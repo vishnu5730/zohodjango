@@ -981,7 +981,8 @@ urlpatterns = [
     path('retainer_invoice_details', views.retainer_invoice_details, name='retainer_invoice_details'),
     path('estimate_details', views.estimate_details, name='estimate_details'),
     path('vendor_credits_details',views.vendor_credits_details,name='vendor_credits_details'), 
-
+    path('journal_report',views.journalreport,name='journalreport'), 
+    path('purchase_order_details',views.purchaseorderdetails,name='purchaseorderdetails'), 
     
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
     

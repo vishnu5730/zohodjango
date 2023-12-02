@@ -1261,11 +1261,7 @@ class customer_comments_table(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,null=True,default='')
     customr=models.ForeignKey(customer,on_delete=models.CASCADE,null=True)
     comment=models.TextField(max_length=500) 
-    
-    
-
-    
-    
+      
 class transactions(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     bank=models.ForeignKey(Bankcreation, on_delete=models.CASCADE,null=True, blank=True)

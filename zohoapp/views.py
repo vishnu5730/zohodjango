@@ -21166,3 +21166,13 @@ def vendor_credits_details(request):
                 'recur_bill' : sorted_recur
             }
     return render(request,'vendor_credit_details.html',context)
+
+def journalreport(request):
+    company = company_details.objects.get(user = request.user)
+    accounts = Chart_of_Account.objects.all()
+    journals = Journal.objects.all()
+    return render(request, 'journalreport.html',{'company': company,'accounts':accounts})
+
+def purchaseorderdetails(request):
+    company = company_details.objects.get(user = request.user)
+    return render(request, 'purchaseorderdetails.html',{'company': company})
