@@ -7925,6 +7925,15 @@ def purchase_account_dropdown(request):
 
     return JsonResponse(options)
 
+def purchase_order_details(request):
+    company = company_details.objects.get(user = request.user)
+    data = Purchase_Order.objects.all()
+    vend = vendor_tableE.objects.all()
+    name_list =[]
+    for item in vend :
+        if item.vendor_display_name[3:] not in name_list:
+            name_list.append(item.vendor_display_name[3:])
+    return render(request, 'purchaseorderdetails.html',{'data':data, 'company': company,'name_list':name_list})
 
 @login_required(login_url='login')
 def create_Purchase_order(request):
@@ -15639,6 +15648,11 @@ def manual_journal_home(request):
     }
     return render(request, 'manual_journal.html', context)
 
+def journal_report(request):
+    company = company_details.objects.get(user = request.user)
+    journal_entries=JournalEntry.objects.all()
+    return render(request, 'journalreport.html',{'company': company,'journal_entries':journal_entries})
+
 def add_journal(request):
     accounts = Chart_of_Account.objects.all()
     vendors = vendor_table.objects.all()
@@ -21167,12 +21181,3 @@ def vendor_credits_details(request):
             }
     return render(request,'vendor_credit_details.html',context)
 
-def journalreport(request):
-    company = company_details.objects.get(user = request.user)
-    accounts = Chart_of_Account.objects.all()
-    journals = Journal.objects.all()
-    return render(request, 'journalreport.html',{'company': company,'accounts':accounts})
-
-def purchaseorderdetails(request):
-    company = company_details.objects.get(user = request.user)
-    return render(request, 'purchaseorderdetails.html',{'company': company})

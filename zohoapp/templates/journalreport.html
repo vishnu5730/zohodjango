@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load social_share %}
 {% block content %}
 
 <style>
@@ -90,30 +90,29 @@
 
 
 <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-6">
-          <form class="form-inline">
+  <div class="row align-items-center">
+    <div class="col-md-6">
+        <form class="form-inline">
             <label class="mr-2" for="fromdate">From:</label>&nbsp;
             <input type="date" class="form-control" id="fromdate" style="color: black !important;">
             <label class="mx-2" for="todate">To:</label>
             <input type="date" class="form-control" id="todate" style="color: black !important;">
-          </form>
-      </div>
-
-      <div class="col-md-6" style="text-align: right;">
-        <a class="btn text-center btn-outline-warning p-2"  onclick="exportAsPDF()" style="margin-right: 2vh;"><i class="fa fa-file-pdf-o" aria-hidden="true"></i>PDF</a>
-
-
-        <a class="btn text-center btn-outline-warning printdrop p-2" href="#" onclick="printPageContent()" style="margin-right: 2vh;"><i class="fa fa-print" aria-hidden="true"></i>Print</a>
-    
-        <a class="btn text-center btn-outline-warning p-2"  onclick="exportAsXLS()" style="margin-right: 2vh;"><i class="fa fa-file-excel-o" aria-hidden="true"></i>EXCEL</a>
-    
-    
-          <a class="btn btn-outline-warning p-2" href="{% url 'report_inventory_view' %}" >&times;</a>
-      </div>
-
+        </form>
     </div>
-
+    <div class="col-md-6 d-flex justify-content-end align-items-center position-relative">
+      <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsPDF()"><i class="fa fa-file-pdf-o" aria-hidden="true"></i>PDF</a>&nbsp;
+      <a class="btn btn-outline-warning p-2 mr-2" href="#" onclick="printPageContent()"><i class="fa fa-print" aria-hidden="true"></i>Print</a>&nbsp;
+      <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsXLS()"><i class="fa fa-file-excel-o" aria-hidden="true"></i>EXCEL</a>&nbsp;
+      <div class="share-dropdown ">
+          <button class="btn btn-outline-warning p-2 mr-2" title="SHARE"><i class="fa fa-share" aria-hidden="true"></i>Share </button>&nbsp;
+          <ul class="share-dropdown-menu position-absolute" aria-labelledby="navbarDropdown">
+              <li>{% post_to_whatsapp object_or_url "WhatsApp" %}</li>
+              <li>{% send_email object.title "New: {{object.title}}. Check it out!" object_or_url "Email" %}</li>
+          </ul>
+      </div>
+      <a class="btn btn-outline-warning p-2" href="{% url 'report_inventory_view' %}">&times;</a>
+  </div>
+  </div>
 
 </div>
 <div class="container-fluid" id="container-to-print"> 
@@ -132,9 +131,11 @@
   </div> 
 
   <div>
-    <table class="table text-white" id="myTable">
+    <table class="table table-responsive text-white" id="myTable">
       <thead >
         <tr style="text-align: center;">
+          <th hidden>DATE
+          </th>
           <th>PARTICULARS
           </th>
           <th>DEBIT
@@ -143,20 +144,21 @@
           </th>
         </tr>
       </thead>
-
+      {% for i in journal_entries %}
       <tbody style="text-align: center;">
         <tr>
-          <td></td>
-          <td></td>
-          <td></td>
+          <td hidden>{{i.journal.date}}</td>
+          <td>{{i.account}}</td>
+          <td>{{i.debits}}</td>
+          <td>{{i.credits}}</td>
         </tr>
       </tbody>
+      {% endfor %}
     </table>
   </div>
 
 
 </div>  
-
 <script>
   function updateEndDateMin() {
       const startDateInput = document.getElementById('fromdate');
@@ -254,7 +256,7 @@ $('body').removeClass("printingContent");
             const ws = XLSX.utils.table_to_sheet(table);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-            XLSX.writeFile(wb, 'sales_order.xlsx');
+            XLSX.writeFile(wb, 'journal_report.xlsx');
     }
     
     function exportAsPDF() {
@@ -277,7 +279,7 @@ $('body').removeClass("printingContent");
     
       const pdfOptions = {
         margin: 0,
-        filename: 'Sales_order.pdf',
+        filename: 'journal_report.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' },
@@ -385,6 +387,20 @@ document.addEventListener("click", function(event) {
       tooltip.style.display ="none";
     }
   }
+});
+$(document).ready(function() {
+    $(".share-dropdown-menu").hide(); // Hide the dropdown menu initially
+
+    $(".share-dropdown button").click(function(e) {
+        e.stopPropagation();
+        $(this).next(".share-dropdown-menu").slideToggle("fast");
+    });
+
+    $(document).on("click", function(event) {
+        if (!$(event.target).closest(".share-dropdown").length) {
+            $(".share-dropdown-menu").slideUp("fast");
+        }
+    });
 });
 </script>  
 
