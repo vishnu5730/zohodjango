@@ -7925,9 +7925,15 @@ def purchase_account_dropdown(request):
 
     return JsonResponse(options)
 
+@login_required(login_url='login')
 def purchase_order_details(request):
     company = company_details.objects.get(user = request.user)
-    data = Purchase_Order.objects.all()
+    data = Purchase_Order.objects.filter(user=request.user)
+    for i in data:
+        if i.vendor_name:
+            i.vendor_name=i.vendor_name.split()
+            i.vendor_name=i.vendor_name[:-1]
+            i.vendor_name=' '.join(i.vendor_name)
     return render(request, 'purchaseorderdetails.html',{'data':data, 'company': company})
 
 @login_required(login_url='login')
@@ -15643,9 +15649,10 @@ def manual_journal_home(request):
     }
     return render(request, 'manual_journal.html', context)
 
+@login_required(login_url='login')
 def journal_report(request):
     company = company_details.objects.get(user = request.user)
-    journal_entries=JournalEntry.objects.all()
+    journal_entries=JournalEntry.objects.filter(user=request.user)
     return render(request, 'journalreport.html',{'company': company,'journal_entries':journal_entries})
 
 def add_journal(request):
@@ -15701,6 +15708,7 @@ def add_journal(request):
             credits = credits_list[i]
 
             journal_entry = JournalEntry(
+                user=user,
                 journal=journal,
                 account=account,
                 description=description,

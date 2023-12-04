@@ -155,16 +155,14 @@
           </th>
           <th>ORDER NO 
           </th>
-          <th>NAME 
-          </th>
           <th>DUE DATE 
+          </th>
+          <th>VENDOR NAME 
           </th>
           <th>STATUS 
           </th>
 
           <th>AMOUNT
-          </th>
-          <th>ACTION 
           </th>
         
         </tr>
@@ -175,9 +173,13 @@
         <tr>
           <td>{{ d.Ord_date }}</td>
           <td>{{ d.Pur_no }}</td>
-          <td>{{ d.vendor_name }}</td>
           <td>{{ d.exp_date }}</td>
-            <td>{{ d.status }}</td>
+          <td>{{ d.vendor_name }}</td>
+          {% if d.convert_status == 1 %}
+            <td>Converted</td>
+            {% else %}
+            <td>Not Converted</td>
+            {% endif %}
           <td id="grand">{{ d.grand_total }}</td>
           
         </tr>

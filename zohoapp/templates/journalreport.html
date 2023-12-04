@@ -43,8 +43,15 @@
         }
 
         #company{
-          margin-left: 15vh;
+          margin-left: 10vh;
         }
+        #company a, /* Target links within company */
+        #selectedEndDate,
+        #totalDisplay /* Target Sale Order Details */
+         {
+          color: black !important; /* Set text color to black */
+         } 
+         
   }
 
   #reportrange span, #selectedEndDate, .daterangepicker .ranges ul li {
@@ -85,42 +92,52 @@
   max-height: 130px; /* Maximum height for the tooltip */
   overflow-y: auto; /* Add vertical scrollbar when content overflows */
         }
+        @media (max-width: 768px) {
+  .share-dropdown {
+    display: inline-block;
+  }
+}
+        
 
 </style>
-
-
 <div class="container-fluid">
   <div class="row align-items-center">
-    <div class="col-md-6">
-        <form class="form-inline">
-            <label class="mr-2" for="fromdate">From:</label>&nbsp;
-            <input type="date" class="form-control" id="fromdate" style="color: black !important;">
-            <label class="mx-2" for="todate">To:</label>
-            <input type="date" class="form-control" id="todate" style="color: black !important;">
-        </form>
-    </div>
-    <div class="col-md-6 d-flex justify-content-end align-items-center position-relative">
-      <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsPDF()"><i class="fa fa-file-pdf-o" aria-hidden="true"></i>PDF</a>&nbsp;
-      <a class="btn btn-outline-warning p-2 mr-2" href="#" onclick="printPageContent()"><i class="fa fa-print" aria-hidden="true"></i>Print</a>&nbsp;
-      <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsXLS()"><i class="fa fa-file-excel-o" aria-hidden="true"></i>EXCEL</a>&nbsp;
-      <div class="share-dropdown ">
-          <button class="btn btn-outline-warning p-2 mr-2" title="SHARE"><i class="fa fa-share" aria-hidden="true"></i>Share </button>&nbsp;
-          <ul class="share-dropdown-menu position-absolute" aria-labelledby="navbarDropdown">
-              <li>{% post_to_whatsapp object_or_url "WhatsApp" %}</li>
-              <li>{% send_email object.title "New: {{object.title}}. Check it out!" object_or_url "Email" %}</li>
-          </ul>
+      <div class="col-md-6">
+          <form class="form-inline">
+              <label class="mr-2" for="fromdate">From:</label>&nbsp;
+              <input type="date" class="form-control" id="fromdate" style="color: black !important;">
+              <label class="mx-2" for="todate">To:</label>
+              <input type="date" class="form-control" id="todate" style="color: black !important;">
+          </form>
       </div>
-      <a class="btn btn-outline-warning p-2" href="{% url 'report_inventory_view' %}">&times;</a>
-  </div>
+      <div class="col-md-6 d-flex justify-content-end align-items-center position-relative">
+        <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsPDF()"><i class="fa fa-file-pdf-o" aria-hidden="true"></i>PDF</a>&nbsp;
+        <a class="btn btn-outline-warning p-2 mr-2" href="#" onclick="printPageContent()"><i class="fa fa-print" aria-hidden="true"></i>Print</a>&nbsp;
+        <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsXLS()"><i class="fa fa-file-excel-o" aria-hidden="true"></i>EXCEL</a>&nbsp;
+        <div class="share-dropdown ">
+            <button class="btn btn-outline-warning p-2 mr-2" title="SHARE"><i class="fa fa-share" aria-hidden="true"></i>Share </button>&nbsp;
+            <ul class="share-dropdown-menu position-absolute" aria-labelledby="navbarDropdown">
+                <li>{% post_to_whatsapp object_or_url "WhatsApp" %}</li>
+                <li>{% send_email object.title "New: {{object.title}}. Check it out!" object_or_url "Email" %}</li>
+            </ul>
+        </div>
+        <a class="btn btn-outline-warning p-2" href="{% url 'report_inventory_view' %}">&times;</a>
+    </div>
   </div>
 
 </div>
+<div class="row" hidden>
+  <div class="col-md-4" style="margin-left: 5vh;"><br><br>
+    <input class="form-control text-black" type="text" id="searchInput" placeholder="Search ">
+  </div>
+</div>
+
 <div class="container-fluid" id="container-to-print"> 
   <div class="row pt-5">
     <center>
       <div class="col-md-4" id="company">
         {% if company.company_name != None %}
-          <a class="text" style="font-size: 1rem; color: white;">{{ company.company_name }}</a><br>
+          <a class="text" style="font-size: 1.5rem; color: white;">{{ company.company_name }}</a><br>
         {% else %}
           <a class="text" style="font-size: 1rem; color: white;">Add Company</a><br>
         {% endif %}
@@ -156,9 +173,8 @@
       {% endfor %}
     </table>
   </div>
-
-
 </div>  
+
 <script>
   function updateEndDateMin() {
       const startDateInput = document.getElementById('fromdate');
@@ -166,12 +182,30 @@
       
       // Set the minimum allowed date for the end date input
       endDateInput.min = startDateInput.value;
+      
   }
 </script>
 
 
 <script>
-  function ApplyDateFilter() {
+
+function initializePageContent() {
+  // Call function to display count of all orders initially
+  const totalSalesAmountDisplayed = calculateTotalSalesAmountDisplayed();
+  document.getElementById('totalSalesAmount').textContent = "" + totalSalesAmountDisplayed.toFixed(2);
+  displaySalesOrderCount();
+}
+
+document.addEventListener('DOMContentLoaded', initializePageContent);
+
+// Rest of your existing code...
+
+
+
+
+
+
+function ApplyDateFilter() {
     updateEndDateMin()
     var fromDate = new Date(document.getElementById('fromdate').value);
     var toDate = new Date(document.getElementById('todate').value);
@@ -205,7 +239,28 @@
     var start = fromDate;
     var end = toDate;
     document.getElementById('selectedEndDate').textContent = 'From ' + start.toDateString() + ' to ' + end.toDateString();
+   
   }
+
+  
+
+// Function to calculate total sales amount based on displayed rows after date filtering
+function calculateTotalSalesAmountDisplayed() {
+let totalAmount = 0;
+const table = document.getElementById("myTable");
+const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+
+for (let i = 0; i < rows.length; i++) {
+    if (rows[i].style.display !== "none") {
+        const totalValue = parseFloat(rows[i].getElementsByTagName("td")[5].innerText);
+        totalAmount += totalValue;
+    }
+}
+
+return totalAmount;
+}
+
+
 
   // Add event listeners to the date inputs to trigger ApplyDateFilter on change
   document.getElementById('fromdate').addEventListener('change', ApplyDateFilter);
@@ -229,6 +284,11 @@
 
   // Call the function to show full table initially
   ShowFullTable();
+
+
+
+ 
+
 </script>
 
 <script>
@@ -243,6 +303,7 @@ $('body').append($printerDiv).addClass("printingContent"); // add the div to bod
 window.print(); // call print
 $printerDiv.remove(); // remove the div
 $('body').removeClass("printingContent");
+
   }
 </script>
 
@@ -308,46 +369,6 @@ $('body').removeClass("printingContent");
   </script>
 
 <script>
-  const searchInput = document.getElementById('searchInput');
-  const nameTooltip = document.getElementById('nameTooltip');
-  const dataTable = document.getElementById('myTable');
-  const tableBody = dataTable.getElementsByTagName('tbody')[0];
-  const initialTableData = [...tableBody.querySelectorAll('tr')];
-
-  searchInput.addEventListener('click', showTooltip);
-  searchInput.addEventListener('keyup', filterTooltip);
-  nameTooltip.addEventListener('click', filterTable);
-
-  function showTooltip(){
-      nameTooltip.style.display = 'block';
-  }
-
-  function filterTooltip() {
-            const searchText = searchInput.value.toLowerCase();
-    
-            // Show the tooltip if there's text in the input
-            if (searchText.length > 0) {
-                nameTooltip.style.top = (searchInput.offsetTop + searchInput.offsetHeight) + 'px';
-                nameTooltip.style.left = searchInput.offsetLeft + 'px';
-            } else {
-              nameTooltip.style.display = 'block';
-                // If search input is empty, restore the initial table
-                restoreInitialTable();
-            }
-    
-            // Filter the tooltip items based on the input
-            const items = nameTooltip.getElementsByClassName('tooltip-item');
-            for (let i = 0; i < items.length; i++) {
-                const item = items[i];
-                const itemName = item.textContent.toLowerCase();
-                if (itemName.includes(searchText)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            }
-        }
-
   function filterTable(event) {
       if (event.target.classList.contains('tooltip-item')) {
         searchInput.value = event.target.textContent
@@ -369,6 +390,7 @@ $('body').removeClass("printingContent");
           // Hide the tooltip after selecting
           nameTooltip.style.display = 'none';
       }
+     
   }
 
   function restoreInitialTable() {
@@ -388,6 +410,8 @@ document.addEventListener("click", function(event) {
     }
   }
 });
+
+//share
 $(document).ready(function() {
     $(".share-dropdown-menu").hide(); // Hide the dropdown menu initially
 
@@ -402,7 +426,10 @@ $(document).ready(function() {
         }
     });
 });
-</script>  
+
+</script>
+
+
 
 {% endblock content %}
 

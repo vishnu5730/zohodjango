@@ -737,12 +737,16 @@ class Purchase_Order(models.Model):
     sgst = models.FloatField(null=True,blank=True)
     tax_amount =  models.FloatField(null=True,blank=True)
     shipping_charge = models.FloatField(null=True,blank=True)
+    adjustment_charge = models.FloatField(null=True,blank=True)
     grand_total = models.FloatField(null=True,blank=True)
+    payed = models.FloatField(null=True,blank=True)
     note = models.CharField(max_length=255,null=True,blank=True)
+    payment_type = models.CharField(max_length=255,null=True,blank=True)
     document=models.FileField(upload_to='doc/purchase_order',null=True,blank=True)
     comments = models.CharField(max_length=255,null=True,blank=True)
     term=models.CharField(max_length=255,null=True,blank=True)
     status=models.CharField(max_length=255,default='Draft')
+    convert_status=models.IntegerField(default='0',null=True)
 
 class Purchase_Order_items (models.Model):
 
@@ -1477,6 +1481,7 @@ class Journal(models.Model):
         
         
 class JournalEntry(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     journal = models.ForeignKey(Journal, on_delete=models.CASCADE)
     account = models.CharField(max_length=200)
     description = models.TextField()
