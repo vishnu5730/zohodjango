@@ -7928,12 +7928,7 @@ def purchase_account_dropdown(request):
 def purchase_order_details(request):
     company = company_details.objects.get(user = request.user)
     data = Purchase_Order.objects.all()
-    vend = vendor_tableE.objects.all()
-    name_list =[]
-    for item in vend :
-        if item.vendor_display_name[3:] not in name_list:
-            name_list.append(item.vendor_display_name[3:])
-    return render(request, 'purchaseorderdetails.html',{'data':data, 'company': company,'name_list':name_list})
+    return render(request, 'purchaseorderdetails.html',{'data':data, 'company': company})
 
 @login_required(login_url='login')
 def create_Purchase_order(request):
