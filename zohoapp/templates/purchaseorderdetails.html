@@ -176,9 +176,9 @@
           <td>{{ d.exp_date }}</td>
           <td>{{ d.vendor_name }}</td>
           {% if d.convert_status == 1 %}
-            <td>Converted</td>
+            <td style="color: rgb(3, 139, 3);">Converted</td>
             {% else %}
-            <td>Not Converted</td>
+            <td style="color: rgb(204, 134, 5);">Not Converted</td>
             {% endif %}
           <td id="grand">{{ d.grand_total }}</td>
           

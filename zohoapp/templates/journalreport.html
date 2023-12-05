@@ -4,10 +4,6 @@
 {% block content %}
 
 <style>
-
-
-
-
   .daterangepicker{
     color: black;
   }
@@ -97,8 +93,6 @@
     display: inline-block;
   }
 }
-        
-
 </style>
 <div class="container-fluid">
   <div class="row align-items-center">
@@ -148,7 +142,7 @@
   </div> 
 
   <div>
-    <table class="table table-responsive text-white" id="myTable">
+    <table class="table table-responsive text-white" id="myTable" data-journal="{{journal_entries}}">
       <thead >
         <tr style="text-align: center;">
           <th hidden>DATE
@@ -186,7 +180,6 @@
   }
 </script>
 
-
 <script>
 
 function initializePageContent() {
@@ -200,49 +193,66 @@ document.addEventListener('DOMContentLoaded', initializePageContent);
 
 // Rest of your existing code...
 
-
-
-
-
-
 function ApplyDateFilter() {
-    updateEndDateMin()
-    var fromDate = new Date(document.getElementById('fromdate').value);
-    var toDate = new Date(document.getElementById('todate').value);
+            updateEndDateMin();
+            var fromDate = new Date(document.getElementById('fromdate').value);
+            var toDate = new Date(document.getElementById('todate').value);
 
-    // Set the time part to the beginning and end of the day
-    fromDate.setHours(0, 0, 0, 0);
-    toDate.setHours(23, 59, 59, 999);
+            fromDate.setHours(0, 0, 0, 0);
+            toDate.setHours(23, 59, 59, 999);
 
-    var table = document.getElementById("myTable");
-    var tr = table.getElementsByTagName("tr");
+            var table = document.getElementById("myTable");
+            var tr = table.getElementsByTagName("tr");
+            var data = table.getAttribute('data-journal');
 
-    for (var i = 1; i < tr.length; i++) {
-      var row = tr[i];
-      var td = row.getElementsByTagName("td")[0]; // Assuming the date is in the first column.
+            var accountMap = {};
 
-      if (td) {
-        var txtValue = td.textContent || td.innerText;
-        var check = new Date(txtValue);
+            for (var i = 1; i < tr.length; i++) {
+                var row = tr[i];
+                var tdAccount = row.getElementsByTagName("td")[1];
+                var tdDebits = row.getElementsByTagName("td")[2];
+                var tdCredits = row.getElementsByTagName("td")[3];
 
-        // Set the time part of check to match the format of fromDate and toDate
-        check.setHours(0, 0, 0, 0);
+                if (tdAccount && tdDebits && tdCredits) {
+                    var account = tdAccount.textContent || tdAccount.innerText;
+                    var debits = parseFloat(tdDebits.textContent || tdDebits.innerText);
+                    var credits = parseFloat(tdCredits.textContent || tdCredits.innerText);
 
-        if (check >= fromDate && check <= toDate) {
-          row.style.display = "";
-        } else {
-          row.style.display = "none";
+                    var tdDate = row.getElementsByTagName("td")[0];
+                    var txtValue = tdDate.textContent || tdDate.innerText;
+                    var check = new Date(txtValue);
+                    check.setHours(0, 0, 0, 0);
+
+                    if (check >= fromDate && check <= toDate) {
+                        if (!accountMap[account]) {
+                            accountMap[account] = { debits: 0, credits: 0 };
+                        }
+                        accountMap[account].debits += debits;
+                        accountMap[account].credits += credits;
+                        row.style.display = "none";
+                    }
+                }
+            }
+
+
+            for (var account in accountMap) {
+                var newRow = table.insertRow();
+                var cell1 = newRow.insertCell(0);
+                var cell2 = newRow.insertCell(1);
+                var cell3 = newRow.insertCell(2);
+                var cell4 = newRow.insertCell(3);
+
+                cell1.textContent = "";
+                cell2.textContent = account;
+                cell3.textContent = accountMap[account].debits.toFixed(2);
+                cell4.textContent = accountMap[account].credits.toFixed(2);
+            }
+
+
+            var start = fromDate;
+            var end = toDate;
+            document.getElementById('selectedEndDate').textContent = 'From ' + start.toDateString() + ' to ' + end.toDateString();
         }
-      }
-    }
-    // Update the selectedEndDate div
-    var start = fromDate;
-    var end = toDate;
-    document.getElementById('selectedEndDate').textContent = 'From ' + start.toDateString() + ' to ' + end.toDateString();
-   
-  }
-
-  
 
 // Function to calculate total sales amount based on displayed rows after date filtering
 function calculateTotalSalesAmountDisplayed() {
@@ -259,8 +269,6 @@ for (let i = 0; i < rows.length; i++) {
 
 return totalAmount;
 }
-
-
 
   // Add event listeners to the date inputs to trigger ApplyDateFilter on change
   document.getElementById('fromdate').addEventListener('change', ApplyDateFilter);
@@ -284,11 +292,6 @@ return totalAmount;
 
   // Call the function to show full table initially
   ShowFullTable();
-
-
-
- 
-
 </script>
 
 <script>
@@ -306,9 +309,6 @@ $('body').removeClass("printingContent");
 
   }
 </script>
-
-
-
 
   <script>
     function exportAsXLS() {
@@ -428,8 +428,6 @@ $(document).ready(function() {
 });
 
 </script>
-
-
 
 {% endblock content %}
 
