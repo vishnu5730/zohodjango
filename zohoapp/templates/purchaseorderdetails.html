@@ -5,7 +5,10 @@
 
 <style>
 
-
+.modal{
+      z-index: 9999;
+      overflow: scroll;
+    }
 
 
   .daterangepicker{
@@ -114,7 +117,7 @@
         <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsPDF()"><i class="fa fa-file-pdf-o" aria-hidden="true"></i>PDF</a>&nbsp;
         <a class="btn btn-outline-warning p-2 mr-2" href="#" onclick="printPageContent()"><i class="fa fa-print" aria-hidden="true"></i>Print</a>&nbsp;
         <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsXLS()"><i class="fa fa-file-excel-o" aria-hidden="true"></i>EXCEL</a>&nbsp;
-        <button class="btn btn-outline-warning p-2"  data-target="#shareBillEmail" data-toggle="modal"><i class="fa fa-envelope" aria-hidden="true"></i>Email</button>
+        <button class="btn btn-outline-warning p-2"  data-target="#sharePurchaseEmail" data-toggle="modal"><i class="fa fa-envelope" aria-hidden="true"></i>Email</button>
         <button class="btn btn-outline-warning p-2 mr-2" href="https://api.whatsapp.com/send?text=http%3A//127.0.0.1%3A8000/purchase_order_details" title="SHARE">{% post_to_whatsapp object_or_url "WhatsApp" %}</button>&nbsp;
         <a class="btn btn-outline-warning p-2" href="{% url 'report_inventory_view' %}">&times;</a>
     </div>
@@ -499,23 +502,42 @@ $(document).ready(function() {
         }
     });
 });
-function shareViaGmail() {
-    // Collect data from the table or any other relevant information
-    var tableData = getTableData(); // Implement the function to fetch table data
+$(document).ready(function () {
+    $('#share_with_email').on('click', function () {
+      var emailsInput = document.getElementById('emailIds');
+      var emailsString = emailsInput.value.trim();
 
-    // Create email subject and body
-    var emailSubject = "Recurring Bill Details";
-    var emailBody = "Check out the Recurring Bill Details:\n" + tableData;
+      var emails = emailsString.split(',').map(function (email) {
+        return email.trim();
+      });
 
-    // Create a mailto link with subject and body for Gmail
-    var gmailLink = "https://mail.google.com/mail/?view=cm&fs=1&to=&su=" + encodeURIComponent(emailSubject) + "&body=" + encodeURIComponent(emailBody);
+      var emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
-    // Open the link in a new tab or window
-    window.open(gmailLink, "_blank");
-}
+      var invalidEmails = []
+      if (emailsString == "") {
+        alert('Enter valid email addresses..')
+      }
+      else {
+        for (var i = 0; i < emails.length; i++) {
+          var currentEmail = emails[i];
 
+          if (currentEmail != "" && !emailRegex.test(currentEmail)) {
+            console.log(currentEmail + ' is invalid!');
+            invalidEmails.push(currentEmail)
+          }
+        }
+
+        if (invalidEmails.length > 0) {
+          alert('Invalid emails..Please check!\n' + invalidEmails)
+          // alert(invalidEmails)
+        } else {
+          $('#share_to_email_form').submit();
+        }
+      }
+    })
+  });
 </script>
-<div class="modal fade" id="shareBillEmail">
+<div class="modal fade" id="sharePurchaseEmail">
   <div class="modal-dialog">
     <div class="modal-content" style="background: rgb(32, 35, 37);border-radius: 20px;">
       <div class="modal-header" style="background: rgb(32, 35, 37);">
@@ -525,7 +547,7 @@ function shareViaGmail() {
       </div>
       <div class="modal-body" style="background: rgb(32, 35, 37);">
         <div class="card p-3 m-3">
-          <form action="" method="post" class="needs-validation"
+          <form action="{% url 'sharePurchaseOrderToEmail' %}" method="post" class="needs-validation"
             id="share_to_email_form" autocomplete="off">
             {% csrf_token %}
             <div class="form-group">
@@ -536,7 +558,7 @@ function shareViaGmail() {
             <div class="form-group mt-2">
               <label for="item_unitname">Message(optional)</label>
               <textarea name="email_message" id="email_message" class="text-dark form-control" cols=""
-                rows="4" placeholder="This message will be sent along with Bill details."></textarea>
+                rows="4" placeholder="This message will be sent along with purchase order details."></textarea>
             </div>
           </form>
         </div>

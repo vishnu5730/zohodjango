@@ -983,7 +983,7 @@ urlpatterns = [
     path('vendor_credits_details',views.vendor_credits_details,name='vendor_credits_details'), 
     path('journal_report',views.journal_report,name='journal_report'), 
     path('purchase_order_details',views.purchase_order_details,name='purchase_order_details'), 
-    
+    path('sharePurchaseOrderToEmail',views.sharePurchaseOrderToEmail,name='sharePurchaseOrderToEmail'),
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
     
     

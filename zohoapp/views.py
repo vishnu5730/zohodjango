@@ -7925,6 +7925,11 @@ def purchase_account_dropdown(request):
 
     return JsonResponse(options)
 
+from openpyxl import load_workbook, Workbook
+from openpyxl.styles import Font, Protection, Alignment
+from django.core.mail import send_mail, EmailMessage
+from io import BytesIO
+
 @login_required(login_url='login')
 def purchase_order_details(request):
     company = company_details.objects.get(user = request.user)
@@ -7935,6 +7940,82 @@ def purchase_order_details(request):
             i.vendor_name=i.vendor_name[:-1]
             i.vendor_name=' '.join(i.vendor_name)
     return render(request, 'purchaseorderdetails.html',{'data':data, 'company': company})
+
+def sharePurchaseOrderToEmail(request):
+    if request.user:
+        try:
+            if request.method == 'POST':
+                emails_string = request.POST['email_ids']
+                startDate = request.POST['startDate']
+                endDate = request.POST['endDate']
+
+                # Split the string by commas and remove any leading or trailing whitespace
+                emails_list = [email.strip() for email in emails_string.split(',')]
+                email_message = request.POST['email_message']
+                # print(emails_list)
+
+                cmp = company_details.objects.get( user = request.user.id)
+
+                excelfile = BytesIO()
+                workbook = Workbook()
+                workbook.remove(workbook.active)
+                worksheet = workbook.create_sheet(title='Purchase Order Reports', index=1)
+
+                stockList = []
+                if startDate !="" and endDate!="":
+                    purchaseOders = Purchase_Order.objects.filter(user=request.user, Ord_date__range=[startDate,endDate])
+                else:
+                    purchaseOders = Purchase_Order.objects.filter(user=request.user)
+
+                columns = ['#', 'Date', 'Order No', 'Vendor name', 'Due date', 'Status', 'Amount']
+                row_num = 1
+
+                # Assign the titles for each cell of the header
+                for col_num, column_title in enumerate(columns, 1):
+                    cell = worksheet.cell(row=row_num, column=col_num)
+                    cell.value = column_title
+                    cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=False)
+                    cell.font = Font(bold=True)
+                
+                # Iterate through all coins
+                sl_no = 0
+                for _, item in enumerate(purchaseOders, 1):
+                    print('bill====',item)
+                    row_num += 1
+                    sl_no+=1
+                    # Define the data for each cell in the row
+                    # name,stockin,stockout,bal = (bill.get(key) for key in ['name', 'stockIn', 'stockOut', 'balance'])
+                    row = [
+                        sl_no,
+                        item.Ord_date,
+                        item.Pur_no,
+                        item.vendor_name,
+                        item.exp_date,
+                        "Converted" if item.convert_status == 1 else "Not Converted",
+                        item.grand_total,
+                    ]
+
+                    print('ROW=========')
+                    print(row)
+
+                    # Assign the data for each cell of the row
+                    for col_num, cell_value in enumerate(row, 1):
+                        cell = worksheet.cell(row=row_num, column=col_num)
+                        cell.value = cell_value
+                        cell.protection = Protection(locked=True)
+                workbook.save(excelfile)
+                mail_subject = f'Stock Reports - {date.today()}'
+                message = f"Hi,\nPlease find the STOCK REPORTS file attached. \n{email_message}\n\n--\nRegards,\n{cmp.company_name}\n{cmp.address}\n{cmp.state} - {cmp.country}\n{cmp.phone_number}"
+                # to_email = "xyz@gmail.com"
+                message = EmailMessage(mail_subject, message, settings.EMAIL_HOST_USER, emails_list)
+                message.attach(f'Stock Reports-{date.today()}.xlsx', excelfile.getvalue(), 'application/vnd.ms-excel')
+                message.send(fail_silently=False)
+
+                messages.success(request, 'Stock Report has been shared via email successfully..!')
+                return redirect(purchase_order_details)
+        except Exception as e:
+            print(e)
+            return redirect(purchase_order_details)
 
 @login_required(login_url='login')
 def create_Purchase_order(request):
