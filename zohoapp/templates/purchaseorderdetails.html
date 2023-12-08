@@ -108,23 +108,23 @@
       <div class="col-md-6">
           <form class="form-inline">
               <label class="mr-2" for="fromdate">From:</label>&nbsp;
-              <input type="date" class="form-control" id="fromdate" style="color: black !important;">
+              <input type="date" class="form-control" id="fromdate" style="color: black !important;" onchange="updateFromDate()">
               <label class="mx-2" for="todate">To:</label>
-              <input type="date" class="form-control" id="todate" style="color: black !important;">
+              <input type="date" class="form-control" id="todate" style="color: black !important;" onchange="updateToDate()">
           </form>
       </div>
       <div class="col-md-6 d-flex justify-content-end align-items-center position-relative">
         <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsPDF()"><i class="fa fa-file-pdf-o" aria-hidden="true"></i>PDF</a>&nbsp;
         <a class="btn btn-outline-warning p-2 mr-2" href="#" onclick="printPageContent()"><i class="fa fa-print" aria-hidden="true"></i>Print</a>&nbsp;
         <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsXLS()"><i class="fa fa-file-excel-o" aria-hidden="true"></i>EXCEL</a>&nbsp;
-        <button class="btn btn-outline-warning p-2"  data-target="#sharePurchaseEmail" data-toggle="modal"><i class="fa fa-envelope" aria-hidden="true"></i>Email</button>
-        <button class="btn btn-outline-warning p-2 mr-2" href="https://api.whatsapp.com/send?text=http%3A//127.0.0.1%3A8000/purchase_order_details" title="SHARE">{% post_to_whatsapp object_or_url "WhatsApp" %}</button>&nbsp;
+        <a class="btn btn-outline-warning p-2 mr-2"  data-target="#sharePurchaseEmail" data-toggle="modal"><i class="fa fa-envelope" aria-hidden="true"></i>Email</a>
+        <a class="btn btn-outline-warning p-2 mr-2" onclick="shareViaWhatsApp()">WHATSAPP</a>&nbsp;
         <a class="btn btn-outline-warning p-2" href="{% url 'report_inventory_view' %}">&times;</a>
     </div>
   </div>
 
 </div>
-<div class="row">
+<div class="row" hidden>
   <div class="col-md-4" style="margin-left: 5vh;"><br><br>
     <input class="form-control text-black" type="text" id="searchInput" placeholder="Search ">
   </div>
@@ -325,10 +325,6 @@ return totalAmount;
   // Call the function to show full table initially
   ShowFullTable();
 
-
-
- 
-
 </script>
 
 <script>
@@ -347,7 +343,18 @@ $('body').removeClass("printingContent");
   }
 </script>
 
-
+<script>
+  function shareViaWhatsApp() {
+    // Get the current page URL
+    var pageUrl = window.location.href;
+  
+    // Create the WhatsApp share link
+    var whatsappLink = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(pageUrl);
+  
+    // Open the WhatsApp share link in a new window or tab
+    window.open(whatsappLink, '_blank');
+  }
+  </script>
 
 
   <script>
@@ -541,22 +548,24 @@ $(document).ready(function () {
   <div class="modal-dialog">
     <div class="modal-content" style="background: rgb(32, 35, 37);border-radius: 20px;">
       <div class="modal-header" style="background: rgb(32, 35, 37);">
-        <h5 class="m-3 text-uppercase" id="shareBillEmailLabel">Share Sales Order Via Email</h5>
+        <h5 class="m-3 text-uppercase" id="shareBillEmailLabel">Share Purchase Order Via Email</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
             aria-hidden="true">&times;</span></button>
       </div>
       <div class="modal-body" style="background: rgb(32, 35, 37);">
         <div class="card p-3 m-3">
-          <form action="{% url 'sharePurchaseOrderToEmail' %}" method="post" class="needs-validation"
+          <form action="{% url 'purchaseOrderDetailsToEmail' %}" method="post" class="needs-validation"
             id="share_to_email_form" autocomplete="off">
             {% csrf_token %}
+            <input type="hidden" name="from_date" id="from_date" value="">
+            <input type="hidden" name="to_date" id="to_date" value="">
             <div class="form-group">
               <label for="emailIds">Email IDs</label>
               <textarea class="form-control text-dark" name="email_ids" id="emailIds" rows="5"
                 placeholder="Multiple emails can be added by separating with a comma(,)." required></textarea>
             </div>
             <div class="form-group mt-2">
-              <label for="item_unitname">Message(optional)</label>
+              <label for="item_unitname">Message(Optional)</label>
               <textarea name="email_message" id="email_message" class="text-dark form-control" cols=""
                 rows="4" placeholder="This message will be sent along with purchase order details."></textarea>
             </div>
@@ -571,5 +580,23 @@ $(document).ready(function () {
     </div>
   </div>
 </div>
+<script>
+  function updateFromDate() {
+      var fromDateInput = document.getElementById('fromdate');
+      var fromDateHiddenInput = document.getElementById('from_date');
+
+      // Set the value of the hidden input to the selected date
+      fromDateHiddenInput.value = fromDateInput.value;
+  }
+
+  function updateToDate() {
+      var toDateInput = document.getElementById('todate');
+      var toDateHiddenInput = document.getElementById('to_date');
+
+      // Set the value of the hidden input to the selected date
+      toDateHiddenInput.value = toDateInput.value;
+  }
+</script>
+
 {% endblock content %}
 
