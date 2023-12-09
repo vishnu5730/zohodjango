@@ -21243,11 +21243,8 @@ def purchaseOrderDetailsToEmail(request):
                 email = EmailMessage(subject, f"{email_message}", from_email=settings.EMAIL_HOST_USER, to=emails_list)
                 email.attach(f'purchase_order_details-{cmp.company_name}.csv', response.getvalue(), "text/csv")
                 email.send(fail_silently=False)
-
-                messages.success(request, 'Report has been shared via email successfully..!')
                 return redirect('purchase_order_details')
         except Exception as e:
-            messages.error(request, f'Error while sending report: {e}')
             return redirect('purchase_order_details')
 
 def JournalReportToEmail(request):
@@ -21290,9 +21287,6 @@ def JournalReportToEmail(request):
                 email = EmailMessage(subject, f"{email_message}", from_email=settings.EMAIL_HOST_USER, to=emails_list)
                 email.attach(f'journal_report-{cmp.company_name}.csv', response.getvalue(), "text/csv")
                 email.send(fail_silently=False)
-
-                messages.success(request, 'Report has been shared via email successfully..!')
                 return redirect('journal_report')
         except Exception as e:
-            messages.error(request, f'Error while sending report: {e}')
             return redirect('journal_report')

@@ -113,9 +113,15 @@
         <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsPDF()"><i class="fa fa-file-pdf-o" aria-hidden="true"></i>PDF</a>&nbsp;
         <a class="btn btn-outline-warning p-2 mr-2" href="#" onclick="printPageContent()"><i class="fa fa-print" aria-hidden="true"></i>Print</a>&nbsp;
         <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsXLS()"><i class="fa fa-file-excel-o" aria-hidden="true"></i>EXCEL</a>&nbsp;
-        <a class="btn btn-outline-warning p-2 mr-2"  data-target="#shareJournalEmail" data-toggle="modal"><i class="fa fa-envelope" aria-hidden="true"></i>Email</a>
-        <a class="btn btn-outline-warning p-2 mr-2" onclick="shareViaWhatsApp()">WHATSAPP</a>&nbsp;
+        <div class="share-dropdown ">
+          <button class="btn btn-outline-warning p-2 mr-2" title="SHARE"><i class="fa fa-share" aria-hidden="true"></i>Share </button>&nbsp;
+          <ul class="share-dropdown-menu position-absolute" aria-labelledby="navbarDropdown">
+              <li><a class="btn btn-outline-warning p-2 mr-2"  data-target="#shareJournalEmail" data-toggle="modal"><i class="fa fa-envelope" aria-hidden="true"></i>Email</a></li>
+              <li><a class="btn btn-outline-warning p-2 mr-2" onclick="shareViaWhatsApp()">WHATSAPP</a>&nbsp;</li>
+          </ul>
+      </div>
         <a class="btn btn-outline-warning p-2" href="{% url 'report_inventory_view' %}">&times;</a>
+        
     </div>
   </div>
 
@@ -273,19 +279,26 @@ return totalAmount;
 </script>
 
 <script>
-  function printPageContent(){
+  function printPageContent() {
+  var printContents = document.getElementById("container-to-print").innerHTML;
 
-      var printContents = document.getElementById("container-to-print").innerHTML;
+  var printWindow = window.open('', '_blank');
+  printWindow.document.write('<html><head><title>Print</title>');
+  printWindow.document.write('<style>');
+  printWindow.document.write('body { text-align: center; }');
+  printWindow.document.write('a { color: black !important; }'); // Set the color of <a> tags to black
+  printWindow.document.write('table { border-collapse: collapse; width: 100%; }');
+  printWindow.document.write('th, td { border: 1px solid #000; padding: 8px; text-align: center; }');
+  printWindow.document.write('th { background-color: #f2f2f2; }');
+  printWindow.document.write('</style></head><body>');
+  printWindow.document.write(printContents);
+  printWindow.document.write('</body></html>');
+  printWindow.document.close();
 
-var $printerDiv = $('<div class="printContainer"></div>'); // create the div that will contain the stuff to be printed
-$printerDiv.html(printContents); // add the content to be printed
-$('body').append($printerDiv).addClass("printingContent"); // add the div to body, and make the body aware of printing (we apply a set of css styles to the body to hide its contents)
+  printWindow.print();
+  printWindow.close();
+}
 
-window.print(); // call print
-$printerDiv.remove(); // remove the div
-$('body').removeClass("printingContent");
-
-  }
 </script>
 
   <script>
