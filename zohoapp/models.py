@@ -21,9 +21,6 @@ class company_details(models.Model):
     gst_num = models.CharField(max_length=100,null=True,blank=True)
     pan_num = models.CharField(max_length=100,null=True,blank=True)
 
-
-
-
 class Sales(models.Model):
     Account_type=models.TextField(max_length=255)
     Account_name=models.TextField(max_length=255)

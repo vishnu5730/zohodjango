@@ -55,15 +55,13 @@
                     <thead>
                       <tr>
                         <th>NAME</th>
-                        <th>COMPANY</th>
-                        <th>EMAIL</th>
                         <th>PHONE</th>
+                        <th>EMAIL</th>
                         <th>GST TREATMENT</th>
-                        <th>STATUS</th>
+                        <th>GST NO</th>
                         <th>OPENING BALANCE</th>
+                        <th>STATUS</th>
                         <th>BALANCE</th>
-                        <th>DELETE</th>
-
                       </tr>
                     </thead>
                     <tbody>
@@ -73,22 +71,22 @@
              
                        <!-- <td onclick="location.href ='{% url 'detail' v.id %}' " > {{v.Name}}</td> -->
                         <td>{{v.first_name}} {{v.last_name}}</td>
-                        <td>{{v.company_name}}</td>
-                        <td>{{v.vendor_email}}</td>
                         <td>{{v.vendor_wphone}}</td>
-
+                        <td>{{v.vendor_email}}</td>
                         <td ><textarea class="bg-transparent text-white border-0" name="" id="" cols="45" rows="2">{{v.gst_treatment}}</textarea></td>
+                        <td>{{v.gst_number}}</td>
+                        {% if v.opening_bal_type == 'credit' %}
+                        <td>-{{v.opening_bal}}</td>
+                        {% else %}
+                        <td>{{v.opening_bal}}</td>
+                        {% endif %}
                         <td>{{v.status}}</td>
                         {% if v.opening_bal_type == 'credit' %}
                         <td>-{{v.opening_bal}}</td>
                         {% else %}
                         <td>{{v.opening_bal}}</td>
                         {% endif %}
-                        <td></td>
                         <td><a href="{% url 'delete_vendor' v.id %}" onclick="alert('Do You Want to Delete?')"><i class="fas fa-trash text-danger text-center"></i></a></td>
-
-        
-                       
                       </tr>
                       {% endfor %}
                     </tbody>
@@ -99,11 +97,6 @@
             <div class="col-sm-12 col-md-1 col-lg-1"></div>
 
         </div>
-      
-
-           
-        
-
     <!-- </div> -->
 
 </div>
