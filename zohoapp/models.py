@@ -132,6 +132,7 @@ class vendor_table(models.Model):
     sphone=models.CharField(max_length=100,default='')
     sfax=models.CharField(max_length=100,default='')
     status=models.CharField(max_length=100,null=True,blank=True,default='')
+    credit_limit=models.IntegerField(default=0)
 
 class comments_table(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,null=True,default='')

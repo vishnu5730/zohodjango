@@ -1152,7 +1152,8 @@ urlpatterns = [
     
     path('shareEstimateToEmail/<int:pk>',views.shareEstimateToEmail,name='shareEstimateToEmail'),
     path('shareExpenseToEmail/<int:pk>',views.shareExpenseToEmail,name='shareExpenseToEmail'),
-    
+    path('payment_terms_vend',views.payment_terms_vend,name='payment_terms_vend'),
+
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
     
     

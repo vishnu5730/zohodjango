@@ -862,8 +862,9 @@ def commentproduct(request, product_id):
     
 @login_required(login_url='login')
 def vendor(request):
+    sb=payment_terms.objects.filter(user=request.user)
     company=company_details.objects.get(user=request.user)
-    return render(request,'create_vendor.html',{'company':company})
+    return render(request,'create_vendor.html',{'company':company,'sb':sb})
 
 
 @login_required(login_url='login')
@@ -897,7 +898,11 @@ def add_vendor(request):
         vendor_data.currency=request.POST['currency']
         vendor_data.opening_bal=request.POST['opening_bal']
         vendor_data.payment_terms=request.POST['payment_terms']
-
+        vendor_data.credit_limit=request.POST['credit_limit']
+        crdr=request.POST.get('bal')
+        if crdr == 'credit':
+            vendor_data.opening_bal = float(vendor_data.opening_bal)
+            vendor_data.opening_bal = -vendor_data.opening_bal
         user_id=request.user.id
         udata=User.objects.get(id=user_id)
         vendor_data.user=udata
@@ -17014,7 +17019,18 @@ def payment_terms_cust(request):        #update
             "terms": terms,
         }
         return JsonResponse(response_data)
-        
+
+def payment_terms_vend(request):       
+    if request.method == 'POST':
+        terms = request.POST.get('name')
+        day = request.POST.get('days')
+        ptr = payment_terms(user=request.user,Terms=terms, Days=day)
+        ptr.save()
+        response_data = {
+            "message": "success",
+            "terms": terms,
+        }
+        return JsonResponse(response_data)
         
 def customer_active(request,id):
     p=customer.objects.get(id=id)
