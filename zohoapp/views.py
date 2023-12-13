@@ -862,7 +862,7 @@ def commentproduct(request, product_id):
     
 @login_required(login_url='login')
 def vendor(request):
-    sb=payment_terms.objects.filter(user=request.user)
+    sb = payment_terms.objects.filter(user=request.user)
     company=company_details.objects.get(user=request.user)
     return render(request,'create_vendor.html',{'company':company,'sb':sb})
 
@@ -897,12 +897,13 @@ def add_vendor(request):
         vendor_data.source_supply=request.POST['source_supply']
         vendor_data.currency=request.POST['currency']
         vendor_data.opening_bal=request.POST['opening_bal']
+        vendor_data.opening_bal = float(vendor_data.opening_bal)
         vendor_data.payment_terms=request.POST['payment_terms']
         vendor_data.credit_limit=request.POST['credit_limit']
         crdr=request.POST.get('bal')
         if crdr == 'credit':
-            vendor_data.opening_bal = float(vendor_data.opening_bal)
-            vendor_data.opening_bal = -vendor_data.opening_bal
+            if vendor_data.opening_bal != 0.0:
+                vendor_data.opening_bal = -vendor_data.opening_bal
         user_id=request.user.id
         udata=User.objects.get(id=user_id)
         vendor_data.user=udata
@@ -923,44 +924,48 @@ def add_vendor(request):
         vendor_data.szip=request.POST['szip']
         vendor_data.sphone=request.POST['sphone']
         vendor_data.sfax=request.POST['sfax']
-        vendor_data.save()
-# .......................................................adding to remaks table.....................
-        vdata=vendor_table.objects.get(id=vendor_data.id)
-        vendor=vdata
-        rdata=remarks_table()
-        rdata.remarks=request.POST['remark']
-        rdata.user=udata
-        rdata.vendor=vdata
-        rdata.save()
+        if vendor_table.objects.filter(pan_number=vendor_data.pan_number, vendor_display_name=vendor_data.vendor_display_name).exists():
+            messages.info(request,'Vendor already exist!!!')
+            return redirect('vendor')
+        else:
+            vendor_data.save()
+    # .......................................................adding to remaks table.....................
+            vdata=vendor_table.objects.get(id=vendor_data.id)
+            vendor=vdata
+            rdata=remarks_table()
+            rdata.remarks=request.POST['remark']
+            rdata.user=udata
+            rdata.vendor=vdata
+            rdata.save()
 
 
-#  ...........................adding multiple rows of table to model  ........................................................  
-     
-        salutation =request.POST.getlist('salutation[]')
-        first_name =request.POST.getlist('first_name[]')
-        last_name =request.POST.getlist('last_name[]')
-        email =request.POST.getlist('email[]')
-        work_phone =request.POST.getlist('wphone[]')
-        mobile =request.POST.getlist('mobile[]')
-        skype_number =request.POST.getlist('skype[]')
-        designation =request.POST.getlist('designation[]')
-        department =request.POST.getlist('department[]') 
-        vdata=vendor_table.objects.get(id=vendor_data.id)
-        vendor=vdata
-        print("hi")
-        print(salutation)
-        if salutation != ['Select']:
-            if len(salutation)==len(first_name)==len(last_name)==len(email)==len(work_phone)==len(mobile)==len(skype_number)==len(designation)==len(department):
-                mapped2=zip(salutation,first_name,last_name,email,work_phone,mobile,skype_number,designation,department)
-                mapped2=list(mapped2)
-                print(mapped2)
-                for ele in mapped2:
-                    created = contact_person_table.objects.get_or_create(salutation=ele[0],first_name=ele[1],last_name=ele[2],email=ele[3],
-                            work_phone=ele[4],mobile=ele[5],skype_number=ele[6],designation=ele[7],department=ele[8],user=udata,vendor=vendor)
-            
-       
-                 
-        return redirect('view_vendor_list')
+    #  ...........................adding multiple rows of table to model  ........................................................  
+        
+            salutation =request.POST.getlist('salutation[]')
+            first_name =request.POST.getlist('first_name[]')
+            last_name =request.POST.getlist('last_name[]')
+            email =request.POST.getlist('email[]')
+            work_phone =request.POST.getlist('wphone[]')
+            mobile =request.POST.getlist('mobile[]')
+            skype_number =request.POST.getlist('skype[]')
+            designation =request.POST.getlist('designation[]')
+            department =request.POST.getlist('department[]') 
+            vdata=vendor_table.objects.get(id=vendor_data.id)
+            vendor=vdata
+            print("hi")
+            print(salutation)
+            if salutation != ['Select']:
+                if len(salutation)==len(first_name)==len(last_name)==len(email)==len(work_phone)==len(mobile)==len(skype_number)==len(designation)==len(department):
+                    mapped2=zip(salutation,first_name,last_name,email,work_phone,mobile,skype_number,designation,department)
+                    mapped2=list(mapped2)
+                    print(mapped2)
+                    for ele in mapped2:
+                        created = contact_person_table.objects.get_or_create(salutation=ele[0],first_name=ele[1],last_name=ele[2],email=ele[3],
+                                work_phone=ele[4],mobile=ele[5],skype_number=ele[6],designation=ele[7],department=ele[8],user=udata,vendor=vendor)
+                
+        
+                    
+            return redirect('view_vendor_list')
         
 
 def sample(request):
@@ -17834,6 +17839,105 @@ def sort_vendor_by_amount(request):
     data=vendor_table.objects.filter(user=udata).order_by('opening_bal')
     return render(request,'vendor_list.html',{'data':data,'company':company})
 
+def view_vendor_details_active(request,pk):
+    company=company_details.objects.get(user=request.user)
+    user_id=request.user.id
+    udata=User.objects.get(id=user_id)
+    vdata1=vendor_table.objects.filter(user=udata,status='Active').order_by('-id')
+    vdata2=vendor_table.objects.get(id=pk)
+    mdata=mail_table.objects.filter(vendor=vdata2)
+    ddata=doc_upload_table.objects.filter(user=udata,vendor=vdata2)
+    cmt_data=comments_table.objects.filter(user=udata,vendor=vdata2)
+    contact_persons = contact_person_table.objects.filter(user=udata,vendor=vdata2)
+
+    fname = vdata2.first_name
+    lname = vdata2.last_name
+    fullname = fname + ' ' + lname
+    v_email = vdata2.vendor_email
+    name_and_id = fullname +' '+ str(vdata2.id) 
+    id_and_name = str(vdata2.id) +' '+ fullname  
+
+    print(fname)
+    print(lname)
+    print(fullname)
+    print(v_email)
+    print(name_and_id)
+
+    expence = ExpenseE.objects.filter(user = udata,vendor_id = pk)
+    recurring_expense = Expense.objects.filter(vendor_id = pk)
+    purchase_ordr = Purchase_Order.objects.filter(user = udata,vendor_name = name_and_id)
+    paymnt_made = payment_made.objects.filter(user = udata,vendor_id = pk)
+    purchase_bill = PurchaseBills.objects.filter(user = udata,vendor_name = fullname,vendor_email = v_email)
+    recurring_bill = recurring_bills.objects.filter(user = udata,vendor_name = id_and_name)
+
+    context = {
+        'company':company,
+        'vdata':vdata1,
+        'vdata2':vdata2,
+        'mdata':mdata,
+        'ddata':ddata,
+        'cmt_data':cmt_data,
+        'contact_persons':contact_persons,
+        'expence':expence,
+        'recurring_expense':recurring_expense,
+        'purchase_ordr':purchase_ordr,
+        'paymnt_made':paymnt_made,
+        'purchase_bill':purchase_bill,
+        'recurring_bill':recurring_bill,
+
+    }
+
+    return render(request,'vendor_details.html',context)
+
+def view_vendor_details_inactive(request,pk):
+    company=company_details.objects.get(user=request.user)
+    user_id=request.user.id
+    udata=User.objects.get(id=user_id)
+    vdata1=vendor_table.objects.filter(user=udata,status='Inactive').order_by('-id')
+    vdata2=vendor_table.objects.get(id=pk)
+    mdata=mail_table.objects.filter(vendor=vdata2)
+    ddata=doc_upload_table.objects.filter(user=udata,vendor=vdata2)
+    cmt_data=comments_table.objects.filter(user=udata,vendor=vdata2)
+    contact_persons = contact_person_table.objects.filter(user=udata,vendor=vdata2)
+
+    fname = vdata2.first_name
+    lname = vdata2.last_name
+    fullname = fname + ' ' + lname
+    v_email = vdata2.vendor_email
+    name_and_id = fullname +' '+ str(vdata2.id) 
+    id_and_name = str(vdata2.id) +' '+ fullname  
+
+    print(fname)
+    print(lname)
+    print(fullname)
+    print(v_email)
+    print(name_and_id)
+
+    expence = ExpenseE.objects.filter(user = udata,vendor_id = pk)
+    recurring_expense = Expense.objects.filter(vendor_id = pk)
+    purchase_ordr = Purchase_Order.objects.filter(user = udata,vendor_name = name_and_id)
+    paymnt_made = payment_made.objects.filter(user = udata,vendor_id = pk)
+    purchase_bill = PurchaseBills.objects.filter(user = udata,vendor_name = fullname,vendor_email = v_email)
+    recurring_bill = recurring_bills.objects.filter(user = udata,vendor_name = id_and_name)
+
+    context = {
+        'company':company,
+        'vdata':vdata1,
+        'vdata2':vdata2,
+        'mdata':mdata,
+        'ddata':ddata,
+        'cmt_data':cmt_data,
+        'contact_persons':contact_persons,
+        'expence':expence,
+        'recurring_expense':recurring_expense,
+        'purchase_ordr':purchase_ordr,
+        'paymnt_made':paymnt_made,
+        'purchase_bill':purchase_bill,
+        'recurring_bill':recurring_bill,
+
+    }
+
+    return render(request,'vendor_details.html',context)
 
 def sort_vendor_by_name_det(request,pk):
     company=company_details.objects.get(user=request.user)

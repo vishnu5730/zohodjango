@@ -106,7 +106,15 @@ document.getElementById("modalPayment").reset();
 <!-- <section > -->
     <!-- <div class="fixed-top" style="top: 7rem; margin-left: 18rem;" > -->
         <div  style="top: 7rem; " >
-
+            {% for message in messages %}
+            <div class="alert alert-danger">
+                <div class="d-flex justify-content-between">
+                  <p>{{ message }}</p>
+                  <a class="close" href="#" data-dismiss="alert">x</a>
+                </div>
+                
+            </div>
+            {% endfor %}
      
           <!-- <div  style="height: 600px;overflow-y: scroll;"> -->
              <h3  class="mb-3  text-white " style="font-size: 2rem;">New Vendor</h3><br>     
@@ -420,7 +428,7 @@ document.getElementById("modalPayment").reset();
                    
                   </select>
                 </div>
-                <input type="number" class="form-control text-dark bg-light" id="cn" name="opening_bal">
+                <input type="number" class="form-control text-dark bg-light" id="cn" name="opening_bal" required>
               </div>
             </div></div>
                 
