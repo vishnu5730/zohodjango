@@ -1155,6 +1155,7 @@ urlpatterns = [
     path('payment_terms_vend',views.payment_terms_vend,name='payment_terms_vend'),
     path('view_vendor_details_active/<int:pk>',views.view_vendor_details_active,name='view_vendor_details_active'),
     path('view_vendor_details_inactive/<int:pk>',views.view_vendor_details_inactive,name='view_vendor_details_inactive'),
+    path('shareTransactionDetailsToEmail/<int:pk>', views.shareTransactionDetailsToEmail, name='shareTransactionDetailsToEmail'),
 
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
     

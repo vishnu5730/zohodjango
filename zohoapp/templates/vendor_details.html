@@ -111,6 +111,11 @@
 .transaction_table, .transaction_table th, .transaction_table td {
         border: 1px solid #000; /* Set the border style and color */
     }  
+
+    .modal{
+      z-index: 9999;
+      overflow: scroll;
+    }
 </style>
 
 <div class="row">
@@ -181,10 +186,11 @@
                 <div class="row mt-2">
                     <div class="col-sm-12 col-md-4 col-lg-4 ">
                         <button onclick="fieldset1_function()"   class="btn btn-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;"><i class="fas fa-eye"></i> Overview</button> 
-                        <button onclick="fieldset8_function()"   class="btn" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-                        background-color: rgb(78, 77, 77);"><i class="fas fa-file-alt"></i></button>
+                        
                     </div> 
                     <div class="col-sm-12 col-md-8 col-lg-8 d-flex justify-content-end" >
+                        <a style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;margin-right: 4px;" class="btn btn-warning "  
+                        href="{% url 'edit_vendor' vdata2.id %}" data-toggle="tooltip" data-placement="top" title="Edit Vendor"><i class="fas fa-edit"></i></a>
                     <button onclick="fieldset2_function()" class="btn btn-warning " style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                         margin-right: 4px;"><i class="fas fa-comment"></i></button>
                     <button onclick="fieldset3_function()" class="btn btn-warning " style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
@@ -193,12 +199,22 @@
                         margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
                     <a href="{% url 'delete_vendor' vdata2.id %}" class="btn btn-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                         margin-right: 4px;" onclick="return confirm('Are you sure to delete?')"><i class="fas fa-trash-alt"></i></a>
-                    <a style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;margin-right: 4px;" class="btn btn-warning "  
-                        href="{% url 'edit_vendor' vdata2.id %}" data-toggle="tooltip" data-placement="top" title="Edit Vendor"><i class="fas fa-edit"></i></a>
+                    
+                    {% if vdata2.status == 'Inactive' %}
+                        <a class="btn btn-warning " data-toggle="tooltip" data-placement="top" title="Change Status" 
+                        href="{% url 'change_vendor_status' vdata2.id %}" >Active</a>
+                    {% else %}
                     <a class="btn btn-warning " data-toggle="tooltip" data-placement="top" title="Change Status" 
-                        href="{% url 'change_vendor_status' vdata2.id %}" ></i><i class="fas fa-info-circle"></i></a>
+                        href="{% url 'change_vendor_status' vdata2.id %}" >Inactive</a>
+                    {% endif %}
                     </div> 
                                      
+                </div>
+                <div class="row mt-2">
+                    <div class="col-sm-12 col-md-4 col-lg-4 ">
+                        <button onclick="fieldset8_function()"   class="btn" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                        background-color: rgb(78, 77, 77);"><i class="fas fa-file-alt"></i>Transactions</button>
+                    </div> 
                 </div>
                 <hr>
                     
@@ -574,8 +590,18 @@
                 </fieldset7>
 
                 <fieldset8 id="transactions" style="display: none;background-color: burlywood" class="px-2 pb-4">
+                    
                     <div class="row text-dark " >
+                        <div class="col-sm-12 col-md-8 col-lg-8 d-flex justify-content-end pt-2" >
+                            <button onclick="printPageContent()" class="btn btn-warning " style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                                margin-right: 4px;"><i class="fa fa-print"></i>Print</button>
+                            <button onclick="exportAsPDF()" class="btn btn-warning " style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                                margin-right: 4px;"><i class="fa fa-file-pdf-o"></i>PDF</button>
+                            <button class="btn btn-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                                margin-right: 4px;" data-target="#shareTransationEmail" data-toggle="modal"><i class="fa fa-envelope"></i>Email</button>
+                            </div> 
                       <div class="col-md-8">
+                        <br>
                         <h6 class="text-uppercase py-2">{{vdata2.first_name}} {{vdata2.last_name}}
                         </h6>
                         {% if vdata2.vendor_mphone %}
@@ -584,16 +610,20 @@
                         {% if vdata2.vendor_email %}
                         <p >Email : {{vdata2.vendor_email}}</p>
                         {% endif %}
-                        <p>Credit Limit: {{vdata2.credit_limit}}</p>
+                        
                       </div>
                       <div class="col-md-4">
-                        <br><br>
+                        <br>
                         {% if vdata2.baddress %}
-                        <p style="text-align: right;">Address : {{vdata2.baddress}}</p>
+                        <p>Address : {{vdata2.baddress}}</p>
                         {% endif %}
-                        {% if vdata2.gst_number != 'null' %}
-                        <p style="text-align: right;">GSTIN : {{vdata2.gst_number}}</p>
+                        {% if vdata2.gst_number %}
+                        <p>GSTIN : {{vdata2.gst_number}}</p>
                         {% endif %}
+                        {% if vdata2.opening_bal %}
+                        <p>OPENING BALANCE : {{vdata2.opening_bal}}</p>
+                        {% endif %}
+                        <p>Credit Limit: {{vdata2.credit_limit}}</p>
                       </div>
                       <hr>
                     </div> 
@@ -704,7 +734,7 @@
                                 <td>{{ vc.credit_note }}</td>
                                 <td>{{ vc.vendor_date }}</td>
                                 <td><i class="fa fa-inr"></i> {{ vc.grand_total }}</td>
-                                <td>-</td>
+                                <td><i class="fa fa-inr"></i> {{ vc.grand_total }}</td>
                             </tr>
                             {% endfor %}
                             {% for exp in expence %}
@@ -714,7 +744,7 @@
                                 <td>{{ exp.invoice }}</td>
                                 <td>{{ exp.date }}</td>
                                 <td><i class="fa fa-inr"></i> {{ exp.amount }}</td>
-                                <td>-</td>
+                                <td><i class="fa fa-inr"></i> {{ exp.amount }}</td>
                             </tr>
                             {% endfor %}
                             {% for r_exp in recurring_expense %}
@@ -724,7 +754,7 @@
                                 <td>{{ r_exp.profile_name }}</td>
                                 <td>{{ r_exp.start_date }}</td>
                                 <td><i class="fa fa-inr"></i> {{ r_exp.amount }}</td>
-                                <td>-</td>
+                                <td><i class="fa fa-inr"></i> {{ r_exp.amount }}</td>
                             </tr>
                             {% endfor %}
                             {% for po in purchase_ordr %}
@@ -734,7 +764,7 @@
                                 <td>{{ po.Pur_no }}</td>
                                 <td>{{ po.Ord_date }}</td>
                                 <td><i class="fa fa-inr"></i> {{ po.grand_total }}</td>
-                                <td>-</td>
+                                <td><i class="fa fa-inr"></i> {{ po.grand_total }}</td>
                             </tr>
                             {% endfor %}
                             {% for pm in paymnt_made %}
@@ -744,7 +774,7 @@
                                 <td>{{ pm.Pur_no }}</td>
                                 <td>{{ pm.date }}</td>
                                 <td><i class="fa fa-inr"></i> {{ pm.amount }}</td>
-                                <td>-</td>
+                                <td><i class="fa fa-inr"></i> {{ pm.amount }}</td>
                             </tr>
                             {% endfor %}
                             {% for pb in purchase_bill %}
@@ -754,7 +784,7 @@
                                 <td>{{ pb.bill_no }}</td>
                                 <td>{{ pb.bill_date }}</td>
                                 <td><i class="fa fa-inr"></i> {{ pb.total }}</td>
-                                <td>-</td>
+                                <td><i class="fa fa-inr"></i> {{ pb.total }}</td>
                             </tr>
                             {% endfor %}
                             {% for rb in recurring_bill %}
@@ -764,7 +794,7 @@
                                 <td>{{ rb.bill_no }}</td>
                                 <td>{{ rb.start_date }}</td>
                                 <td><i class="fa fa-inr"></i> {{ rb.grand_total }}</td>
-                                <td>-</td>
+                                <td><i class="fa fa-inr"></i> {{ rb.grand_total }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -1043,8 +1073,6 @@
     }
   </script>
 <script>
-   
-
     function fieldset1_function(){
         document.getElementById("overview").style.display="block";
         document.getElementById("transactions").style.display="none";
@@ -1056,11 +1084,8 @@
         document.getElementById("view_cmt").style.display="none";
 
 
-
-
-
-
     }
+
     function fieldset2_function(){
         document.getElementById("overview").style.display="none";
         document.getElementById("transactions").style.display="none";
@@ -1071,9 +1096,6 @@
 
         document.getElementById("doc_list").style.display="none";
         document.getElementById("view_cmt").style.display="none";
-
-
-
 
 
     }
@@ -1088,10 +1110,6 @@
         document.getElementById("view_cmt").style.display="none";
 
 
-
-
-
-
     }
     function fieldset4_function(){
         document.getElementById("overview").style.display="none";
@@ -1102,10 +1120,6 @@
         document.getElementById("attach").style.display="none";
         document.getElementById("doc_list").style.display="none";
         document.getElementById("view_cmt").style.display="none";
-
-
-
-
 
 
     }
@@ -1120,10 +1134,6 @@
         document.getElementById("view_cmt").style.display="none";
 
 
-
-
-
-
     }
     function fieldset6_function(){
         document.getElementById("overview").style.display="none";
@@ -1134,10 +1144,6 @@
         document.getElementById("attach").style.display="none";
         document.getElementById("doc_list").style.display="block";
         document.getElementById("view_cmt").style.display="none";
-
-
-
-
 
 
     }
@@ -1154,9 +1160,6 @@
         document.getElementById("doc_list").style.display="none";
 
 
-
-
-
     }
 
     function fieldset8_function(){
@@ -1168,10 +1171,6 @@
         document.getElementById("attach").style.display="none";
         document.getElementById("doc_list").style.display="none";
         document.getElementById("view_cmt").style.display="none";
-
-
-
-
 
 
     }
@@ -1252,8 +1251,197 @@
         });
     });
 </script>
+<script>
+ function printPageContent() {
+    // Get the content to print
+    var printContents = document.getElementById("transactions").cloneNode(true);
+
+    // Remove filter-dropdown elements from the print content
+    removeFilterDropdown(printContents);
+
+    // Hide buttons
+    var buttonsToHide = printContents.querySelectorAll('button');
+    buttonsToHide.forEach(button => {
+        button.style.display = 'none';
+    });
+
+    // Open a new window
+    var printWindow = window.open('', '_blank');
+
+    // Write the HTML content to the new window
+    printWindow.document.write('<html><head><title>Print</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('body { text-align: center; }');
+    printWindow.document.write('a { color: black !important; }');
+    printWindow.document.write('table { border-collapse: collapse; width: 100%; margin-top: 20px; }');
+    printWindow.document.write('th, td { border: 1px solid #000; padding: 8px; text-align: center; }');
+    printWindow.document.write('th { background-color: #f2f2f2; }');
+    printWindow.document.write('h6, p { margin: 0; text-align: center; }'); // Adjusting margin and text-align
+    printWindow.document.write('h6 { font-size: 1.5em; }'); // Adjusting font size of h6
+    printWindow.document.write('</style></head><body>');
+    printWindow.document.write(printContents.outerHTML);
+    printWindow.document.write('</body></html>');
+
+    // Close the document stream
+    printWindow.document.close();
+
+    // Print the content
+    printWindow.print();
+
+    // Restore button visibility after printing
+    buttonsToHide.forEach(button => {
+        button.style.display = ''; // or you can set it back to the original value
+    });
+
+    // Close the new window
+    printWindow.close();
+}
 
 
+// Function to remove filter-dropdown elements
+function removeFilterDropdown(element) {
+    var filterDropdowns = element.querySelectorAll('.filter-dropdown');
+
+    filterDropdowns.forEach(function (dropdown) {
+        dropdown.parentNode.removeChild(dropdown);
+    });
+}
+$(document).ready(function () {
+    $('#share_with_email').on('click', function () {
+      var emailsInput = document.getElementById('emailIds');
+      var emailsString = emailsInput.value.trim();
+
+      var emails = emailsString.split(',').map(function (email) {
+        return email.trim();
+      });
+
+      var emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+
+      var invalidEmails = []
+      if (emailsString == "") {
+        alert('Enter valid email addresses..')
+      }
+      else {
+        for (var i = 0; i < emails.length; i++) {
+          var currentEmail = emails[i];
+
+          if (currentEmail != "" && !emailRegex.test(currentEmail)) {
+            console.log(currentEmail + ' is invalid!');
+            invalidEmails.push(currentEmail)
+          }
+        }
+
+        if (invalidEmails.length > 0) {
+          alert('Invalid emails..Please check!\n' + invalidEmails)
+          // alert(invalidEmails)
+        } else {
+          $('#share_to_email_form').submit();
+        }
+      }
+    })
+  });
+  function exportAsPDF() {
+    const container = document.getElementById('transactions');
+
+    // Store original styles
+    const originalStyles = {
+        backgroundColor: container.style.backgroundColor,
+        textWhiteElements: [],
+        tableRows: [],
+        buttons: []
+    };
+
+    // Change styles for PDF export
+    container.style.backgroundColor = 'white';
+
+    const textWhiteElements = container.querySelectorAll('.text');
+    textWhiteElements.forEach(element => {
+        originalStyles.textWhiteElements.push({ element, color: element.style.color });
+        element.style.color = '#000000';
+    });
+
+    const tableRows = document.querySelectorAll('#myTable tbody tr');
+    tableRows.forEach(row => {
+        originalStyles.tableRows.push({
+            row,
+            backgroundColor: row.style.backgroundColor,
+            color: row.style.color
+        });
+
+        row.style.backgroundColor = 'white';
+        row.style.color = 'black';
+    });
+
+    // Hide buttons
+    const buttons = container.querySelectorAll('button');
+    buttons.forEach(button => {
+        originalStyles.buttons.push({ button, display: button.style.display });
+        button.style.display = 'none';
+    });
+
+    const pdfOptions = {
+        margin: 0,
+        filename: 'transactions.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' },
+    };
+
+    // Generate PDF from the container
+    html2pdf().from(container).set(pdfOptions).save().then(() => {
+        // Restore original styles
+        container.style.backgroundColor = originalStyles.backgroundColor;
+
+        originalStyles.textWhiteElements.forEach(({ element, color }) => {
+            element.style.color = color;
+        });
+
+        originalStyles.tableRows.forEach(({ row, backgroundColor, color }) => {
+            row.style.backgroundColor = backgroundColor;
+            row.style.color = color;
+        });
+
+        // Restore button visibility
+        originalStyles.buttons.forEach(({ button, display }) => {
+            button.style.display = display;
+        });
+    });
+}
 
 
+  </script>
+  <div class="modal fade" id="shareTransationEmail">
+    <div class="modal-dialog">
+      <div class="modal-content" style="background: rgb(32, 35, 37);border-radius: 20px;">
+        <div class="modal-header" style="background: rgb(32, 35, 37);">
+          <h5 class="m-3 text-uppercase" id="shareBillEmailLabel">Share Transactions Via Email</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body" style="background: rgb(32, 35, 37);">
+          <div class="card p-3 m-3">
+            <form action="{% url 'shareTransactionDetailsToEmail' vdata2.id %}" method="post" class="needs-validation"
+              id="share_to_email_form" autocomplete="off">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="emailIds">Email IDs</label>
+                <textarea class="form-control text-dark" name="email_ids" id="emailIds" rows="5"
+                  placeholder="Multiple emails can be added by separating with a comma(,)." required></textarea>
+              </div>
+              <div class="form-group mt-2">
+                <label for="item_unitname">Message(Optional)</label>
+                <textarea name="email_message" id="email_message" class="text-dark form-control" cols=""
+                  rows="4" placeholder="This message will be sent along with purchase order details."></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer d-flex justify-content-center" style="border-top: 1px solid #ffff;">
+            <input type="submit" id="share_with_email"
+              class="submitShareEmailBtn rounded-pill text-grey w-50 my-4 mx-3" value="SEND MAIL">
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  </div>
 {% endblock %}

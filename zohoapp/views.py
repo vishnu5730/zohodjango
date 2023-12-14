@@ -979,6 +979,77 @@ def view_vendor_list(request):
     data=vendor_table.objects.filter(user=udata)
     return render(request,'vendor_list.html',{'data':data,'company':company})
 
+def shareTransactionDetailsToEmail(request,pk):
+    if request.user:
+        try:
+            if request.method == 'POST':
+                emails_string = request.POST['email_ids']
+
+                # Split the string by commas and remove any leading or trailing whitespace
+                emails_list = [email.strip() for email in emails_string.split(',')]
+                email_message = request.POST['email_message']
+                # print(emails_list)
+
+                company=company_details.objects.get(user=request.user)
+                user_id=request.user.id
+                udata=User.objects.get(id=user_id)
+                vdata1=vendor_table.objects.filter(user=udata)
+                vdata2=vendor_table.objects.get(id=pk)
+                mdata=mail_table.objects.filter(vendor=vdata2)
+                ddata=doc_upload_table.objects.filter(user=udata,vendor=vdata2)
+                cmt_data=comments_table.objects.filter(user=udata,vendor=vdata2)
+                contact_persons = contact_person_table.objects.filter(user=udata,vendor=vdata2)
+
+                fname = vdata2.first_name
+                lname = vdata2.last_name
+                fullname = fname + ' ' + lname
+                v_email = vdata2.vendor_email
+                name_and_id = fullname +' '+ str(vdata2.id) 
+                id_and_name = str(vdata2.id) +' '+ fullname  
+
+                vendor_credits = Vendor_Credits_Bills.objects.filter(user = udata,vendor_name = name_and_id)
+                expence = ExpenseE.objects.filter(user = udata,vendor_id = pk)
+                recurring_expense = Expense.objects.filter(vendor_id = pk)
+                purchase_ordr = Purchase_Order.objects.filter(user = udata,vendor_name = name_and_id)
+                paymnt_made = payment_made.objects.filter(user = udata,vendor_id = pk)
+                purchase_bill = PurchaseBills.objects.filter(user = udata,vendor_name = fullname,vendor_email = v_email)
+                recurring_bill = recurring_bills.objects.filter(user = udata,vendor_name = id_and_name)
+
+                context = {
+                    'company':company,
+                    'vdata':vdata1,
+                    'vdata2':vdata2,
+                    'mdata':mdata,
+                    'ddata':ddata,
+                    'cmt_data':cmt_data,
+                    'contact_persons':contact_persons,
+                    'vendor_credits':vendor_credits,
+                    'expence':expence,
+                    'recurring_expense':recurring_expense,
+                    'purchase_ordr':purchase_ordr,
+                    'paymnt_made':paymnt_made,
+                    'purchase_bill':purchase_bill,
+                    'recurring_bill':recurring_bill,
+
+                }
+                template_path = 'transactions_detail_pdf.html'
+                template = get_template(template_path)
+
+                html  = template.render(context)
+                result = BytesIO()
+                pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+                pdf = result.getvalue()
+                filename = f'Transaction Report - {company.company_name}.pdf'
+                subject = f"Transaction Report - {company.company_name}"
+                email = EmailMessage(subject, f"Hi,\nPlease find the attached Godown Report -of -{company.company_name}. \n{email_message}\n\n--\nRegards,\n{company.company_name}\n{company.address}\n{company.state} - {company.country}\n{company.contact_number}", from_email=settings.EMAIL_HOST_USER,to=emails_list)
+                email.attach(filename, pdf, "application/pdf")
+                email.send(fail_silently=False)
+                return redirect(view_vendor_details,pk)
+        except Exception as e:
+            print(e)
+            messages.error(request, f'{e}')
+            return redirect(view_vendor_details,pk)
+
 def view_vendor_details(request,pk):
     company=company_details.objects.get(user=request.user)
     user_id=request.user.id
