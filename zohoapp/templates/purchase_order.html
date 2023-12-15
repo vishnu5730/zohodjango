@@ -88,7 +88,7 @@
 
       
 <section>
-    <div class="row fixed-top" style="top: 7rem; margin-left: 13rem;position: fixed;">
+    <div class="row fixed-top" style="top: 7rem; margin-left: 15rem;position: fixed;">
         <div class="col-md-10" style="width: 100%;">
             <div class="row mx-2">
                 <div class="col-md-10">
@@ -120,12 +120,11 @@
               </div>
             </div>
             <div style="overflow-y: scroll;overflow-x: scroll; height: 525px;width: 100%;">
-                <table class="table text-white" style="width: 100%;" >
+                <table class="table table-responsive text-white" style="width: 100%;" >
                     <thead>
                         <tr>
                             <th class="text-white">DATE</th>
                             <th class="text-white">ORD NUMBER</th>
-                            <th class="text-white">ORD DATE</th>
                             <th class="text-white">CLIENT</th>
                             <th class="text-white">E-MAIL</th>
                             <th class="text-white">DELIVERY DATE</th>
@@ -137,17 +136,16 @@
                         {% for v in pt %}
                         <tr class="text-white">
                             <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.Ord_date}}</td>
-                            <td>{{v.Pur_no}}</td>
-                            <td>{{v.Ord_date}}</td>
+                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.Pur_no}}</td>
                             {% if v.typ == 'Organization'  %}
-                            <td> {{v.Org_name}} </td>
+                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.Org_name}} </td>
                             {% else %}
-                            <td>{{v.customer_name}} </td>
+                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.customer_name}} </td>
                             {% endif %}
-                            <td>{{v.customer_mail}} {{v.Org_mail}}</td>
-                            <td>{{v.exp_date}}</td>
-                            <td>{{v.status}}</td>
-                            <td>{{v.grand_total}}</td>
+                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.customer_mail}} {{v.Org_mail}}</td>
+                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.exp_date}}</td>
+                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.status}}</td>
+                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.grand_total}}</td>
                             <td>
                                 <a style="border-radius: 50%;"  href="{% url 'purchase_delet' v.id %}"><i class="fa fa-trash-o" style="font-size:24px"></i>
 
