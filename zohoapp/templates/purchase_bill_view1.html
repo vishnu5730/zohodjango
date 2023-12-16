@@ -340,19 +340,20 @@
 
 <section>
   <div class="row " style="top: 7rem; ">
+
     <div>
       <div class="col-md-12" style="width: auto;">
         <div class="row">
           <div class="col-md-3" style="border-right: 1px solid white; overflow-y: scroll; height: 84vh;">
             <div class="row">
-              <a class="text-white" style="font-size: 1.5rem;">Sales Order</a>
+              <a class="text-white" style="font-size: 1.5rem;">Purchase Order</a>
               <div class="col-md-9">
                 <input type="text" id="search" class="form-control bg-light text-dark mt-2 " placeholder="Search.."
                   autocomplete="off">
               </div>
               <div class="col-md-3 ">
                 <a class="btn btn btn-outline-warning text-right mt-2"
-                  style="height: 38px; padding-top: 12px; padding-left: 17px;" href="{% url 'create_sales_order' %}"><i
+                  style="height: 38px; padding-top: 12px; padding-left: 17px;" href="{% url 'purchase_order' %}"><i
                     class="fa fa-plus "></i></a>
               </div>
               <div class="col-md-2">
@@ -362,9 +363,7 @@
                     <i class="fas fa-sort m-1"></i>
                   </a>
                   <div class="dropdown-menu m-1">
-                    <a class="dropdown-item" href="{% url 'sales_order_det' sale.id %}">All</a>
-                    <a class="dropdown-item" onclick="sortTable()">Customer Name</a>
-                    <a class="dropdown-item" onclick="sortTablebybillno()">Sales Order Number</a>
+                    
                   </div>
                 </div>
               </div>
@@ -375,11 +374,10 @@
                     <i class="fa fa-filter mt-1"></i>
                   </a>
                   <div class="dropdown-menu m-1">
-                    <a class="dropdown-item" href="{% url 'sales_order_det' sale.id %}">All</a>
-                    <a class="dropdown-item" href="{% url 'sales_order_det_draft' sale.id %}">Draft</a>
-                    <a class="dropdown-item" href="{% url 'sales_order_det_approved' sale.id %}">Save</a>
+                    <a class="dropdown-item" href="{% url 'purchase_bill_view' po_item.id  %}">All</a>
+                <a class="dropdown-item" href="{% url 'draft' po_item.id  %}">Draft</a>
+                <a class="dropdown-item" href="{% url 'Approved' po_item.id  %}">Approved</a>
                   </div>
-
                 </div>
               </div>
               <div class="col-md-6"></div>
@@ -387,28 +385,36 @@
             </div>
 
             <div class="scrollable-table">
-              <table class="table  text-white" id="myTable">
-
-                <tbody>
-                  {% for i in sale_order %}
-
-                  <tr class="clickable" id="{{i.id}}">
-
-                    <td class="justify-content-between align-items-center ">
-                      <p><b>{{i.sales_no}}</b></p>
-                      <label>{{i.customer.customerName}} </label>
-                    </td>
-                    <td>
-                      <label class="text-end d-block">{{i.status}}</label>
-                      <label class="text-end d-block">₹{{i.grandtotal}}</label>
-
-                    </td>
-                  </tr>
-
-                  {% endfor %}
-
-                </tbody>
-              </table>
+                <table class="table  text-white" >
+                    <thead>
+                      <tr>
+                        <th class="text-white">Name</th>
+                       <th class="text-white">Amount</th>
+                      </tr>
+                      
+                    </thead>
+                    <tbody id="table-body">
+                      {% for v in po %}
+                      <tr>
+                        <td>
+                          <a class="text-white" onclick="location.href ='{% url 'purchase_bill_view' v.id %}' ">
+                            {{v.vendor_name}}
+                          </a>
+                          <br>
+                          <br>
+                          {{v.Pur_no}}
+                          <br><br>
+                          {{v.Ord_date}}
+                        </td>
+                        <td class="text-right">
+                          {{v.grand_total}} <br><br>
+                          {{v.status}}
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                    
+                  </table>
             </div>
 
 
@@ -418,7 +424,7 @@
             <div class="row">
               <div class="col-md-7">
                 <a class="text-white" style="font-size: 1.5rem;">
-                  <h2>{{sale.sales_no}}</h2>
+                  <h2>{{po_item.Pur_no}}</h2>
                 </a>
               </div>
             </div>
@@ -446,11 +452,11 @@
 
               <div class="col-md-6" style="text-align: center;">
                 {% if sale.status == "draft" %}
-                <a href="{% url 'convert_view' sale.id %}" class="btn btn-outline-warning" title="Save">
+                <a href="" class="btn btn-outline-warning" title="Save">
                   <i class="fa fa-save" aria-hidden="true"></i>
                 </a>
                 {% endif %}
-                <a href="{% url 'edit_sales_order' sale.id %}" class=" text-dark">
+                <a href="{% url 'edit' po_item.id %}" class=" text-dark">
                   <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
                 </a>
                 <a class="text-dark" data-toggle="dropdown">
@@ -704,218 +710,6 @@
                 </div><br>
               </div>
             </div>
-
-            <!-- <div class="row">
-            <div class="tab-content" style="background-color: rgba(252, 236, 217, 0.8); ">
-              <div class="tab-pane fade active show" id="overview" role="tabpanel" aria-labelledby="home-tab">
-                  <div class="row">
-                      <div class="col-md-6" id="orderinfo" 
-                      style="box-shadow: 5px 5px 10px rgb(45, 45, 45); background-color: #ffddb0; 
-                      border-radius: 1vh; overflow-y: scroll;height: 500px; margin-top: -2vh; " >
-                          <div class="overview text-dark" style="background-color: #ffddb0;" ><br>
-                              <h2 class="text-dark" style="text-transform: uppercase; font-size: x-large;"><b>Sales Order</b></h2>
-                              
-                              <table class="table-responsive saleordertable" cellspacing="0" cellpadding="0">
-                                <tbody>
-                                  <tr>
-                                    <td>Sale Order No</td>
-                                    <td>:</td>
-                                    <td>{{sale.sales_no}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Reference</td>
-                                    <td>:</td>
-                                    <td>{{sale.reference}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Customer Name</td>
-                                    <td>:</td>
-                                    <td>{{sale.customer.customerName}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Customer Mail</td>
-                                    <td>:</td>
-                                    <td>{{sale.customer.customerEmail}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>GST Treatment</td>
-                                    <td>:</td>
-                                    <td>{{sale.customer.GSTTreatment}}</td>
-                                  </tr>
-                                  {% if sale.customer.GSTIN %}
-                                  <tr>
-                                    <td>GST Number</td>
-                                    <td>:</td>
-                                    <td>{{sale.customer.GSTIN}}</td>
-                                  </tr>
-                                  {% endif %}
-                                  <tr>
-                                    <td>Source of Supply</td>
-                                    <td>:</td>
-                                    <td>{{sale.sos}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Sale Order Date</td>
-                                    <td>:</td>
-                                    <td>{{sale.sales_date}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Expiry Date</td>
-                                    <td>:</td>
-                                    <td>{{sale.ship_date}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Payment Term</td>
-                                    <td>:</td>
-                                    <td>{{sale.terms.Terms}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Payment Method</td>
-                                    <td>:</td>
-                                    <td>{{sale.pay_method}}</td>
-                                  </tr>
-                                  {% if sale.pay_method == 'upi' %}
-                                  <tr>
-                                    <td>UPI ID</td>
-                                    <td>:</td>
-                                    <td>{{sale.upi_id}}</td>
-                                  </tr>
-                                  {% elif sale.pay_method == 'cheque' %}
-                                  <tr>
-                                    <td>Cheque ID</td>
-                                    <td>:</td>
-                                    <td>{{sale.cheque_id}}</td>
-                                  </tr>
-                                  {% elif sale.pay_method != 'cash' %}
-                                  <tr>
-                                    <td>Bank Account</td>
-                                    <td>:</td>
-                                    <td>{{bank.ac_no}}</td>
-                                  </tr>
-                                  {% endif %}
-                                  <tr>
-                                    <td>Subtotal</td>
-                                    <td>:</td>
-                                    <td>{{sale.subtotal}}</td>
-                                  </tr>
-                                  {% if sale.igst != '0.00' %}
-                                  <tr>
-                                    <td>IGST</td>
-                                    <td>:</td>
-                                    <td>{{sale.igst}}</td>
-                                  </tr>
-                                  {% endif %}
-                                  {% if sale.cgst != '0.00' %}
-                                  <tr>
-                                    <td>CGST</td>
-                                    <td>:</td>
-                                    <td>{{sale.cgst}}</td>
-                                  </tr>
-                                  {% endif %}
-                                  {% if sale.sgst != '0.00' %}
-                                  <tr>
-                                    <td>SGST</td>
-                                    <td>:</td>
-                                    <td>{{sale.sgst}}</td>
-                                  </tr>
-                                  {% endif %}
-                                  <tr>
-                                    <td>Tax Amount</td>
-                                    <td>:</td>
-                                    <td>{{sale.t_tax}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Shipping Charge</td>
-                                    <td>:</td>
-                                    <td>{{sale.sh_charge}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Adjustment</td>
-                                    <td>:</td>
-                                    <td>{{sale.adjust}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Total Amount</td>
-                                    <td>:</td>
-                                    <td>{{sale.grandtotal}}</td>
-                                  </tr>
-                                  {% if sale.advance != 0.0 %}
-                                  <tr>
-                                    <td>Advance</td>
-                                    <td>:</td>
-                                    <td>{{sale.advance}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Balance Amount</td>
-                                    <td>:</td>
-                                    <td>{{sale.balance}}</td>
-                                  </tr>
-                                  {% endif %}
-                                </tbody>
-                              </table> 
-                          </div>
-                      </div>
-                      <div class="col-md-6" >
-                          <div class="card" id="productinfo" style="background-color:#8b3131; padding:1rem; margin-top: -2vh;" >
-                              <div class="row" style="overflow-y: scroll;height: 500px; margin-top: -2vh; " >
-                                  <div class="card-title mb-4 mt-3" style="font-size: x-large;"><b>PRODUCT INFORMATION</b>
-                                  </div>
-                                      <table class="table table-responsive" id="producttable">
-                                        <tbody id="productbody">
-                                          {% for i in saleitem %}
-                                          <tr>
-                                            <td>Product Name</td>
-                                            <td>:</td>
-                                            <td>{{i.product}}</td>
-                                          </tr>
-                                          <tr>
-                                            <td>HSN Number</td>
-                                            <td>:</td>
-                                            <td>{{i.hsn}}</td>
-                                          </tr>
-                                          <tr>
-                                            <td>Product Quantity</td>
-                                            <td>:</td>
-                                            <td>{{i.quantity}}</td>
-                                          </tr>
-                                          <tr>
-                                            <td>Product Rate</td>
-                                            <td>:</td>
-                                            <td>{{i.rate}}</td>
-                                          </tr>
-                                          <tr>
-                                            <td>Product Discount</td>
-                                            <td>:</td>
-                                            <td>{{i.desc}}</td>
-                                          </tr>
-                                          <tr>
-                                            <td>Product Tax</td>
-                                            <td>:</td>
-                                            <td>{{i.tax}}</td>
-                                          </tr>
-                                          <tr >
-                                            <td>Product Total</td>
-                                            <td>:</td>
-                                            <td>{{i.total}}
-                                            </td>
-                                          </tr>
-                                          <tr style="border-bottom: solid; border-bottom-width: thin; ">
-                                            <td></td>
-                                          </tr>
-                                          {% endfor %}
-                                        </tbody>
-                                      </table>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                  
-              </div>
-
-
-             
-          </div>
-          </div> -->
 
           </div>
 
