@@ -675,7 +675,7 @@
                   <div class="row mt-2">
                     <div class="col-5"><label for="">Product Name :</label></div>
                     <div class="col-7">
-                      <p class="bold">{{i.product}}</p>
+                      <p class="bold">{{i.item}}</p>
                     </div>
                   </div>
                   <div class="row mt-2">
@@ -727,7 +727,7 @@
             <div class="row">
               <div class="col-md-7">
                 <a class="text-white" style="font-size: 1.5rem;">
-                  <h2>{{sale.sales_no}}</h2>
+                  <h2>{{po_item.Pur_no}}</h2>
                 </a>
               </div>
             </div>
@@ -760,30 +760,39 @@
                   <i class="fa fa-save" aria-hidden="true"></i>
                 </a>
                 {% endif %}
-                <a href="" class=" text-dark">
+                <a href="{% url 'edit' po_item.id %}" class=" text-dark">
                   <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
                 </a>
                 <a class="text-dark" data-toggle="dropdown">
                   <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                 </a>
                 <div class="dropdown-menu ">
-                  <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
+                  <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
-
-                <a href="" class="  text-dark">
+                <!-- <a href="#" class="text-dark">
+                  <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-comment" onclick="openModal()"></i></button>
+                </a> -->
+                <a href="{% url 'purchase_delet' po_item.id %}" class="  text-dark">
                   <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
                 </a>
-                <a class="  text-dark" onclick="exportToPDF4()">
+                <a class="  text-dark" onclick="exportToPDF()">
                   <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
                 </a>
-                <a class=" text-dark" onclick="printSelectedArea4()">
+                <a class=" text-dark" onclick="printSelectedArea()">
                   <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
                   </button>
                 </a>
                 <a class="text-dark" onclick="show_slip()">
                   <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
-              </div>
+                  {% if po_item.status == 'Draft' %}
+                  <a class="text-dark"  href="{% url 'change_status' po_item.id %}">
+                    <button class="btn btn-outline-warning" title="Approve"><i class="fa fa-status"></i></button></a>
+                    {% else %}
+                    <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
+                      <button class="btn btn-outline-warning" title="Draft"><i class="fa fa-status"></i></button></a>
+                    {% endif %}
+                </div>
             </div>
 
 
@@ -1014,18 +1023,20 @@
                   <i class="fa fa-save" aria-hidden="true"></i>
                 </a>
                 {% endif %}
-                <a href="" class=" text-dark">
+                <a href="{% url 'edit' po_item.id %}" class=" text-dark">
                   <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
                 </a>
                 <a class="text-dark" data-toggle="dropdown">
                   <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                 </a>
                 <div class="dropdown-menu ">
-                  <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
+                  <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
-
-                <a href="" class="  text-dark">
+                <!-- <a href="#" class="text-dark">
+                  <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-comment" onclick="openModal()"></i></button>
+                </a> -->
+                <a href="{% url 'purchase_delet' po_item.id %}" class="  text-dark">
                   <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
                 </a>
                 <a class="  text-dark" onclick="exportToPDF()">
@@ -1037,21 +1048,24 @@
                 </a>
                 <a class="text-dark" onclick="show_slip()">
                   <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
-              </div>
+                  {% if po_item.status == 'Draft' %}
+                  <a class="text-dark"  href="{% url 'change_status' po_item.id %}">
+                    <button class="btn btn-outline-warning" title="Approve"><i class="fa fa-status"></i></button></a>
+                    {% else %}
+                    <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
+                      <button class="btn btn-outline-warning" title="Draft"><i class="fa fa-status"></i></button></a>
+                    {% endif %}
+                </div>
             </div>
-
-
-
-
 
             <div class="mt-3 template2 whatToPrint2" style="height: auto;width: 100%; margin-left: -1vh">
 
               <section id="selected-area" style="background-color: rgb(255, 221, 176);height: auto;" class=" p-2 m-2">
                 <header style="	background-color: #8b3131;border-radius: 1rem;">
-                  <div class="logo ">
+                  <!-- <div class="logo ">
                     <img class="ml-2" width="100rem" style="border-radius: 50%;" src="{% static 'images/zlogo.png' %}"
                       alt="Company Logo">
-                  </div>
+                  </div> -->
                   <div style="background: #8b3131;color: white;" class="company-info">
                     <h2 class="text-white">{{company.company_name}}</h2>
                     <p class="text-white"> {{company.address}}<br>{{company.city}}</p>
@@ -1060,44 +1074,44 @@
                   </div>
                 </header>
                 <div class="invoice-box">
-                  <h1 class="text-dark">SalesOrder</h1>
+                  <h1 class="text-dark">Purchase Order</h1>
                   <div class="invoice-header">
                     <div class="invoice-details text-dark">
                       <table>
                         <tr>
-                          <td class="table-cell text-black" style="border: none;">Sales No#</td>
+                          <td class="table-cell text-black" style="border: none;">Order No</td>
                           <td class="table-cell text-black" style="border: none;">:</td>
-                          <td class="table-cell text-black" style="border: none;">{{sale.sales_no}}</td>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.Pur_no}}</td>
                         </tr>
                         <tr>
-                          <td class="table-cell text-black" style="border: none;">Sales Order Date</td>
+                          <td class="table-cell text-black" style="border: none;">Purchase Order Date</td>
                           <td class="table-cell text-black" style="border: none;">:</td>
-                          <td class="table-cell text-black" style="border: none;">{{sale.sales_date}}</td>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.Ord_date}}</td>
                         </tr>
                         <tr>
-                          <td class="table-cell text-black" style="border: none;">Expiry Date</td>
+                          <td class="table-cell text-black" style="border: none;">Expect Delivery Date:</td>
                           <td class="table-cell text-black" style="border: none;">:</td>
-                          <td class="table-cell text-black" style="border: none;">{{sale.ship_date}}</td>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.exp_date}}</td>
                         </tr>
                       </table>
                     </div>
                     <div class="client-details" style="width: 50vh;">
                       <table>
                         <tr>
-                          <td class="table-cell text-black" style="border: none;"><b>{{sale.customer.customerName}}</b>
+                          <td class="table-cell text-black" style="border: none;"><b>{{po_item.vendor_name}}</b>
                           </td>
                         </tr>
-                        {% if sale.customer.Address1 %}
+                        {% if po_item.vendor_mail %}
                         <tr>
-                          <td class="table-cell text-black" style="border: none;">{{sale.customer.Address1}}</td>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.vendor_mail}}</td>
                         </tr>
                         {% endif %}
                         <tr>
-                          <td class="table-cell text-black" style="border: none;">{{sale.customer.GSTTreatment}}</td>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.vendor_gst_traet}}</td>
                         </tr>
-                        {% if sale.customer.GSTIN %}
+                        {% if po_item.vendor_gst_no %}
                         <tr>
-                          <td class="table-cell text-black" style="border: none;">{{sale.customer.GSTIN}}</td>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.vendor_gst_no}}</td>
                         </tr>
                         {% endif %}
                       </table>
@@ -1109,7 +1123,7 @@
                       <tr>
 
                         <th id="th" style="text-align: center;">Product</th>
-                        <th id="th" style="text-align: center;">HSN</th>
+                        <th id="th" style="text-align: center;">Account</th>
                         <th id="th" style="text-align: center;">Quantity</th>
                         <th id="th" style="text-align: center;">Price</th>
                         <th id="th" style="text-align: center;">Discount</th>
@@ -1118,15 +1132,19 @@
                       </tr>
                     </thead>
                     <tbody>
-                      {% for i in saleitem %}
+                      {% for i in pot %}
                       <tr style="color: black;">
-                        <td style="text-align: center;">{{i.product}}</td>
-                        <td style="text-align: center;">{{i.hsn}}</td>
+                        <td style="text-align: center;">{{i.item}}</td>
+                        <td style="text-align: center;">{{i.account}}</td>
                         <td style="text-align: center;">{{i.quantity}}</td>
                         <td style="text-align: center;">{{i.rate}}</td>
-                        <td style="text-align: center;">{{i.desc}}</td>
-                        <td style="text-align: center;">{{i.tax}}</td>
-                        <td style="text-align: center;">{{i.total}}</td>
+                        <td style="text-align: center;">{{i.discount}}</td>
+                        {% if i.PO.source_supply == "[KL] Kerala" %}
+                               <td>{{i.tax}} GST</td>
+                               {% else %}
+                               <td>{{i.tax}} IGST</td>
+                               {% endif %}
+                        <td style="text-align: center;">{{i.amount}}</td>
                       </tr>
                       {% endfor %}
 
@@ -1143,35 +1161,35 @@
                           <tr>
                             <td class="table-cell text-black" style="border: none;">Subtotal</td>
                             <td class="table-cell text-black" style="border: none;">:</td>
-                            <td class="table-cell text-black" style="border: none;"><b>{{sale.subtotal}}</b></td>
+                            <td class="table-cell text-black" style="border: none;"><b>{{po_item.sub_total}}</b></td>
                           </tr>
                           {% if sale.igst != '0.00' %}
                           <tr>
                             <td class="table-cell text-black" style="border: none;">IGST</td>
                             <td class="table-cell text-black" style="border: none;">:</td>
-                            <td class="table-cell text-black" style="border: none;">{{sale.igst}}</td>
+                            <td class="table-cell text-black" style="border: none;">{{po_item.igst}}</td>
                           </tr>
                           {% else %}
                           <tr>
                             <td class="table-cell text-black" style="border: none;">SGST</td>
                             <td class="table-cell text-black" style="border: none;">:</td>
-                            <td class="table-cell text-black" style="border: none;">{{sale.sgst}}</td>
+                            <td class="table-cell text-black" style="border: none;">{{po_item.sgst}}</td>
                           </tr>
                           <tr>
                             <td class="table-cell text-black" style="border: none;">CGST</td>
                             <td class="table-cell text-black" style="border: none;">:</td>
-                            <td class="table-cell text-black" style="border: none;">{{sale.cgst}}</td>
+                            <td class="table-cell text-black" style="border: none;">{{po_item.cgst}}</td>
                           </tr>
                           {% endif %}
                           <tr>
                             <td class="table-cell text-black" style="border: none;">Tax Amount</td>
                             <td class="table-cell text-black" style="border: none;">:</td>
-                            <td class="table-cell text-black" style="border: none;">{{sale.t_tax}}</td>
+                            <td class="table-cell text-black" style="border: none;">{{po_item.tax_amount}}</td>
                           </tr>
                           <tr>
                             <td class="table-cell text-black" style="border: none;">Shipping Charge</td>
                             <td class="table-cell text-black" style="border: none;">:</td>
-                            <td class="table-cell text-black" style="border: none;">{{sale.sh_charge}}</td>
+                            <td class="table-cell text-black" style="border: none;">{{po_item.shipping_charge}}</td>
                           </tr>
                           <tr>
                             <td class="table-cell text-black" style="border: none;">Adjustment</td>
@@ -1189,7 +1207,7 @@
                           <tr>
                             <td class="table-cell text-black" style="border: none;">Total</td>
                             <td class="table-cell text-black" style="border: none;">:</td>
-                            <td class="table-cell text-black" style="border: none;">{{sale.grandtotal}}</td>
+                            <td class="table-cell text-black" style="border: none;">{{po_item.grand_total}}</td>
                           </tr>
                         </table>
                       </div>
@@ -1201,7 +1219,7 @@
                 </div>
 
                 <footer class="mb-5">
-                  <p class="text-dark">&copy; Zho Books 2023 | Info park kakkanad kochi, Ernamkulam, kerala India 12345
+                  <p class="text-dark">&copy; Zoho Books 2023 | Info park kakkanad kochi, Ernamkulam, kerala India 12345
                     | Phone: (123) 456-7890 | Email: info@zohodjango.com</p>
                 </footer>
               </section>
@@ -1212,7 +1230,7 @@
             <div class="row">
               <div class="col-md-7">
                 <a class="text-white" style="font-size: 1.5rem;">
-                  <h2>{{sale.sales_no}}</h2>
+                  <h2>{{po_item.Pur_no}}</h2>
                 </a>
               </div>
             </div>
@@ -1245,30 +1263,39 @@
                   <i class="fa fa-save" aria-hidden="true"></i>
                 </a>
                 {% endif %}
-                <a href="" class=" text-dark">
+                <a href="{% url 'edit' po_item.id %}" class=" text-dark">
                   <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
                 </a>
                 <a class="text-dark" data-toggle="dropdown">
                   <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                 </a>
                 <div class="dropdown-menu ">
-                  <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
+                  <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
-
-                <a href="" class="  text-dark">
+                <!-- <a href="#" class="text-dark">
+                  <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-comment" onclick="openModal()"></i></button>
+                </a> -->
+                <a href="{% url 'purchase_delet' po_item.id %}" class="  text-dark">
                   <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
                 </a>
-                <a class="  text-dark" onclick="exportToPDF2()">
+                <a class="  text-dark" onclick="exportToPDF()">
                   <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
                 </a>
-                <a class=" text-dark" onclick="printSelectedArea2()">
+                <a class=" text-dark" onclick="printSelectedArea()">
                   <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
                   </button>
                 </a>
                 <a class="text-dark" onclick="show_slip()">
                   <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
-              </div>
+                  {% if po_item.status == 'Draft' %}
+                  <a class="text-dark"  href="{% url 'change_status' po_item.id %}">
+                    <button class="btn btn-outline-warning" title="Approve"><i class="fa fa-status"></i></button></a>
+                    {% else %}
+                    <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
+                      <button class="btn btn-outline-warning" title="Draft"><i class="fa fa-status"></i></button></a>
+                    {% endif %}
+                </div>
             </div>
 
 
@@ -1279,10 +1306,10 @@
               <div class="my-3 page" style="background-color: rgb(255, 221, 176);" id="selected-area2">
                 <div class="p-5">
                   <div style="background-color: #8b3131;border-radius: 1rem;padding: 20px;">
-                    <center class="h3"><b>SALES ORDER</b></center>
+                    <center class="h3"><b>PURCHASE ORDER</b></center>
                   </div>
                   <div class="row mt-5">
-                    <div class="col-md-8">
+                    <div class="col-md-7">
                       <h4 class="text-secondary" style="font-weight: bold;">{{company.company_name }}</h4>
                       <p class="address" style="font-weight: bold;color: #000;">
                         {{company.address}}<br>
@@ -1293,18 +1320,18 @@
                         {{company.contact_number}}<br>
                       </p>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-5">
                       <div class="top-left">
                         <div class="graphic-path">
-                          <p>Sales Order No. #:<b>{{sale.sales_no}}</b></p>
+                          <p>Order No. :<b>{{po_item.Pur_no}}</b></p>
                         </div>
                         <div class="mt-2">
 
-                          <p style="color: #000;">Sales Order Date:
-                            <b>{{ sale.sales_date | date:'d-m-Y'}}</b>
+                          <p style="color: #000;">Purchase Order Date:
+                            <b>{{ po_item.Ord_date | date:'d-m-Y'}}</b>
                           </p>
-                          <p style="color: #000;">Expiry Date:
-                            <b>{{ sale.ship_date | date:'d-m-Y'}}</b>
+                          <p style="color: #000;">Expect Delivery Date:
+                            <b>{{ po_item.exp_date | date:'d-m-Y'}}</b>
                           </p>
                         </div>
                       </div>
@@ -1324,9 +1351,9 @@
                           <label class="text-white bg-secondary w-100 p-1"><b>BILL
                               TO</b></label>
                           <h5 class="" style="font-weight: bold; color: #8b3131;">
-                            {{sale.customer.customerName}}</h5>
+                            {{po_item.vendor_name}}</h5>
                           <p class="address" style="font-weight: bold;color: #000;">
-                            {{sale.customer.customerEmail}}
+                            {{po_item.vendor_mail}}
                             <br>
                             {{sale.customer.Address1}}
                             <br>
@@ -1338,9 +1365,9 @@
                         <div class="col-4 pr-0">
                           <label class="text-white bg-secondary w-100 p-1"><b>GST Details</b></label>
                           <h5 class="" style="font-weight: bold; color: #8b3131;">
-                            {{sale.customer.GSTTreatment}}</h5>
+                            {{po_item.vendor_gst_traet}}</h5>
                           <p class="address" style="font-weight: bold;color: #000;">
-                            {{ sale.customer.GSTIN}}
+                            {{po_item.vendor_gst_no}}
                           </p>
                         </div>
                       </div>
@@ -1353,7 +1380,7 @@
                       <thead>
                         <tr class="">
                           <th class="text-center" style="color:#8b3131;">Product</th>
-                          <th class="text-center" style="color:#8b3131;">HSN</th>
+                          <th class="text-center" style="color:#8b3131;">Account</th>
                           <th class="text-center" style="color:#8b3131;">Quantity</th>
                           <th class="text-center" style="color:#8b3131;">Price</th>
                           <th class="text-center" style="color:#8b3131;">Discount</th>
@@ -1362,15 +1389,19 @@
                         </tr>
                       </thead>
                       <tbody>
-                        {% for itm in saleitem %}
+                        {% for i in pot %}
                         <tr>
-                          <td class="text-center" style="color:#000">{{ itm.product }}</td>
-                          <td class="text-center" style="color:#000">{{ itm.hsn }}</td>
-                          <td class="text-center" style="color:#000">{{ itm.quantity }}</td>
-                          <td class="text-center" style="color:#000">{{ itm.rate }}</td>
-                          <td class="text-center" style="color:#000">{{ itm.desc }}</td>
-                          <td class="text-center" style="color:#000">{{ itm.tax }}</td>
-                          <td class="text-center" style="color:#000">{{ itm.total }}</td>
+                          <td class="text-center" style="color:#000">{{i.item}}</td>
+                          <td class="text-center" style="color:#000">{{i.account}}</td>
+                          <td class="text-center" style="color:#000">{{i.quantity}}</td>
+                          <td class="text-center" style="color:#000">{{i.rate}}</td>
+                          <td class="text-center" style="color:#000">{{ i.discount }}</td>
+                          {% if i.PO.source_supply == "[KL] Kerala" %}
+                          <td class="text-center" style="color:#000">{{i.tax}} GST</td>
+                          {% else %}
+                          <td class="text-center" style="color:#000">{{i.tax}} IGST</td>
+                          {% endif %}
+                          <td class="text-center" style="color:#000">{{i.amount}}</td>
                         </tr>
                         {% endfor %}
                       </tbody>
@@ -1418,40 +1449,40 @@
                               <td style="color: #000;">Sub Total</td>
                               <td style="color: #000;">:</td>
                               <td class="text-center" style="color: #000;">
-                                {{sale.subtotal}}</td>
+                                {{po_item.sub_total}}</td>
                             </tr>
                             {% if sale.igst != '0.00' %}
                             <tr>
                               <td style="color: #000;">IGST</td>
                               <td style="color: #000;">:</td>
                               <td class="text-center" style="color: #000;">
-                                {{sale.igst}}</td>
+                                {{po_item.igst}}</td>
                             </tr>
                             {% else %}
                             <tr>
                               <td style="color: #000;">SGST</td>
                               <td style="color: #000;">:</td>
                               <td class="text-center" style="color: #000;">
-                                {{sale.sgst}}</td>
+                                {{po_item.sgst}}</td>
                             </tr>
                             <tr>
                               <td style="color: #000;">CGST</td>
                               <td style="color: #000;">:</td>
                               <td class="text-center" style="color: #000;">
-                                {{sale.cgst}}</td>
+                                {{po_item.cgst}}</td>
                             </tr>
                             {% endif %}
                             <tr>
                               <td style="color: #000;">Tax Amount</td>
                               <td style="color: #000;">:</td>
                               <td class="text-center" style="color: #000;">
-                                {{sale.t_tax}}</td>
+                                {{po_item.tax_amount}}</td>
                             </tr>
                             <tr>
                               <td style="color: #000;">Shipping Charge</td>
                               <td style="color: #000;">:</td>
                               <td class="text-center" style="color: #000;">
-                                {{sale.sh_charge}}</td>
+                                {{po_item.shipping_charge}}</td>
                             </tr>
                             <tr>
                               <td style="color: #000;">Adjustment</td>
@@ -1471,7 +1502,7 @@
                               <td style="color: #000;">Total</td>
                               <td style="color: #000;">:</td>
                               <td class="text-center" style="color: #000;">
-                                <b>{{sale.grandtotal}}</b>
+                                <b>{{po_item.grand_total}}</b>
                               </td>
                             </tr>
 
@@ -1482,7 +1513,7 @@
                       </div>
                     </div>
                     <footer class="mb-5">
-                      <p class="text-dark">&copy; Zho Books 2023 | Info park kakkanad kochi,
+                      <p class="text-dark">&copy; Zoho Books 2023 | Info park kakkanad kochi,
                         Ernamkulam,
                         kerala India 12345
                         | Phone: (123) 456-7890 | Email: info@zohodjango.com</p>
@@ -1532,30 +1563,39 @@
                   <i class="fa fa-save" aria-hidden="true"></i>
                 </a>
                 {% endif %}
-                <a href="" class=" text-dark">
+                <a href="{% url 'edit' po_item.id %}" class=" text-dark">
                   <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
                 </a>
                 <a class="text-dark" data-toggle="dropdown">
                   <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                 </a>
                 <div class="dropdown-menu ">
-                  <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
+                  <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
-
-                <a href="" class="  text-dark">
+                <!-- <a href="#" class="text-dark">
+                  <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-comment" onclick="openModal()"></i></button>
+                </a> -->
+                <a href="{% url 'purchase_delet' po_item.id %}" class="  text-dark">
                   <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
                 </a>
-                <a class="  text-dark" onclick="exportToPDF3()">
+                <a class="  text-dark" onclick="exportToPDF()">
                   <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
                 </a>
-                <a class=" text-dark" onclick="printSelectedArea3()">
+                <a class=" text-dark" onclick="printSelectedArea()">
                   <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
                   </button>
                 </a>
                 <a class="text-dark" onclick="show_slip()">
                   <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
-              </div>
+                  {% if po_item.status == 'Draft' %}
+                  <a class="text-dark"  href="{% url 'change_status' po_item.id %}">
+                    <button class="btn btn-outline-warning" title="Approve"><i class="fa fa-status"></i></button></a>
+                    {% else %}
+                    <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
+                      <button class="btn btn-outline-warning" title="Draft"><i class="fa fa-status"></i></button></a>
+                    {% endif %}
+                </div>
             </div>
 
 
@@ -1571,11 +1611,11 @@
                     </div>
                     <div class="top-left">
                       <div class="graphic-path">
-                        <p>Sales Order</p>
+                        <p>Purchase Order</p>
                       </div>
                       <div class="position-relative" style="margin-right: 5px;">
-                        <p>Sales Order No.
-                          <span>{{sale.sales_no}}</span>
+                        <p>Order No.
+                          <span>{{po_item.Pur_no}}</span>
                         </p>
                       </div>
                     </div>
@@ -1584,7 +1624,7 @@
                   <section class="store-user mt-5">
                     <div class="col-12">
                       <div class="row bb pb-3">
-                        <div class="col-7">
+                        <div class="col-4">
                           <p>FROM,</p>
                           <h5>{{company.company_name }}</h5>
                           <p class="address "> {{company.address}}<br>
@@ -1594,24 +1634,38 @@
                           </p>
 
                         </div>
-                        <div class="col-5">
+                        <div class="col-4">
                           <p>TO,</p>
-                          <h5>{{sale.customer.customerName}}</h5>
+                          <h5>{{po_item.vendor_name}}</h5>
                           <p class="address col-9" style="margin-left: 0px;">
-                            {{sale.customer.Address1}} </p><br>
-                          <p class="address col-9">{{sale.customer.GSTTreatment}}</p><br>
-                          <p class="address col-9">{{sale.customer.GSTIN}}</p>
+                            {{po_item.vendor_mail}}</p><br>
+                          <p class="address col-9">{{po_item.vendor_gst_traet}}</p><br>
+                          <p class="address col-9">{{po_item.vendor_gst_no}}</p>
 
 
+                        </div>
+                        <div class="col-4">
+                          <p>Deliver TO,</p>
+                          {% if po_item.customer_name == '' %}
+                          <h5>{{po_item.Org_name}}</h5>
+                          <p class="address col-9" style="margin-left: 0px;">
+                            {{po_item.Org_address}}</p><br>
+                          <p class="address col-9">{{po_item.Org_gst}}</p><br>
+                          {% else %}
+                          <h5>{{po_item.customer_name}}</h5>
+                          <p class="address col-9" style="margin-left: 0px;">
+                            {{po_item.customer_mail}}</p><br>
+                          <p class="address col-9">{{po_item.customer_address}}</p><br>
+                          {% endif %}
                         </div>
                       </div>
                       <div class="row extra-info pt-3">
                         <div class="col-7">
-                          <p>Sales Order Date:
-                            <span>{{sale.sales_date |date:'d-m-Y'}}</span>
+                          <p>Purchase Order Date:
+                            <span>{{po_item.Ord_date |date:'d-m-Y'}}</span>
                           </p>
-                          <p>Expiry Date:
-                            <span>{{sale.ship_date |date:'d-m-Y'}}</span>
+                          <p>Expect Delivery Date:
+                            <span>{{po_item.exp_date |date:'d-m-Y'}}</span>
                           </p>
                         </div>
 
@@ -1623,8 +1677,8 @@
                     <table class=" table table-hover table-bordered " id="table1">
                       <thead>
                         <tr>
-                          <td style="text-align: center; font-weight:bold; color:black ">Items</td>
-                          <td style="font-weight:bold; color:black">HSN</td>
+                          <td style="text-align: center; font-weight:bold; color:black ">Product</td>
+                          <td style="font-weight:bold; color:black">Account</td>
                           <td style="font-weight:bold; color:black">Quantity</td>
                           <td style="font-weight:bold; color:black">Price</td>
                           <td style="font-weight:bold; color:black">Discount</td>
@@ -1635,15 +1689,19 @@
                       </thead>
                       <tbody>
 
-                        {% for j in saleitem %}
+                        {% for j in pot %}
                         <tr>
                           <td style="color:black; text-align: center;">{{j.product}}</td>
-                          <td style="color:black">{{j.hsn}}</td>
+                          <td style="color:black">{{j.account}}</td>
                           <td style="color:black">{{j.quantity}}</td>
                           <td style="color:black">{{j.rate}} </td>
-                          <td style="color:black">{{j.desc}} </td>
-                          <td style="color:black">{{j.tax}} </td>
-                          <td style="color:black">{{j.total}} </td>
+                          <td style="color:black">{{j.discount}} </td>
+                          {% if i.PO.source_supply == "[KL] Kerala" %}
+                          <td style="color:black">{{j.tax}} GST</td>
+                          {% else %}
+                          <td style="color:black">{{j.tax}} IGST</td>
+                          {% endif %}
+                          <td style="color:black">{{i.amount}}</td>
 
                         </tr>
                         {% endfor %}
@@ -1662,39 +1720,39 @@
                               <td style="color: #000;">Sub Total</td>
                               <td style="color: #000;">:</td>
                               <td class="text-right" style="color: #000;">
-                                {{sale.subtotal}}</td>
+                                {{po_item.sub_total}}</td>
                             </tr>
                             {% if sale.igst != '0.00' %}
                             <tr>
                               <td style="color: #000;">IGST</td>
                               <td style="color: #000;">:</td>
                               <td class="text-right" style="color: #000;">
-                                {{sale.igst}}</td>
+                                {{po_item.igst}}</td>
                             </tr>
                             {% else %}
                             <tr>
                               <td style="color: #000;">SGST</td>
                               <td style="color: #000;">:</td>
                               <td class="text-right" style="color: #000;">
-                                {{sale.sgst}}</td>
+                                {{po_item.sgst}}</td>
                             </tr>
                             <tr>
                               <td style="color: #000;">CGST</td>
                               <td style="color: #000;">:</td>
                               <td class="text-right" style="color: #000;">
-                                {{sale.cgst}}</td>
+                                {{po_item.cgst}}</td>
                             </tr>
                             {% endif %}
                             <tr>
                               <td style="color: #000;">Tax Amount</td>
                               <td style="color: #000;">:</td>
                               <td class="text-right" style="color: #000;">
-                                {{sale.t_tax}}</td>
+                                {{po_item.tax_amount}}</td>
                             </tr>
                             <tr>
                               <td style="color: #000;">Shipping Charge</td>
                               <td style="color: #000;">:</td>
-                              <td class="text-right" style="color: #000;">{{sale.sh_charge}}</td>
+                              <td class="text-right" style="color: #000;">{{po_item.shipping_charge}}</td>
                             </tr>
                             <tr>
                               <td style="color: #000;">Adjustment</td>
@@ -1713,7 +1771,7 @@
                               <td style="color: #000;">Total</td>
                               <td style="color: #000;">:</td>
                               <td class="text-right" style="color: #000;">
-                                <b>{{sale.grandtotal}}</b>
+                                <b>{{po_item.grand_total}}</b>
                               </td>
                             </tr>
 
@@ -1724,7 +1782,7 @@
                       </div>
 
                       <footer class="mb-5">
-                        <p class="text-dark">&copy; Zho Books 2023 | Info park kakkanad kochi,
+                        <p class="text-dark">&copy; Zoho Books 2023 | Info park kakkanad kochi,
                           Ernamkulam,
                           kerala India 12345
                           | Phone: (123) 456-7890 | Email: info@zohodjango.com</p>

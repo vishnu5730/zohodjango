@@ -1,200 +1,140 @@
 {% extends 'base.html' %}
-{% load static %}
 {% block content %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% load static %}
+
 <style>
-    .modal{
-      z-index: 9999;
-      overflow: scroll;
+  #over:hover{
+        background-color: rgba(110, 110, 110, 0.616);
+        
     }
-      input[type=text], select, textarea {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        resize: vertical;
-  
-      }
-      
-      label {
-        padding: 12px 12px 12px 0;
-        display: inline-block;
-      }
-      
-      
-      .row:after {
-        content: "";
-        display: table;
-        clear: both;
-      }
-      
-      @media screen and (max-width: 600px) {
-        .col-25, .col-75, input[type=submit] {
-          width: 100%;
-          margin-top: 0;
-        }
-        input[type=text], select, textarea {
-        width: 100%;
-  
-      }
-      }
-  
-      .dropdown input,
-      .dropdown button {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-      }
-  
-      .dropdown.open input,
-      .dropdown.open button {
-        display: block;
-      }
-  
-      .row a{
-        color: rgb(218, 164, 48);
-        font-size: 12px;
-      }
-  
-      .table th a{
-        color:rgb(218, 164, 48);
-        font-size: 11px;
-        margin-left: 100px;
-      }
-  
-  
-      ::-webkit-scrollbar {
-        width: 5px; 
-      }
-  
-      ::-webkit-scrollbar-track {
-        background: #f1f1f1; 
-      }
-  
-      ::-webkit-scrollbar-thumb {
-        background: #888; 
-      }
-  
-      ::-webkit-scrollbar-thumb:hover {
-        background: #555; 
-      }
-      .fields {
-        display: none;
-      }
-    
-  
-      </style>
+</style>
 
+  <div  style="top: 7rem; " >
+    <div class="pb-4"><a class="text-white" style="font-size: 2rem;">All Purchases</a></div>
+    <div class="row mb-4">
       
-<section>
-    <div class="row fixed-top" style="top: 7rem; margin-left: 15rem;position: fixed;">
-        <div class="col-md-10" style="width: 100%;">
-            <div class="row mx-2">
-                <div class="col-md-10">
-                    <a class="text-white" style="font-size: 2rem;">All Purchases</a>
-                </div>  
+      <div class=" col-md-3 d-flex justify-content-between align-items-center">
+      </div>
+      <div class="col-md-6"></div>
+      <div class="col-md-3 d-flex justify-content-end">
+          <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsXLS()"><i class="fa fa-file-excel-o" aria-hidden="true"></i>EXCEL</a>&nbsp;
+      </div>
+  </div>
+  <div class="row mb-4">
+      
+    <div class=" col-md-3 d-flex justify-content-between align-items-center">
+      
+            <input type="text" id="search" placeholder="Search..." class="form-control text-dark bg-light" autocomplete="off">
+            <!-- <a href="" class="btn btn-outline-warning fa fa-sort text-right px-3 py-2" role="button"
+            style="margin-left: 5px;"></a> -->
+            <a class="btn text-center px-3 py-2 btn-outline-warning" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+            role="button" style="margin-left: 5px;"><i class="fa fa-sort "></i>
+            </a>
+            <div class="dropdown-menu ">
+                <a class="dropdown-item" href="{% url 'purchaseView' %}">All</a>
+                <a class="dropdown-item" href="{% url 'purchaseView_by_name' %}">Name</a>
+                <a class="dropdown-item" href="{% url 'purchaseView_by_ord_no' %}">Purchase Order No</a>
             </div>
-            <div class="row mb-3">
-              <div class="col-md-5">
-                <input type="text" id="search" class="form-control bg-light text-dark" placeholder="Search.." autocomplete="off">
-
-              </div>
-              <div class="col-md-4"></div>
-              <div class="col-md-1 d-flex">
-                <div class="dropdown mt-2 ">
-                  <a class="dropdown-toggle btn btn-secondary text-dark m-2" href="" data-toggle="dropdown">
-                    <i style="color: chocolate;" class="fa fa-filter"></i>
-                  </a>
-                  <div class="dropdown-menu m-1">
-                    <a class="dropdown-item" href="{% url 'purchaseView' %}">All</a>
-    
-                    <a class="dropdown-item" href="{% url 'drf' %}">Draft</a>
-                    <a class="dropdown-item" href="{% url 'apr' %}">Approved</a>
-                  </div>
-                </div>
-    
-                <a style="color: #ccc;background-color: chocolate;" class="btn btn-success m-3 mt-3" href="{% url 'purchase_order' %}">
-                  <i class="fa-solid fa-plus"></i>New
-              </a>
-              </div>
-            </div>
-            <div style="overflow-y: scroll;overflow-x: scroll; height: 525px;width: 100%;">
-                <table class="table table-responsive text-white" style="width: 100%;" >
-                    <thead>
-                        <tr>
-                            <th class="text-white">DATE</th>
-                            <th class="text-white">ORD NUMBER</th>
-                            <th class="text-white">CLIENT</th>
-                            <th class="text-white">E-MAIL</th>
-                            <th class="text-white">DELIVERY DATE</th>
-                            <th class="text-white">STATUS</th>
-                            <th class="text-white">AMOUNT</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
-                        {% for v in pt %}
-                        <tr class="text-white">
-                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.Ord_date}}</td>
-                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.Pur_no}}</td>
-                            {% if v.typ == 'Organization'  %}
-                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.Org_name}} </td>
-                            {% else %}
-                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.customer_name}} </td>
-                            {% endif %}
-                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.customer_mail}} {{v.Org_mail}}</td>
-                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.exp_date}}</td>
-                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.status}}</td>
-                            <td onclick="location.href='{% url 'purchase_bill_view' v.id %}'">{{v.grand_total}}</td>
-                            <td>
-                                <a style="border-radius: 50%;"  href="{% url 'purchase_delet' v.id %}"><i class="fa fa-trash-o" style="font-size:24px"></i>
-
-
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                    
-                </table>
-                <br><br><br><br><br><br><br><br>
-            </div>
-        </div>
+            
     </div>
-    
-</section>
-<script>
-  var $rows = $('#table tr ');
-  $('#search').keyup(function() {
-      var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
-      
-      $rows.hide().filter(function() {
-          var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
-          return ~text.indexOf(val);
-      }).show();
-  });
+    <div class="col-md-6"></div>
+    <div class="col-md-3 d-flex justify-content-end">
+        
+        <a class="btn text-center px-4 pt-2 btn-outline-warning" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+        role="button" ><i class="fa fa-filter"></i>
+        </a>
+        <div class="dropdown-menu ">
+            <a class="dropdown-item" href="{% url 'purchaseView' %}">All</a>
+            <a class="dropdown-item" href="{% url 'drf' %}">Draft</a>
+            <a class="dropdown-item" href="{% url 'apr' %}">Save</a>
+        </div>
+        <a href="{% url 'purchase_order' %}" class="btn btn-outline-warning fa fa-plus text-right px-3 py-2" role="button" style="margin-left: 5px;">
+            <span class="mt-2">&nbsp;&nbsp;New</span>
+        </a></div>
+</div>
+        <!-- <div class="row">
+            
+            <div class="col-md-6 form-inline" style="margin-left: 55rem;margin-top: -2rem;"><a style="color: #ccc;background-color: rgb(190, 131, 4);" class="btn  mr-2"  href="{% url 'vendor' %}"><i class="fa-solid fa-plus "></i>New</a>
 
-  $('#search-btn').click(function() {
-    var val = $.trim($('#search').val()).replace(/ +/g, ' ').toLowerCase();
-    $rows.sort(function(a, b) {
-      var textA = $(a).text().replace(/\s+/g, ' ').toLowerCase();
-      var textB = $(b).text().replace(/\s+/g, ' ').toLowerCase();
-      if (textA.indexOf(val) < textB.indexOf(val)) {
-        return -1;
-      } else if (textA.indexOf(val) > textB.indexOf(val)) {
-        return 1;
-      } else {
-        return 0;
-      }
-    }).appendTo('#table');
+            </div>
+        </div>    -->
+    
+        <div class="row">
+            <div class="col-sm-12 ">
+              <div style="width: 100%; overflow-x: auto;">
+                <table class="table  text-white" id="myTable" >
+                    <thead>
+                      <tr>
+                        <th>DATE</th>
+                            <th>ORD NUMBER</th>
+                            <th>VENDOR</th>
+                            <th>E-MAIL</th>
+                            <th>TOTAL AMOUNT</th>
+                            <th>BALANCE</th>
+                            <th>STATUS</th>
+                            <th>ACTION</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for v in pt %}
+                      <tr id="over" class="clickable-row" data-href="{% url 'purchase_bill_view' v.id %}">
+                        <td>{{v.Ord_date}}</td>
+                        <td>{{v.Pur_no}}</td>
+                        <td>{{v.vendor_name}} </td>
+                        <td>{{v.vendor_mail}} </td>
+                        <td>{{v.grand_total}}</td>
+                        <td>{{v.grand_total}}</td>
+                        <td>{{v.status}}</td>
+                        <td>{{v.status}}</td>
+                        <td>
+                            <a style="border-radius: 50%;"  href="{% url 'purchase_delet' v.id %}"><i class="fa fa-trash-o" style="font-size:24px"></i>
+                            </a>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+                <br><br><br><br><br>
+            </div>
+            <div class="col-sm-12 col-md-1 col-lg-1"></div>
+
+        </div>
+    <!-- </div> -->
+
+</div>
+
+
+<script>
+  $(document).ready(function () {
+    $("#search").on("keyup", function () {
+      var value = $(this).val().toLowerCase();
+      $("#myTable tr").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
   });
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-    crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-    crossorigin="anonymous"></script>
+<script>
+  // Add click event listener to all rows with class "clickable-row"
+  const rows = document.querySelectorAll('.clickable-row');
+  rows.forEach(row => {
+    row.addEventListener('click', () => {
+      // Get the URL from the "data-href" attribute
+      const url = row.getAttribute('data-href');
+      // Navigate to the URL
+      window.location.href = url;
+    });
+  });
 
+  function exportAsXLS() {
+            // Assuming you have data in a table format, you can export it to Excel using SheetJS
+            const table = document.querySelector('table');
+            const ws = XLSX.utils.table_to_sheet(table);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+            XLSX.writeFile(wb, 'purchase_order.xlsx');
+    }
+</script>
 {% endblock %}

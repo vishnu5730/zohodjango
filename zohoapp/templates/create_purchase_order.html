@@ -109,15 +109,17 @@
         <div class="col-md-3">
           <label >Vendor Name *</label>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-5">
           <select name="vendor" id="vendor" class="form-control bg-light text-dark">
             <option value=""></option>
             {% for v in vendor %}
             <option value="{{ v.first_name }} {{ v.last_name }} {{v.id}}">{{ v.first_name }} {{ v.last_name }}</option>
             {% endfor %}
           </select>
-          <a href="" data-toggle="modal" data-target="#newvendor">+ Add New Vendor</a>
         </div>
+        <div class="col-md-4 ">
+          <a href="#" class="btn btn-outline-secondary py-2 my-1" data-target="#newvendor" data-toggle="modal" style="color: white; background-color: rgb(210, 132, 30);" >+</a>
+      </div>
       </div>
 
       <div class="row mt-2 d-none" id="email_row">
@@ -144,6 +146,14 @@
         </div>
         <div class="col-md-6">
           <input type="text" class="form-control bg-light text-dark"  id="gstin_inp" name="gstin_inp">
+        </div>
+      </div>
+      <div class="row mt-2 mb-2 d-none" id="baddress_row">
+        <div class="col-md-3">
+          <label for="baddress_inp">Billing Address</label>
+        </div>
+        <div class="col-md-6">
+          <input type="text" class="form-control bg-light text-dark"  id="baddress_inp" name="baddress_inp">
         </div>
       </div>
 
@@ -2184,10 +2194,13 @@ $(document).ready(function() {
                 $("#gstin_row").addClass('d-flex');
                 $("#gst_trt_row").removeClass('d-none');
                 $("#gst_trt_row").addClass('d-flex');
+                $("#baddress_row").removeClass('d-none');
+                $("#baddress_row").addClass('d-flex');
 
                 $('#email_inp').val(" " +data.vendor_email);
                 $('#gstin_inp').val(" " +data.gst_number);
                 $('#gst_trt_inp').val(" "+data.gst_treatment);
+                $('#baddress_inp').val(" "+data.baddress);
 
             }
         });

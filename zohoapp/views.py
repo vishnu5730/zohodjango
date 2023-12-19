@@ -8089,7 +8089,27 @@ def purchase_order(request):
         
     return render(request,'create_purchase_order.html',context)
 
+def purchaseView_by_name(request):
+    purchase_table=Purchase_Order.objects.filter(user=request.user).order_by('vendor_name')
+    purchase_order_table=Purchase_Order_items.objects.all()
+    company=company_details.objects.get(id=request.user.id)
+    context={
+        'pt':purchase_table,
+        'po_t':purchase_order_table,
+        'company':company,
+        }
+    return render(request,'purchase_order.html',context)
 
+def purchaseView_by_ord_no(request):
+    purchase_table=Purchase_Order.objects.filter(user=request.user).order_by('Pur_no')
+    purchase_order_table=Purchase_Order_items.objects.all()
+    company=company_details.objects.get(id=request.user.id)
+    context={
+        'pt':purchase_table,
+        'po_t':purchase_order_table,
+        'company':company,
+        }
+    return render(request,'purchase_order.html',context)
 
 def purchaseView(request):
     purchase_table=Purchase_Order.objects.filter(user=request.user)
@@ -8560,7 +8580,7 @@ def purchase_delet(request,id):
 
     
 def purchase_bill_view(request,id):
-    po=Purchase_Order.objects.all()
+    po=Purchase_Order.objects.filter(user=request.user)
     po_t=Purchase_Order_items.objects.filter(PO=id)
     po_table=Purchase_Order.objects.get(id=id)
     company=company_details.objects.get(user_id=request.user.id)

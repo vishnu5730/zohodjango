@@ -1156,6 +1156,8 @@ urlpatterns = [
     path('view_vendor_details_active/<int:pk>',views.view_vendor_details_active,name='view_vendor_details_active'),
     path('view_vendor_details_inactive/<int:pk>',views.view_vendor_details_inactive,name='view_vendor_details_inactive'),
     path('shareTransactionDetailsToEmail/<int:pk>', views.shareTransactionDetailsToEmail, name='shareTransactionDetailsToEmail'),
+    path('purchaseView_by_name',views.purchaseView_by_name,name='purchaseView_by_name'),
+    path('purchaseView_by_ord_no',views.purchaseView_by_ord_no,name='purchaseView_by_ord_no'),
 
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
     
