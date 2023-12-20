@@ -6515,8 +6515,10 @@ def get_vendordet(request):
     gstnum = vdr.gst_number
     gsttr = vdr.gst_treatment
     source_supply = vdr.source_supply
-
-    return JsonResponse({'vendor_email' :vemail, 'gst_number' : gstnum,'gst_treatment':gsttr,'source_supply':source_supply},safe=False)
+    baddress=vdr.baddress
+    bcity=vdr.bcity
+    bstate=vdr.bstate
+    return JsonResponse({'baddress':baddress,'bcity':bcity,'bstate':bstate,'vendor_email' :vemail, 'gst_number' : gstnum,'gst_treatment':gsttr,'source_supply':source_supply},safe=False)
 
 
 @login_required(login_url='login')
@@ -8074,6 +8076,34 @@ def purchase_order(request):
     unit=Unit.objects.all()
     sales=Sales.objects.all()
     purchase=Purchase.objects.all()
+    last_record = Purchase_Order.objects.filter(user=request.user.id).last()
+    last_reference = purchaseOrderReference.objects.filter(user=request.user.id).last()
+
+    if last_record ==None:
+        reference = '01'
+        remaining_characters=''
+    else:
+        lastSalesNo = last_record.Pur_no
+        last_two_numbers = int(lastSalesNo[-2:])+1
+        remaining_characters = lastSalesNo[:-2] 
+        if remaining_characters == '':
+            if last_two_numbers < 10:
+                reference = '0'+str(last_two_numbers)
+            else:
+                reference = str(last_two_numbers)
+        else: 
+            if last_two_numbers < 10:
+                reference = remaining_characters+'0'+str(last_two_numbers)
+            else:
+                reference = remaining_characters+str(last_two_numbers)
+            
+    if last_reference==None:
+        reford = '01'
+    else:
+        if last_reference.reference+1 < 10:
+            reford = '0'+ str(last_reference.reference+1)
+        else:
+            reford = str(last_reference.reference+1)
     context={
         'vendor':vendor,
         'customer':cust,
@@ -8084,7 +8114,8 @@ def purchase_order(request):
         'sales':sales,
         'purchase':purchase,
         'company':company,
-        
+        'reference':reference,
+        'reford':reford
     }
         
     return render(request,'create_purchase_order.html',context)

@@ -156,7 +156,55 @@
           <input type="text" class="form-control bg-light text-dark"  id="baddress_inp" name="baddress_inp">
         </div>
       </div>
+      <div class="row mt-5 ">
+        <div class="col-md-3">
+          <label >Place of Supply*</label>
+        </div>
 
+        <div class="col-md-6">
+            <select name="srcofsupply" id="srcofsupply" onclick="toggleDateInput()" onselect="calculateTaxAmount()" class="form-control bg-light text-dark">
+                <option value="[AN] Andaman and Nicobar Islads">[AN] Andaman and Nicobar Islads</option>
+                <option value="[AD] Andhra Predhesh">[AD] Andhra Predhesh</option>
+                <option value="[AR] Arunachal Predesh">[AR] Arunachal Predesh</option>
+                <option value="[AS] Assam">[AS] Assam</option>
+                <option value="[BR] Bihar">[BR] Bihar</option>
+                <option value="[CH] Chandigarh">[CH] Chandigarh</option>
+                <option value="[CG] Chhattisgarh">[CG] Chhattisgarh</option>
+                <option value="[DNH] Dadra and Nagar Haveli">[DNH] Dadra and Nagar Haveli</option>
+                <option value="[DD] Damn anad Diu">[DD] Damn anad Diu</option>
+                <option value="[DL] Delhi">[DL] Delhi</option>
+                <option value="[GA] Goa">[GA] Goa</option>
+                <option value="[GJ] Gujarat">[GJ] Gujarat</option>
+                <option value="[HR] Haryana">[HR] Haryana</option>
+                <option value="[HP] Himachal Predesh">[HP] Himachal Predesh</option>
+                <option value="[JK] Jammu and Kashmir">[JK] Jammu and Kashmir</option>
+                <option value="[JH] Jharkhand">[JH] Jharkhand</option>
+                <option value="[KA] Karnataka">[KA] Karnataka</option>
+                <option selected="selected" value="[KL] Kerala">[KL] Kerala</option>
+                <option value="[LA] Ladakh">[LA] Ladakh</option>
+                <option value="[LD] Lakshadweep">[LD] Lakshadweep</option>
+                <option value="[MP] Madhya Predesh">[MP] Madhya Predesh</option>
+                <option value="[MH] Maharashtra">[MH] Maharashtra</option>
+                <option value="[MN] Manipur">[MN] Manipur</option>
+                <option value="[ML] Meghalaya">[ML] Meghalaya</option>
+                <option value="[MZ] Mizoram">[MZ] Mizoram</option>
+                <option value="[NL] Nagaland">[NL] Nagaland</option>
+                <option value="[OD] Odisha">[OD] Odisha</option>
+                <option value="[PY] Puducherry">[PY] Puducherry</option>
+                <option value="[PB] Punjab">[PB] Punjab</option>
+                <option value="[RJ] Rajasthan">[RJ] Rajasthan</option>
+                <option value="[SK] Sikkim">[SK] Sikkim</option>
+                <option value="[TN] Tamil Nadu">[TN] Tamil Nadu</option>
+                <option value="[TS] Telangana">[TS] Telangana</option>
+                <option value="[TR] Tripura">[TR] Tripura</option>
+                <option value="[UP] Uttar Predesh">[UP] Uttar Predesh</option>
+                <option value="[UK] Uttarakhand">[UK] Uttarakhand</option>
+                <option value="[WB] West Bengal">[WB] West Bengal</option>
+                <option value="[OT] Other Territory">[OT] Other Territory</option>
+            </select>
+            
+        </div>
+      </div>
       <div class="row mt-2  " id="">
         <div class="col-md-3 ">
           <label for="">Deliver To</label>
@@ -224,7 +272,7 @@
 
 <div class="row mt-2">
   <div class="col-md-3">
-    <label for="custAddress">Streat:</label>
+    <label for="custAddress">Street:</label>
 
   </div>
   <div class="col-md-6">
@@ -259,29 +307,38 @@
 </div>
 
     </div>
-      
+    <!-- <div class="row mt-2 d-none" id="gst_trt_row">
+      <div class="col-md-3">
+        <label for="gst_trt_inp">GST Treatment</label>
+      </div>
+      <div class="col-md-6">
+        <input type="text" class="form-control bg-light text-dark" id="gst_trt_inp" name="gst_trt_inp">
+      </div>
+    </div> -->
       <div id="customerFields" class="fields">
         <h3>Customer Details:</h3>
         <div class="row mt-2">
           <div class="col-md-3">
             <label >Customer Name *</label><br>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-5">
             <select name="custom" id="custom" class="form-control bg-light text-dark" >
               <option value=""></option>
               {% for c in customer %}
               <option value="{{ c.customerName }} ">{{ c.customerName }}</option>
               {% endfor %}
             </select>
-            <a href="" data-toggle="modal" data-target="#newcustomer">+ Add New Customer</a>
             <input type="hidden" id="cust_state" value="" readonly >
   
             <input type="hidden" id="company_state" value="{{company.state}}" readonly>
   
           </div>
+          <div class="col-md-4">
+            <a href="#" class="btn btn-outline-secondary py-2 my-1" data-target="#newcustomer" data-toggle="modal" style="color: white; background-color: rgb(210, 132, 30);" >+</a>
+        </div>
         </div>
 
-        <div class="row">
+        <div class="row mt-2 d-none" id="cemail_row">
           <div class="col-md-3">
             <label for="custName">Email:</label>
 
@@ -290,7 +347,7 @@
             <input type="text" id="cemail_inp" class="form-control bg-light text-dark" name="custMail">
           </div>
         </div>
-        <div class="row">
+        <div class="row mt-2 d-none" id="custAddress_row">
           <div class="col-md-3">
             <label for="custAddress">Address:</label>
 
@@ -302,9 +359,9 @@
 
         </div>
         
-        <div class="row">
+        <div class="row mt-2 d-none" id="custstreet_row">
           <div class="col-md-3">
-            <label for="custAddress">Streat:</label>
+            <label for="custAddress">Street:</label>
 
           </div>
           <div class="col-md-6">
@@ -314,7 +371,7 @@
 
         </div>
 
-        <div class="row">
+        <div class="row mt-2 d-none" id="custcity_row">
           <div class="col-md-3">
             <label for="custAddress">City:</label>
 
@@ -326,7 +383,7 @@
 
         </div>
         
-        <div class="row">
+        <div class="row mt-2 d-none" id="custstate_row">
           <div class="col-md-3">
             <label for="custAddress">State:</label>
 
@@ -344,67 +401,14 @@
 
       </div>
 
-
-
-      <div class="row mt-5 ">
-        <div class="col-md-3">
-          <label >Source of Supply*</label>
-        </div>
-
-        <div class="col-md-6">
-            <select name="srcofsupply" id="srcofsupply" onclick="toggleDateInput()" onselect="calculateTaxAmount()" class="form-control bg-light text-dark">
-                <option value="[AN] Andaman and Nicobar Islads">[AN] Andaman and Nicobar Islads</option>
-                <option value="[AD] Andhra Predhesh">[AD] Andhra Predhesh</option>
-                <option value="[AR] Arunachal Predesh">[AR] Arunachal Predesh</option>
-                <option value="[AS] Assam">[AS] Assam</option>
-                <option value="[BR] Bihar">[BR] Bihar</option>
-                <option value="[CH] Chandigarh">[CH] Chandigarh</option>
-                <option value="[CG] Chhattisgarh">[CG] Chhattisgarh</option>
-                <option value="[DNH] Dadra and Nagar Haveli">[DNH] Dadra and Nagar Haveli</option>
-                <option value="[DD] Damn anad Diu">[DD] Damn anad Diu</option>
-                <option value="[DL] Delhi">[DL] Delhi</option>
-                <option value="[GA] Goa">[GA] Goa</option>
-                <option value="[GJ] Gujarat">[GJ] Gujarat</option>
-                <option value="[HR] Haryana">[HR] Haryana</option>
-                <option value="[HP] Himachal Predesh">[HP] Himachal Predesh</option>
-                <option value="[JK] Jammu and Kashmir">[JK] Jammu and Kashmir</option>
-                <option value="[JH] Jharkhand">[JH] Jharkhand</option>
-                <option value="[KA] Karnataka">[KA] Karnataka</option>
-                <option selected="selected" value="[KL] Kerala">[KL] Kerala</option>
-                <option value="[LA] Ladakh">[LA] Ladakh</option>
-                <option value="[LD] Lakshadweep">[LD] Lakshadweep</option>
-                <option value="[MP] Madhya Predesh">[MP] Madhya Predesh</option>
-                <option value="[MH] Maharashtra">[MH] Maharashtra</option>
-                <option value="[MN] Manipur">[MN] Manipur</option>
-                <option value="[ML] Meghalaya">[ML] Meghalaya</option>
-                <option value="[MZ] Mizoram">[MZ] Mizoram</option>
-                <option value="[NL] Nagaland">[NL] Nagaland</option>
-                <option value="[OD] Odisha">[OD] Odisha</option>
-                <option value="[PY] Puducherry">[PY] Puducherry</option>
-                <option value="[PB] Punjab">[PB] Punjab</option>
-                <option value="[RJ] Rajasthan">[RJ] Rajasthan</option>
-                <option value="[SK] Sikkim">[SK] Sikkim</option>
-                <option value="[TN] Tamil Nadu">[TN] Tamil Nadu</option>
-                <option value="[TS] Telangana">[TS] Telangana</option>
-                <option value="[TR] Tripura">[TR] Tripura</option>
-                <option value="[UP] Uttar Predesh">[UP] Uttar Predesh</option>
-                <option value="[UK] Uttarakhand">[UK] Uttarakhand</option>
-                <option value="[WB] West Bengal">[WB] West Bengal</option>
-                <option value="[OT] Other Territory">[OT] Other Territory</option>
-            </select>
-            
-        </div>
-      </div>
-      
-      
-
       <div class="row mt-2">
         <div class="col-md-3">
           <label for="prof_name" >Purchase Order</label>
         </div>
 
         <div class="col-md-6">
-          <input type="text" class="form-control bg-light text-dark" value="PO-"  id="prof_name" name="pur_ord">
+          <input type="text" class="form-control bg-light text-dark" value="{{remaining_characters}}"  id="prof_name" name="pur_ord">
+          <label id="order_label" style="display: none;"></label>
         </div>
       </div>
       <div class="row mt-2">
@@ -795,7 +799,7 @@
 
                 <div class="row">
                   <div class="col-md-3 mt-2">
-                    <label for="" >Source of Supply *</label>
+                    <label for="" >Place of Supply *</label>
                   </div>
                   <div class="col-md-6 mt-2">
                     <select class="form-control bg-light text-dark" id="v_srcsupply" name="v_sourceofsupply">
@@ -2187,20 +2191,50 @@ $(document).ready(function() {
             type : 'POST',
 
             success: function(data) {
-              // console.log(data.vendor_email);
-                $("#email_row").removeClass('d-none');
-                $("#email_row").addClass('d-flex');
-                $("#gstin_row").removeClass('d-none');
-                $("#gstin_row").addClass('d-flex');
-                $("#gst_trt_row").removeClass('d-none');
-                $("#gst_trt_row").addClass('d-flex');
-                $("#baddress_row").removeClass('d-none');
-                $("#baddress_row").addClass('d-flex');
+    // Display email if it exists
+    if (data.vendor_email) {
+        $("#email_row").removeClass('d-none');
+        $("#email_row").addClass('d-flex');
+        $('#email_inp').val(" " + data.vendor_email);
+    } else {
+        $("#email_row").addClass('d-none');
+        $("#email_row").removeClass('d-flex');
+    }
 
-                $('#email_inp').val(" " +data.vendor_email);
-                $('#gstin_inp').val(" " +data.gst_number);
-                $('#gst_trt_inp').val(" "+data.gst_treatment);
-                $('#baddress_inp').val(" "+data.baddress);
+    // Display GST number if it exists
+    if (data.gst_number != 'null') {
+        $("#gstin_row").removeClass('d-none');
+        $("#gstin_row").addClass('d-flex');
+        $("#gstin_inp").show();
+        $('#gstin_inp').val(" " + data.gst_number);
+    } else {
+        $("#gstin_inp").hide();
+        $("#gstin_row").addClass('d-none');
+        $("#gstin_row").removeClass('d-flex');
+    }
+
+    // Display GST treatment if it exists
+    if (data.gst_treatment) {
+        $("#gst_trt_row").removeClass('d-none');
+        $("#gst_trt_row").addClass('d-flex');
+        $('#gst_trt_inp').val(" " + data.gst_treatment);
+    } else {
+        $("#gst_trt_row").addClass('d-none');
+        $("#gst_trt_row").removeClass('d-flex');
+    }
+
+    // Display business address if it exists
+    if (data.baddress) {
+        $("#baddress_row").removeClass('d-none');
+        $("#baddress_row").addClass('d-flex');
+        $("#baddress_inp").show();
+        $('#baddress_inp').val(" " + data.baddress);
+    } else {
+        $("#baddress_inp").hide();
+        $("#baddress_row").addClass('d-none');
+        $("#baddress_row").removeClass('d-flex');
+    }
+
 
             }
         });
@@ -2221,17 +2255,57 @@ $(document).ready(function() {
       },
       type: 'POST',
       success: function(data) {
-        console.log(data.customer_email);
+      if (data.customer_email) {
+          console.log(data.customer_email);
+          $("#cemail_row").removeClass('d-none');
+          $("#cemail_inp").show();
+          $("#cemail_inp").val(data.customer_email);
+      } else {
+          $("#cemail_inp").hide(); // Hide the field if customer_email doesn't exist
+          $("#cemail_row").addClass('d-none');
+      }
+
+    if (data.adres) {
         console.log(data.adres);
-        console.log(data.streat);
-        console.log(data.city);
-        console.log(data.state);
-        $("#cemail_inp").val(data.customer_email);
+        $("#custAddress_row").removeClass('d-none');
+        $("#custAddress").show();
         $("#custAddress").val(data.adres);
+    } else {
+        $("#custAddress").hide(); // Hide the field if adres doesn't exist
+        $("#custAddress_row").addClass('d-none');
+      }
+
+    if (data.streat) {
+        console.log(data.streat);
+        $("#custstreet_row").removeClass('d-none');
+        $("#custstreet").show();
         $("#custstreet").val(data.streat);
+    } else {
+        $("#custstreet").hide(); // Hide the field if streat doesn't exist
+        $("#custstreet_row").addClass('d-none');
+      }
+
+    if (data.city) {
+        console.log(data.city);
+        $("#custcity_row").removeClass('d-none');
+        $("#custcity").show();
         $("#custcity").val(data.city);
+    } else {
+        $("#custcity").hide(); // Hide the field if city doesn't exist
+        $("#custcity_row").addClass('d-none');
+      }
+
+    if (data.state) {
+        console.log(data.state);
         $("#custstate").val(data.state);
-        document.getElementById('company_state').value = data.st
+        $("#custstate_row").removeClass('d-none');
+        $("#custstate").show();
+        document.getElementById('company_state').value = data.state;
+    } else {
+        $("#custstate").hide(); // Hide the field if state doesn't exist
+        $("#custstate_row").addClass('d-none');
+      }
+
 
       }
     });
@@ -3911,6 +3985,25 @@ function toggleDateInput() {
       });
 
 
+  });
+</script>
+<script>
+  $(document).ready(function () {
+    $("#prof_name").keyup(function () {
+      var x = $('#prof_name').val();
+      reford = "{{reference}}"
+      if (reford != '01') {
+        if (reford != x) {
+          document.getElementById("order_label").style.display = "block"
+          document.getElementById("order_label").style.color = "yellow"
+          document.getElementById("order_label").innerHTML = "Purchase Order is not Continuous"
+        } else {
+          document.getElementById("order_label").style.display = "block"
+          document.getElementById("order_label").style.color = "green"
+          document.getElementById("order_label").innerHTML = "Purchase Order is now Continuous"
+        }
+      }
+    });
   });
 </script>
 {% endblock %}
