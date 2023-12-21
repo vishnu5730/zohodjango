@@ -715,11 +715,14 @@ class Purchase_Order(models.Model):
     payed = models.FloatField(null=True,blank=True)
     note = models.CharField(max_length=255,null=True,blank=True)
     payment_type = models.CharField(max_length=255,null=True,blank=True)
+    cheque_id=models.CharField(null=True,blank=True,max_length=255)
+    upi_id=models.CharField(null=True,blank=True,max_length=255)
     document=models.FileField(upload_to='doc/purchase_order',null=True,blank=True)
     comments = models.CharField(max_length=255,null=True,blank=True)
     term=models.CharField(max_length=255,null=True,blank=True)
     status=models.CharField(max_length=255,default='Draft')
     convert_status=models.IntegerField(default='0',null=True)
+    
 
 class Purchase_Order_items (models.Model):
 

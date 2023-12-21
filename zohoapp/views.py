@@ -8076,10 +8076,11 @@ def purchase_order(request):
     unit=Unit.objects.all()
     sales=Sales.objects.all()
     purchase=Purchase.objects.all()
+    bank = Bankcreation.objects.filter(user=request.user)
     last_record = Purchase_Order.objects.filter(user=request.user.id).last()
     last_reference = purchaseOrderReference.objects.filter(user=request.user.id).last()
 
-    if last_record ==None:
+    if last_record == None:
         reference = '01'
         remaining_characters=''
     else:
@@ -8115,7 +8116,8 @@ def purchase_order(request):
         'purchase':purchase,
         'company':company,
         'reference':reference,
-        'reford':reford
+        'reford':reford,
+        'bank':bank
     }
         
     return render(request,'create_purchase_order.html',context)
@@ -8466,7 +8468,7 @@ def create_Purchase_order(request):
         cstreet = request.POST.get('custStreet')
         ccity = request.POST.get('custcity')
         cstate = request.POST.get('custstate')
-
+        
         src_supply = request.POST.get('srcofsupply')
         po = request.POST['pur_ord']
         ref = request.POST['ref']
@@ -8482,9 +8484,18 @@ def create_Purchase_order(request):
         grand_total=request.POST['grandtotal']
         note=request.POST['customer_note']
         payment_type=request.POST['ptype']
+        cheque_id=request.POST['cheque_id']
+        upi_id=request.POST['upi_id']
         terms_con = request.POST['tearms_conditions']
         orgMail=request.POST.get('orgMail')
         u = User.objects.get(id = request.user.id)
+        last_reference = purchaseOrderReference.objects.filter(user=request.user.id).last()
+        if last_reference == None:
+            refe = purchaseOrderReference(reference = int(ref),user=u)
+            refe.save()
+        else:
+            last_reference.reference = int(ref)
+            last_reference.save()
         print('yes')
         print(typ)
         if typ=='Organization':
@@ -8517,11 +8528,13 @@ def create_Purchase_order(request):
                                     sgst=sgst,
                                     cgst=cgst,
                                     igst=igst,
+                                    cheque_id=cheque_id,
+                                    upi_id=upi_id,
                                     tax_amount=tax,
                                     shipping_charge = shipping_charge,
                                     grand_total=grand_total,
                                     note=note,
-                                    
+                                    payment_type = payment_type,
                                     term=terms_con,
                                     company=company,
                                     custo_id=custo,
@@ -8559,6 +8572,9 @@ def create_Purchase_order(request):
                                     Ord_date = start,
                                     exp_date = end,
                                     sub_total=sub_total,
+                                    cheque_id=cheque_id,
+                                    upi_id=upi_id,
+                                    payment_type=payment_type,
                                     sgst=sgst,
                                     cgst=cgst,
                                     igst=igst,

@@ -394,18 +394,12 @@
           </div>
 
         </div>
-        
-       
- 
-
-
-      </div>
+    </div>
 
       <div class="row mt-2">
         <div class="col-md-3">
           <label for="prof_name" >Purchase Order</label>
         </div>
-
         <div class="col-md-6">
           <input type="text" class="form-control bg-light text-dark" value="{{remaining_characters}}"  id="prof_name" name="pur_ord">
           <label id="order_label" style="display: none;"></label>
@@ -413,17 +407,14 @@
       </div>
       <div class="row mt-2">
         <div class="col-md-3">
-          <label for="prof_name" >Reference</label>
+          <label for="prof_name">Reference</label>
         </div>
 
         <div class="col-md-6">
-          <input type="text" class="form-control bg-light text-dark"   id="ref" name="ref">
+          <input type="text" class="form-control bg-light text-dark" id="ref" name="ref" value="{{reford}}" readonly>
         </div>
       </div>
-
       <br>
-
-
       <div class="row mt-2" >
           <div class="col-md-3">
             <label for="date1">Order Date</label>
@@ -437,7 +428,7 @@
           <label for="date2">Expected Delivery On</label>
         </div>
         <div class="col-md-3">
-          <input type="date" class="form-control bg-light text-dark" id="date2" name="end_date">
+          <input type="date" class="form-control bg-light text-dark" id="date2" name="end_date" readonly required>
         </div>
         
       </div>
@@ -449,10 +440,8 @@
         <div class="col-md-6">
           <div class="d-flex">
             <select class="form-control bg-light text-dark" id="terms" name="terms">
-              
               {% for p in payment %}
-              
-                <option selected value="{{p.id}} {{p.Terms}} {{ p.Days}}">{{p.Terms}}</option>
+                <option selected value="{{p.id}}">{{p.Terms}}</option>
               {% endfor %}
               <option value="" selected></option>
             </select>
@@ -463,7 +452,56 @@
         </div>
       </div>  
 
-  
+      <div class="row mt-2">
+        <div class="col-md-3">
+          <label for="date2">Payment Method</label>
+        </div>
+
+        <div class="col-md-6">
+          <div class="d-flex">
+            <select class="form-control bg-light text-dark my-select" id="pay_method" name="ptype" required>
+              <option value="" hidden>Select Payment Method</option>
+              <option value="cash">Cash</option>
+              <option value="cheque">Cheque</option>
+              <option value="upi">UPI</option>
+              {% for item in bank %}
+              <option value="{{item.name}}">{{item.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row mt-2" id="chequediv" style="display: none;">
+        <div class="col-md-3">
+          <label for="date2">Cheque Number</label>
+        </div>
+
+        <div class="col-md-6">
+          <input type="text" class="form-control text-black" name="cheque_id" id="cheque_id"
+            placeholder="Enter Cheque Number">
+        </div>
+      </div>
+
+      <div class="row mt-2" id="upidiv" style="display: none;">
+        <div class="col-md-3">
+          <label for="date2">UPI ID</label>
+        </div>
+
+        <div class="col-md-6">
+          <input type="text" class="form-control text-black" name="upi_id" id="upi_id" placeholder="Enter UPI ID">
+        </div>
+      </div>
+
+      <div class="row mt-2" id="bnkdiv" style="display: none;">
+        <div class="col-md-3">
+          <label for="date2">Bank Account</label>
+        </div>
+
+        <div class="col-md-6">
+          <input type="text" class="form-control text-black" name="bnk_id" id="bnk_id" readonly>
+        </div>
+      </div>
       <div class="row mt-2">
         <div class="col-md-12 table-responsive-md mt-3">
           <table class="table  " id="item_table" onclick='toggleDateInput()' style="background-color: #6f6f6f;">
@@ -552,13 +590,7 @@
             <label for="">Customer Notes</label>
             <textarea name="customer_note" id="" cols="8" rows="8"
                 placeholder=" Will be Displayed on the Purchase Order"></textarea>
-            <label for="">Payment Type</label>
-            <select name="ptype" id="ptype">
-              
-              <option value="Cash">Cash</option>
-              <option value="Check">Check</option>
-              <option value="Bank">Bank</option>
-            </select>
+            
         </div>
         <div class="col-sm-6 " >
             <table class=" table  text-white" style="background-color: #6f6f6f;">
@@ -3983,8 +4015,6 @@ function toggleDateInput() {
           });
 
       });
-
-
   });
 </script>
 <script>
@@ -4006,4 +4036,106 @@ function toggleDateInput() {
     });
   });
 </script>
+<script>
+
+  $(document).ready(function () {
+    var currentDate = moment().format("YYYY-MM-DD");
+    document.getElementById("date1").value = currentDate;
+  });
+</script>
+<script>
+
+  $(document).on('change', '#date1', function () {
+    var term = $('#terms').val();
+    $.ajax({
+      type: "GET",
+      url: "{% url 'termdata' %}",
+      data: {
+        id: term
+      },
+      success: function (response) {
+        days = response.days;
+        order_date = moment(document.getElementById("date1").value);
+        if (order_date.isValid()) {
+          // Calculate the new date by adding the number of days
+          const endDate = moment(order_date).add(days, 'days');
+          // Format the new date as YYYY-MM-DD
+          const formattedDate = endDate.format("YYYY-MM-DD");
+          // Set the result in the second input
+          document.getElementById("date2").value = formattedDate;
+        } else {
+          alert("Please enter a valid date.");
+        }
+      }
+    });
+  });
+
+  $(document).on('change', '#terms', function () {
+    var term = $('#terms').val();
+    $.ajax({
+      type: "GET",
+      url: "{% url 'termdata' %}",
+      data: {
+        id: term
+      },
+      success: function (response) {
+        days = response.days
+        var orderDate = moment(document.getElementById("date1").value);
+        if (orderDate.isValid()) {
+          var endDate = orderDate.add(days, 'days');
+          var formattedDate = endDate.format("YYYY-MM-DD");
+          document.getElementById("date2").value = formattedDate;
+        } else {
+          alert("Please enter a valid date.");
+        }
+
+      }
+    });
+  });
+</script>
+<script>
+  $(document).ready(function () {
+    $("#pay_method").change(function () {
+      var x = $('#pay_method').val();
+      if (x === 'cash') {
+        $('#chequediv').hide()
+        $('#bnkdiv').hide()
+        $('#upidiv').hide()
+        document.getElementById('cheque_id').value = null
+        document.getElementById('upi_id').value = null
+      } else if (x === 'cheque') {
+        $('#chequediv').show()
+        $('#bnkdiv').hide()
+        $('#upidiv').hide()
+        document.getElementById('upi_id').value = null
+      } else if (x === 'upi') {
+        $('#upidiv').show()
+        $('#bnkdiv').hide()
+        $('#chequediv').hide()
+        document.getElementById('cheque_id').value = null
+      } else {
+        $('#bnkdiv').show()
+        $('#chequediv').hide()
+        $('#upidiv').hide()
+        document.getElementById('cheque_id').value = null
+        document.getElementById('upi_id').value = null
+
+        $.ajax({
+          type: "GET",
+          url: "{% url 'bankdata' %}",
+          data: {
+            id: x,
+          },
+          success: function (response) {
+            data = response.bank
+            document.getElementById('cheque_id').value = null
+            document.getElementById('upi_id').value = null
+            document.getElementById("bnk_id").value = data
+          }
+        });
+      }
+    });
+  });
+</script>
+
 {% endblock %}
