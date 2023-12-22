@@ -109,7 +109,7 @@
         <div class="col-md-3">
           <label >Vendor Name *</label>
         </div>
-        <div class="col-md-5">
+        <div class="col-md-6">
           <select name="vendor" id="vendor" class="form-control bg-light text-dark">
             <option value=""></option>
             {% for v in vendor %}
@@ -117,7 +117,7 @@
             {% endfor %}
           </select>
         </div>
-        <div class="col-md-4 ">
+        <div class="col-md-3">
           <a href="#" class="btn btn-outline-secondary py-2 my-1" data-target="#newvendor" data-toggle="modal" style="color: white; background-color: rgb(210, 132, 30);" >+</a>
       </div>
       </div>
@@ -321,7 +321,7 @@
           <div class="col-md-3">
             <label >Customer Name *</label><br>
           </div>
-          <div class="col-md-5">
+          <div class="col-md-6">
             <select name="custom" id="custom" class="form-control bg-light text-dark" >
               <option value=""></option>
               {% for c in customer %}
@@ -333,7 +333,7 @@
             <input type="hidden" id="company_state" value="{{company.state}}" readonly>
   
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
             <a href="#" class="btn btn-outline-secondary py-2 my-1" data-target="#newcustomer" data-toggle="modal" style="color: white; background-color: rgb(210, 132, 30);" >+</a>
         </div>
         </div>
@@ -445,13 +445,12 @@
               {% endfor %}
               <option value="" selected></option>
             </select>
-
           </div> 
-          <a href="" data-toggle="modal" data-target="#newpayment"><i class="fa fa-gear"></i> Configure Payment Trems</a>
-  
-        </div>
       </div>  
-
+      <div class="col-md-3">
+        <a href="#" class="btn btn-outline-secondary py-2 my-1" data-target="#newpayment" data-toggle="modal" style="color: white; background-color: rgb(210, 132, 30);" >+</a>
+    </div>
+    </div>
       <div class="row mt-2">
         <div class="col-md-3">
           <label for="date2">Payment Method</label>
@@ -504,10 +503,12 @@
       </div>
       <div class="row mt-2">
         <div class="col-md-12 table-responsive-md mt-3">
-          <table class="table  " id="item_table" onclick='toggleDateInput()' style="background-color: #6f6f6f;">
+          <table class="table" id="item_table" onclick='toggleDateInput()' style="background-color: #6f6f6f;">
             <thead>
               <tr>
+                <th class="text-white"></th>
                 <th class="text-white ">Item<br><a href="" data-toggle="modal" data-target="#newitem" class="text-capitalize">+ Item</a></th>
+                <th class="text-white text-right">HSN</th>
                 <th class="text-white text-right">Quantity</th>
                 <th class="text-white text-right">Rate</th>
                 <th class="text-white text-right">Discount</th>
@@ -517,9 +518,9 @@
             </thead>
             <tbody>
               <tr id="row1">
+                <td class='text-center text-dark serial-number'></td>
                   <td style="width: 10%;">
-                      <div ><select
-                              class='form-control bg-transparent text-dark item_select itm'
+                      <div><select class='form-control bg-transparent text-dark item_select itm'
                               name='item[]' id='item1'>
                               <option value=" " selected disabled>Select Item</option>
                               {% for i in item %}
@@ -527,7 +528,10 @@
                               {% endfor %}
                           </select></div>
                   </td>
-                  
+                  <td style="width: 15%;" class='text-right'>
+                    <input type='number' id='hsn1'
+                      class=' text-right hsn border-0 form-control bg-transparent text-white' name='hsn[]' readonly>
+                  </td>
                   <td style="width: 13%;" class='text-right'><input type='number' id='qty1'
                           class=' text-right qty form-control bg-transparent text-dark' name='quantity[]'
                           value='0'>
@@ -3008,14 +3012,41 @@ function calculateGrandTotal() {
     calculateSubtotal();
     calculateGrandTotal();
   });
+  var rowCount = 1; // Initialize row counter
+
+// Set initial serial number for the existing row
+$('.serial-number').text(function(index) {
+    return index + 1;
+});
+
+function fetchItemData(itemName, rowNumber) {
+    $.ajax({
+        type: 'GET',
+        url: "{% url 'itemdata_challan' %}",  // Replace with your actual URL
+        success: function (response) {
+            if (data.status === 'not') {
+              data = response.hsn
+              data1 = response.rate
+              document.getElementById(`hsn${id}`).value = data
+              document.getElementById(`rate${id}`).value = data1
+            } else {
+                console.error('Error fetching item data:', data.message);
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.error('Error fetching item data:', errorThrown);
+        }
+    });
+}
 
   $('#add-row').click(function () {
     rowCount++; // Increment row counter
     var newRow = `
-      <tr id='row${rowCount}'>
+    <tr id='row${rowCount}'>
+        <td class='text-center text-dark serial-number'>${rowCount}</td>
         <td style="width: 10%;">
           <div>
-            <select class='form-control bg-transparent text-dark  border-0 item_select itm' name='item[]' id='item${rowCount}'>
+            <select class='form-control bg-transparent text-dark  border-0 item_select itm' name='item[]' id='item${rowCount}' onchange="fetchItemData(this.value, ${rowCount})">
               <option value=" " selected disabled>Select Item</option>
               {% for i in item %}
                 <option value="{{i.Name}}">{{ i.Name }}</option>
@@ -3023,15 +3054,12 @@ function calculateGrandTotal() {
             </select>
           </div>
         </td>
-
-      
-        
-
-        
+        <td style="width: 15%;" class='text-right'>
+          <input type='number' id='hsn${rowCount}' class='text-right hsn border-0 form-control bg-transparent text-white' name='hsn[]' readonly>
+        </td>
         <td style="width: 13%;" class='text-right'>
           <input type='number' id='qty${rowCount}' class='text-right bg-transparent text-dark qty form-control' name='quantity[]' value='0'>
         </td>
-        
         <td style="width: 15%;" class='text-right'>
           <input type='number' id='rate${rowCount}' class='text-right bg-transparent text-dark rate form-control' name='rate[]' value='0'>
         </td>
@@ -3079,13 +3107,16 @@ function calculateGrandTotal() {
       </td>
       </tr>
     `;
+    
   $('#item_table tbody').append(newRow);
+  updateSerialNumbers();
     toggleDateInput();
     calculateSubtotal();
     calculateGrandTotal();
   });
   $('#item_table').on('click', '.delete-row', function () {
     $(this).closest('tr').remove();
+    updateSerialNumbers();
     calculateSubtotal();
     calculateGrandTotal();
     calculateTaxAmount();
@@ -3147,7 +3178,12 @@ function calculateGrandTotal() {
     calculateGrandTotal();
   });
 
-
+  updateSerialNumbers();
+    function updateSerialNumbers() {
+    $('.serial-number').text(function(index) {
+        return index + 1;
+    });
+}
 
   // Add an event listener to the fields in the item table
 $('#item_table').on('click', '.item_select, .acnt, .rate, .qty, .tax, .discount', function () {
@@ -3336,6 +3372,127 @@ function toggleDateInput() {
 </script>
 
 <script>
+  $(document).ready(function () {
+    $("#prof_name").keyup(function () {
+      var x = $('#prof_name').val();
+      reford = "{{reference}}"
+      if (reford != '01') {
+        if (reford != x) {
+          document.getElementById("order_label").style.display = "block"
+          document.getElementById("order_label").style.color = "yellow"
+          document.getElementById("order_label").innerHTML = "Purchase Order is not Continuous"
+        } else {
+          document.getElementById("order_label").style.display = "block"
+          document.getElementById("order_label").style.color = "green"
+          document.getElementById("order_label").innerHTML = "Purchase Order is now Continuous"
+        }
+      }
+    });
+  });
+</script>
+<script>
+
+  $(document).ready(function () {
+    var currentDate = moment().format("YYYY-MM-DD");
+    document.getElementById("date1").value = currentDate;
+  });
+</script>
+<script>
+
+  $(document).on('change', '#date1', function () {
+    var term = $('#terms').val();
+    $.ajax({
+      type: "GET",
+      url: "{% url 'termdata' %}",
+      data: {
+        id: term
+      },
+      success: function (response) {
+        days = response.days;
+        order_date = moment(document.getElementById("date1").value);
+        if (order_date.isValid()) {
+          // Calculate the new date by adding the number of days
+          const endDate = moment(order_date).add(days, 'days');
+          // Format the new date as YYYY-MM-DD
+          const formattedDate = endDate.format("YYYY-MM-DD");
+          // Set the result in the second input
+          document.getElementById("date2").value = formattedDate;
+        } else {
+          alert("Please enter a valid date.");
+        }
+      }
+    });
+  });
+
+  $(document).on('change', '#terms', function () {
+    var term = $('#terms').val();
+    $.ajax({
+      type: "GET",
+      url: "{% url 'termdata' %}",
+      data: {
+        id: term
+      },
+      success: function (response) {
+        days = response.days
+        var orderDate = moment(document.getElementById("date1").value);
+        if (orderDate.isValid()) {
+          var endDate = orderDate.add(days, 'days');
+          var formattedDate = endDate.format("YYYY-MM-DD");
+          document.getElementById("date2").value = formattedDate;
+        } else {
+          alert("Please enter a valid date.");
+        }
+
+      }
+    });
+  });
+</script>
+<script>
+  $(document).ready(function () {
+    $("#pay_method").change(function () {
+      var x = $('#pay_method').val();
+      if (x === 'cash') {
+        $('#chequediv').hide()
+        $('#bnkdiv').hide()
+        $('#upidiv').hide()
+        document.getElementById('cheque_id').value = null
+        document.getElementById('upi_id').value = null
+      } else if (x === 'cheque') {
+        $('#chequediv').show()
+        $('#bnkdiv').hide()
+        $('#upidiv').hide()
+        document.getElementById('upi_id').value = null
+      } else if (x === 'upi') {
+        $('#upidiv').show()
+        $('#bnkdiv').hide()
+        $('#chequediv').hide()
+        document.getElementById('cheque_id').value = null
+      } else {
+        $('#bnkdiv').show()
+        $('#chequediv').hide()
+        $('#upidiv').hide()
+        document.getElementById('cheque_id').value = null
+        document.getElementById('upi_id').value = null
+
+        $.ajax({
+          type: "GET",
+          url: "{% url 'bankdata' %}",
+          data: {
+            id: x,
+          },
+          success: function (response) {
+            data = response.bank
+            document.getElementById('cheque_id').value = null
+            document.getElementById('upi_id').value = null
+            document.getElementById("bnk_id").value = data
+          }
+        });
+      }
+    });
+  });
+  
+</script>
+<!-- <script>
   $(document).ready(function () {
 
 
@@ -4015,127 +4172,8 @@ function toggleDateInput() {
           });
 
       });
-  });
-</script>
-<script>
-  $(document).ready(function () {
-    $("#prof_name").keyup(function () {
-      var x = $('#prof_name').val();
-      reford = "{{reference}}"
-      if (reford != '01') {
-        if (reford != x) {
-          document.getElementById("order_label").style.display = "block"
-          document.getElementById("order_label").style.color = "yellow"
-          document.getElementById("order_label").innerHTML = "Purchase Order is not Continuous"
-        } else {
-          document.getElementById("order_label").style.display = "block"
-          document.getElementById("order_label").style.color = "green"
-          document.getElementById("order_label").innerHTML = "Purchase Order is now Continuous"
-        }
-      }
-    });
-  });
-</script>
-<script>
 
-  $(document).ready(function () {
-    var currentDate = moment().format("YYYY-MM-DD");
-    document.getElementById("date1").value = currentDate;
+
   });
-</script>
-<script>
-
-  $(document).on('change', '#date1', function () {
-    var term = $('#terms').val();
-    $.ajax({
-      type: "GET",
-      url: "{% url 'termdata' %}",
-      data: {
-        id: term
-      },
-      success: function (response) {
-        days = response.days;
-        order_date = moment(document.getElementById("date1").value);
-        if (order_date.isValid()) {
-          // Calculate the new date by adding the number of days
-          const endDate = moment(order_date).add(days, 'days');
-          // Format the new date as YYYY-MM-DD
-          const formattedDate = endDate.format("YYYY-MM-DD");
-          // Set the result in the second input
-          document.getElementById("date2").value = formattedDate;
-        } else {
-          alert("Please enter a valid date.");
-        }
-      }
-    });
-  });
-
-  $(document).on('change', '#terms', function () {
-    var term = $('#terms').val();
-    $.ajax({
-      type: "GET",
-      url: "{% url 'termdata' %}",
-      data: {
-        id: term
-      },
-      success: function (response) {
-        days = response.days
-        var orderDate = moment(document.getElementById("date1").value);
-        if (orderDate.isValid()) {
-          var endDate = orderDate.add(days, 'days');
-          var formattedDate = endDate.format("YYYY-MM-DD");
-          document.getElementById("date2").value = formattedDate;
-        } else {
-          alert("Please enter a valid date.");
-        }
-
-      }
-    });
-  });
-</script>
-<script>
-  $(document).ready(function () {
-    $("#pay_method").change(function () {
-      var x = $('#pay_method').val();
-      if (x === 'cash') {
-        $('#chequediv').hide()
-        $('#bnkdiv').hide()
-        $('#upidiv').hide()
-        document.getElementById('cheque_id').value = null
-        document.getElementById('upi_id').value = null
-      } else if (x === 'cheque') {
-        $('#chequediv').show()
-        $('#bnkdiv').hide()
-        $('#upidiv').hide()
-        document.getElementById('upi_id').value = null
-      } else if (x === 'upi') {
-        $('#upidiv').show()
-        $('#bnkdiv').hide()
-        $('#chequediv').hide()
-        document.getElementById('cheque_id').value = null
-      } else {
-        $('#bnkdiv').show()
-        $('#chequediv').hide()
-        $('#upidiv').hide()
-        document.getElementById('cheque_id').value = null
-        document.getElementById('upi_id').value = null
-
-        $.ajax({
-          type: "GET",
-          url: "{% url 'bankdata' %}",
-          data: {
-            id: x,
-          },
-          success: function (response) {
-            data = response.bank
-            document.getElementById('cheque_id').value = null
-            document.getElementById('upi_id').value = null
-            document.getElementById("bnk_id").value = data
-          }
-        });
-      }
-    });
-  });
-</script>
-
+</script> -->
 {% endblock %}
