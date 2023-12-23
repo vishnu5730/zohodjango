@@ -2301,24 +2301,24 @@ $(document).ready(function() {
           $("#cemail_row").addClass('d-none');
       }
 
-    if (data.adres) {
-        console.log(data.adres);
+    if (data.adres==',,,'||data.adres=='') {
+        $("#custAddress").hide(); // Hide the field if adres doesn't exist
+        $("#custAddress_row").addClass('d-none');
+    } else {
+      console.log(data.adres);
         $("#custAddress_row").removeClass('d-none');
         $("#custAddress").show();
         $("#custAddress").val(data.adres);
-    } else {
-        $("#custAddress").hide(); // Hide the field if adres doesn't exist
-        $("#custAddress_row").addClass('d-none');
       }
 
-    if (data.streat) {
+    if (data.streat==',,,'||data.streat=='') {
+        $("#custstreet").hide(); // Hide the field if streat doesn't exist
+        $("#custstreet_row").addClass('d-none');
+    } else {
         console.log(data.streat);
         $("#custstreet_row").removeClass('d-none');
         $("#custstreet").show();
         $("#custstreet").val(data.streat);
-    } else {
-        $("#custstreet").hide(); // Hide the field if streat doesn't exist
-        $("#custstreet_row").addClass('d-none');
       }
 
     if (data.city) {
@@ -2551,7 +2551,7 @@ $(document).on("click","#customersave",function(){
   $.ajax({
     
     type : 'POST',
-    url:"{% url 'purchase_customer' %}",
+    url:"{% url 'add_customer_for_sorder' %}",
 
     data:{
         tax:inte,
@@ -3022,15 +3022,18 @@ $('.serial-number').text(function(index) {
 function fetchItemData(itemName, rowNumber) {
     $.ajax({
         type: 'GET',
-        url: "{% url 'itemdata_challan' %}",  // Replace with your actual URL
+        url: "{% url 'itemdata_challan' %}",
+        data: { 'id': itemName },  // Pass the item name as a parameter
         success: function (response) {
-            if (data.status === 'not') {
-              data = response.hsn
-              data1 = response.rate
-              document.getElementById(`hsn${id}`).value = data
-              document.getElementById(`rate${id}`).value = data1
+            if (response.status === 'not') {
+                var hsnValue = response.hsn;
+                var rateValue = response.rate;
+
+                // Use rowNumber instead of id
+                document.getElementById(`hsn${rowNumber}`).value = hsnValue;
+                document.getElementById(`rate${rowNumber}`).value = rateValue;
             } else {
-                console.error('Error fetching item data:', data.message);
+                console.error('Error fetching item data:', response.message);
             }
         },
         error: function (xhr, textStatus, errorThrown) {
@@ -3038,6 +3041,7 @@ function fetchItemData(itemName, rowNumber) {
         }
     });
 }
+
 
   $('#add-row').click(function () {
     rowCount++; // Increment row counter
