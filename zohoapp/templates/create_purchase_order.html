@@ -530,7 +530,7 @@
                   </td>
                   <td style="width: 15%;" class='text-right'>
                     <input type='number' id='hsn1'
-                      class=' text-right hsn border-0 form-control bg-transparent text-white' name='hsn[]' readonly>
+                      class=' text-right hsn border-0 form-control bg-transparent text-white' name='hsn[]'>
                   </td>
                   <td style="width: 13%;" class='text-right'><input type='number' id='qty1'
                           class=' text-right qty form-control bg-transparent text-dark' name='quantity[]'
@@ -3395,7 +3395,6 @@ function toggleDateInput() {
   });
 </script>
 <script>
-
   $(document).ready(function () {
     var currentDate = moment().format("YYYY-MM-DD");
     document.getElementById("date1").value = currentDate;

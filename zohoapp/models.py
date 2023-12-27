@@ -722,7 +722,7 @@ class Purchase_Order(models.Model):
     term=models.CharField(max_length=255,null=True,blank=True)
     status=models.CharField(max_length=255,default='Draft')
     convert_status=models.IntegerField(default='0',null=True)
-    
+    complete_status = models.IntegerField(default=0)
 
 class Purchase_Order_items (models.Model):
 
