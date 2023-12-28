@@ -3233,10 +3233,10 @@ def convert_to_invoice(request,pk):
 
 @login_required(login_url='login')
 def convert_to_invoice_purchase(request,pk):
-    sale = Purchase_Order.objects.get(id=pk)
-    inv_id = invoice.objects.filter(user=request.user.id).last()
+    purchase = Purchase_Order.objects.get(id=pk)
+    inv_id = invoice_purchase.objects.filter(user=request.user.id).last()
     user = User.objects.get(id = request.user.id)
-    custo = customer.objects.get(id=sale.customer.id)
+    custo = customer.objects.get(id=purchase.customer.id)
 
     if inv_id == None:
         invoice_no = "INV-01"
@@ -3249,42 +3249,46 @@ def convert_to_invoice_purchase(request,pk):
             invoice_no = "INV-"+str(inv_id.id+1)
             order_no = str(inv_id.id+1)
 
-    terms = sale.term
-    inv_date = sale.Ord_date
-    due_date = sale.exp_date
-    cxnote = sale.note
-    subtotal = sale.sub_total
-    igst = sale.igst
-    cgst = sale.cgst
-    sgst = sale.sgst
-    totaltax = sale.tax_amount
-    t_total = sale.grand_total
-    status = sale.status
-    tc = sale.terms_condition
-    file = sale.file
+    vendor_name=purchase.vendor_name
+    vendor_mail=purchase.vendor_mail
+    vendor_gst_traet=purchase.vendor_gst_traet
+    vendor_gst_no=purchase.vendor_gst_no
+    terms = purchase.payment_terms
+    inv_date = purchase.Ord_date
+    due_date = purchase.exp_date
+    cxnote = purchase.note
+    subtotal = purchase.sub_total
+    igst = purchase.igst
+    cgst = purchase.cgst
+    sgst = purchase.sgst
+    totaltax = purchase.tax_amount
+    t_total = purchase.grand_total
+    status = purchase.status
+    tc = purchase.term
+    file = purchase.document
 
-    inv=invoice(user=user,customer=custo,invoice_no=invoice_no,terms=terms,order_no=order_no,inv_date=inv_date,due_date=due_date,
+    inv=invoice_purchase(user=user,vendor_name=vendor_name,vendor_mail=vendor_mail,vendor_gst_traet=vendor_gst_traet,vendor_gst_no=vendor_gst_no,customer=custo,invoice_no=invoice_no,terms=terms,order_no=order_no,inv_date=inv_date,due_date=due_date,
                 cxnote=cxnote,subtotal=subtotal,igst=igst,cgst=cgst,sgst=sgst,t_tax=totaltax,grandtotal=t_total,status=status,
                 terms_condition=tc,file=file)
     inv.save()
-    invitem_id = invoice.objects.last()
+    invitem_id = invoice_purchase.objects.last()
 
 
-    sale.complete_status = 1
-    sale.save()
-    item =sales_item.objects.filter(sale_id=sale)
+    purchase.complete_status = 1
+    purchase.save()
+    item =Purchase_Order_items.objects.filter(PO=purchase)
     for i in item:
-        invitem=invoice_item(product=i.product,quantity=i.quantity,hsn=i.hsn,tax=i.tax,total=i.total,discount=i.desc,rate=i.rate,inv_id=invitem_id.id)
+        invitem=invoice_item_purchase(product=i.item,quantity=i.quantity,hsn=i.hsn,tax=i.tax,total=i.amount,discount=i.discount,rate=i.rate,inv=invitem_id)
         invitem.save()
 
-    return redirect('view_sales_order')
+    return redirect('purchaseView')
 
 @login_required(login_url='login')
 def convert_to_recinvoice_frm_purchaseorder(request,pk):
-    sale = SalesOrder.objects.get(id=pk)
-    recinv_id = Recurring_invoice.objects.filter(user=request.user.id).last()
+    purchase = Purchase_Order.objects.get(id=pk)
+    recinv_id = Recurring_invoice_purchase.objects.filter(user=request.user.id).last()
     user = User.objects.get(id = request.user.id)
-    custo = customer.objects.get(id=sale.customer.id)
+    custo = customer.objects.get(id=purchase.customer.id)
 
     if recinv_id == None:
         reinvoiceno = "REC-01"
@@ -3297,48 +3301,47 @@ def convert_to_recinvoice_frm_purchaseorder(request,pk):
             reinvoiceno = "REC-"+str(recinv_id.id+1)
             order_num = str(recinv_id.id+1)
 
-    customer_name = sale.customer.customerName
-    customer_email = sale.customer.customerEmail
-    customer_address = sale.customer.Address1
-    gst_treatment = sale.customer.GSTTreatment
-    gst_number = sale.customer.GSTIN
-    place_of_supply = sale.sos
-    entry_type = sale.customer.Taxpreference
-    inv_date = sale.sales_date
-    due_date = sale.ship_date
-    terms = sale.terms.id
-    cxnote = sale.cxnote
-    terms_conditions = sale.terms_condition
-    file = sale.file
-    status = sale.status
-    subtotal = sale.subtotal
-    igst = sale.igst
-    sgst = sale.sgst
-    cgst = sale.cgst
-    totaltax = sale.t_tax
-    sh_charge =sale.sh_charge
-    adjust = sale.adjust
-    t_total = sale.grandtotal
-    advance = sale.advance
-    balance = sale.balance
-    pay_method = sale.pay_method
+    customer_name = purchase.customer_name
+    customer_email = purchase.customer_mail
+    customer_address = purchase.customer_address
+    gst_treatment = purchase.vendor_gst_traet
+    gst_number = purchase.vendor_gst_no
+    place_of_supply = purchase.source_supply
+    # entry_type = sale.customer.Taxpreference
+    inv_date = purchase.Ord_date
+    due_date = purchase.exp_date
+    terms = purchase.payment_terms
+    cxnote = purchase.note
+    terms_conditions = purchase.term
+    file = purchase.document
+    status = purchase.status
+    subtotal = purchase.sub_total
+    igst = purchase.igst
+    sgst = purchase.sgst
+    cgst = purchase.cgst
+    totaltax = purchase.tax_amount
+    sh_charge = purchase.shipping_charge
+    adjust = purchase.adjustment_charge
+    t_total = purchase.grand_total
+    # advance = sale.advance
+    # balance = sale.balance
+    pay_method = purchase.payment_type
    
 
-    recinv=Recurring_invoice(cname=customer_name,cemail=customer_email,cadrs=customer_address,gsttr=gst_treatment,gstnum=gst_number,p_supply=place_of_supply,entry_type=entry_type,reinvoiceno=reinvoiceno,order_num=order_num,start=inv_date,end=due_date,terms=terms,cust_note=cxnote,conditions=terms_conditions,attachment=file,status=status,sub_total=subtotal,igst=igst,sgst=sgst,cgst=cgst,tax_amount=totaltax,shipping_charge=sh_charge,adjustment=adjust,total=t_total,paid=advance,balance=balance,payment_method=pay_method,cust_name=custo,user=user)
+    recinv=Recurring_invoice(cname=customer_name,cemail=customer_email,cadrs=customer_address,gsttr=gst_treatment,gstnum=gst_number,p_supply=place_of_supply,reinvoiceno=reinvoiceno,order_num=order_num,start=inv_date,end=due_date,terms=terms,cust_note=cxnote,conditions=terms_conditions,attachment=file,status=status,sub_total=subtotal,igst=igst,sgst=sgst,cgst=cgst,tax_amount=totaltax,shipping_charge=sh_charge,adjustment=adjust,total=t_total,payment_method=pay_method,cust_name=custo,user=user)
     recinv.save()
     recitem_id = Recurring_invoice.objects.last()
 
 
-    sale.complete_status = -1
-    sale.save()
-    item =sales_item.objects.filter(sale_id=sale)
+    purchase.complete_status = -1
+    purchase.save()
+    item =Purchase_Order_items.objects.filter(PO=purchase)
     for i in item:
-        recitem =recur_itemtable(iname=i.product,hsncode=i.hsn,quantity=i.quantity,rate=i.rate,discount=i.desc,tax=i.tax,amt=i.total,ri_id=recitem_id.id)
-       
+        recitem =recur_itemtable_purchase(iname=i.item,hsncode=i.hsn,quantity=i.quantity,rate=i.rate,discount=i.discount,tax=i.tax,amt=i.amount,ri=recitem_id)
         recitem.save()
 
 
-    return redirect('view_sales_order')
+    return redirect('purchaseView')
 
 def convert_view(request,pk):
     sale=SalesOrder.objects.get(id=pk)

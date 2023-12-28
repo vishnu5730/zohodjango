@@ -307,7 +307,56 @@ class invoice(models.Model):
     def __str__(self) :
         return self.invoice_no
         
+class invoice_purchase(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    customer=models.ForeignKey(customer,on_delete=models.CASCADE,null=True,blank=True)
+    bank = models.ForeignKey(Bankcreation,on_delete=models.SET_NULL,null=True,blank=True)
+    invoice_no=models.TextField(max_length=255)
+    # terms=models.ForeignKey(payment_terms,on_delete=models.CASCADE)
+    terms=models.CharField(max_length=100)
+    vendor_name=models.CharField(max_length=255)
+    vendor_mail=models.EmailField()
+    vendor_gst_traet=models.CharField(max_length=255)
+    vendor_gst_no=models.CharField(max_length=255)
+    order_no=models.IntegerField()
+    inv_date=models.DateField()
+    due_date=models.DateField()
+    igst=models.TextField(max_length=255)
+    cgst=models.TextField(max_length=255)
+    sgst=models.TextField(max_length=255)
+    t_tax=models.FloatField()
+    subtotal=models.FloatField()
+    shipping_charge = models.FloatField(null=True,blank=True)
+    adjustment = models.FloatField(null=True,blank=True)
+    grandtotal=models.FloatField()
+    cxnote=models.TextField(max_length=255)
+    file=models.ImageField(upload_to='documents')
+    terms_condition=models.TextField(max_length=255)
+    status=models.TextField(max_length=255)
+    estimate=models.CharField(max_length=100,null=True,blank=True)
+    paid_amount = models.FloatField(default=0.0)  # updation
+    balance = models.FloatField(null=True, blank=True)
+    payment_method = models.CharField(max_length=50, choices=(         #updation
+        ('cash', 'Cash'),
+        ('cheque', 'Cheque'),
+        ('upi', 'UPI'),
+        ('bank', 'Bank'),  # Added 'bank' as a payment method
+    ), default='cash')
 
+    def save(self, *args, **kwargs):
+        # Convert self.total to a float if it is a string
+        if isinstance(self.grandtotal, str):
+            self.grandtotal = float(self.grandtotal)
+
+        # Ensure that self.paid_amount is always a float
+        if not isinstance(self.paid_amount, float):
+            self.paid_amount = float(self.paid_amount)
+
+        self.balance = self.grandtotal - self.paid_amount
+        super().save(*args, **kwargs)
+        
+    def __str__(self) :
+        return self.invoice_no
 
 
 
@@ -331,7 +380,15 @@ class invoice_item(models.Model):
     rate = models.TextField(max_length=255)
     inv = models.ForeignKey(invoice, on_delete=models.CASCADE)
 
-
+class invoice_item_purchase(models.Model):
+    product = models.TextField(max_length=255)
+    quantity = models.IntegerField()
+    hsn = models.TextField(max_length=255)
+    tax = models.FloatField()
+    total = models.FloatField()  
+    discount = models.FloatField(null=True, blank=True)
+    rate = models.TextField(max_length=255)
+    inv = models.ForeignKey(invoice, on_delete=models.CASCADE)
 
 class Pricelist(models.Model):
     itemtable=models.ForeignKey(AddItem,on_delete=models.CASCADE,null=True)
@@ -539,7 +596,43 @@ class ChallanItems(models.Model):
     tax_percentage = models.IntegerField(null=True,blank=True)
     amount = models.FloatField(null=True,blank=True)
     
-    
+class Recurring_invoice_purchase(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    cust_name=models.ForeignKey(customer,on_delete=models.CASCADE,null=True)
+    items=models.ForeignKey(AddItem,on_delete=models.CASCADE,null=True)
+    cname=models.CharField(max_length=255,null=True)
+    cemail=models.CharField(max_length=255,null=True)
+    cadrs=models.CharField(max_length=255,null=True)
+    gsttr=models.CharField(max_length=255,null=True)
+    gstnum=models.CharField(max_length=255,null=True)
+    p_supply=models.CharField(max_length=255)
+    entry_type=models.CharField(max_length=255,null=True)
+    name=models.CharField(max_length=255)
+    reinvoiceno=models.CharField(max_length=255,null=True)
+    order_num=models.CharField(max_length=255)
+    every=models.CharField(max_length=255)
+    start=models.DateField()
+    end=models.DateField()
+    terms=models.CharField(max_length=255)
+    cust_note=models.TextField()
+    conditions=models.TextField()
+    attachment = models.ImageField(upload_to="image/", null=True) 
+    status=models.CharField(max_length=255,null=True,blank=True)
+    sub_total = models.FloatField(null=True,blank=True)
+    igst = models.FloatField(null=True,blank=True)
+    sgst = models.FloatField(null=True,blank=True)
+    cgst = models.FloatField(null=True,blank=True)
+    tax_amount = models.FloatField(null=True,blank=True)
+    shipping_charge = models.FloatField(null=True,blank=True)
+    adjustment = models.FloatField(null=True,blank=True)
+    total = models.FloatField(null=True,blank=True)
+    paid = models.FloatField(null=True,blank=True)
+    balance = models.FloatField(null=True,blank=True)
+    comments = models.CharField(max_length=255,null=True,blank=True)
+    payment_method = models.CharField(max_length=255,null=True,blank=True)
+    payment_type=models.CharField(max_length=255,null=True,blank=True)
+    estimate=models.CharField(max_length=255,null=True,blank=True)
+
 class Recurring_invoice(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     cust_name=models.ForeignKey(customer,on_delete=models.CASCADE,null=True)
@@ -578,6 +671,17 @@ class Recurring_invoice(models.Model):
     estimate=models.CharField(max_length=255,null=True,blank=True)
 
 class recur_itemtable(models.Model):
+    
+    ri=models.ForeignKey(Recurring_invoice,on_delete=models.CASCADE,null=True)
+    iname=models.CharField(max_length=255)
+    hsncode=models.FloatField(null=True,blank=True)
+    quantity=models.FloatField(null=True,blank=True)
+    rate=models.FloatField(null=True,blank=True)
+    discount=models.FloatField(null=True,blank=True)
+    tax=models.FloatField(null=True,blank=True)
+    amt=models.FloatField(null=True,blank=True)
+
+class recur_itemtable_purchase(models.Model):
     
     ri=models.ForeignKey(Recurring_invoice,on_delete=models.CASCADE,null=True)
     iname=models.CharField(max_length=255)
@@ -670,14 +774,11 @@ class Purchase_Order(models.Model):
     company = models.ForeignKey(company_details,on_delete=models.CASCADE,null=True,blank=True)
     custo=models.ForeignKey(customer,on_delete=models.CASCADE,null=True,blank=True)  # new field shahabas
 
-
-    
     vendor_name = models.CharField(max_length=100,null=True,blank=True)
     vendor_mail = models.CharField(max_length=100,null=True,blank=True)
     vendor_gst_traet = models.CharField(max_length=100,null=True,blank=True)
     vendor_gst_no = models.CharField(max_length=100,null=True,blank=True)
     
-
     Org_name = models.CharField(max_length=100,null=True,blank=True)
     Org_address = models.CharField(max_length=100,null=True,blank=True)
     Org_gst = models.CharField(max_length=100,null=True,blank=True)
@@ -687,14 +788,12 @@ class Purchase_Order(models.Model):
     typ=   models.CharField(max_length=100,null=True,blank=True)
     Org_mail=models.CharField(max_length=100,null=True,blank=True)    ###### #add the fields to medel
 
-
     customer_name = models.CharField(max_length=100,null=True,blank=True)
     customer_mail = models.CharField(max_length=100,null=True,blank=True)
     customer_address = models.CharField(max_length=100,null=True,blank=True)
     customer_street = models.CharField(max_length=100,null=True,blank=True)
     customer_state = models.CharField(max_length=100,null=True,blank=True)
     customer_city = models.CharField(max_length=100,null=True,blank=True)
-
 
     Pur_no = models.CharField(max_length=100,null=True,blank=True)
 
@@ -727,6 +826,7 @@ class Purchase_Order(models.Model):
 class Purchase_Order_items (models.Model):
 
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    hsn=models.TextField(max_length=255,null=True,blank=True)
     company = models.ForeignKey(company_details,on_delete=models.CASCADE,null=True,blank=True)
     PO = models.ForeignKey(Purchase_Order,on_delete=models.CASCADE,null=True,blank=True)
     item = models.CharField(max_length=100,null=True,blank=True)

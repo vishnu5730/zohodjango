@@ -772,6 +772,7 @@ urlpatterns = [
     path('termdata',views.termdata,name='termdata'),
     path('bankdata',views.bankdata,name='bankdata'),
     path('convert_to_invoice/<int:pk>',views.convert_to_invoice,name='convert_to_invoice'),
+    path('convert_to_invoice_purchase/<int:pk>',views.convert_to_invoice_purchase,name='convert_to_invoice_purchase'),
     path('convert_view/<int:pk>',views.convert_view,name='convert_view'),
     
     path('holidays/<str:date>',views.holidays,name='holidays'),
@@ -1057,7 +1058,7 @@ urlpatterns = [
     path('shareSalesOrderToEmail/<int:id>',views.shareSalesOrderToEmail,name='shareSalesOrderToEmail'),
     path('shareRetInvoiceToEmail/<int:id>',views.shareRetInvoiceToEmail,name='shareRetInvoiceToEmail'),
     path('convert_to_recinvoice_frm_salesorder/<int:pk>',views.convert_to_recinvoice_frm_salesorder,name='convert_to_recinvoice_frm_salesorder'),
-    
+    path('convert_to_recinvoice_frm_purchaseorder/<int:pk>',views.convert_to_recinvoice_frm_purchaseorder,name='convert_to_recinvoice_frm_purchaseorder'),
     path('convert_to_reccinvoice/<int:pk>',views.convert_to_reccinvoice,name='convert_to_reccinvoice'),
     path('item_dropdown_estimate',views.item_dropdown_estimate,name='item_dropdown_estimate'),
 
