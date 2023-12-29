@@ -3236,7 +3236,6 @@ def convert_to_invoice_purchase(request,pk):
     purchase = Purchase_Order.objects.get(id=pk)
     inv_id = invoice_purchase.objects.filter(user=request.user.id).last()
     user = User.objects.get(id = request.user.id)
-    custo = customer.objects.get(id=purchase.customer.id)
 
     if inv_id == None:
         invoice_no = "INV-01"
@@ -3267,7 +3266,7 @@ def convert_to_invoice_purchase(request,pk):
     tc = purchase.term
     file = purchase.document
 
-    inv=invoice_purchase(user=user,vendor_name=vendor_name,vendor_mail=vendor_mail,vendor_gst_traet=vendor_gst_traet,vendor_gst_no=vendor_gst_no,customer=custo,invoice_no=invoice_no,terms=terms,order_no=order_no,inv_date=inv_date,due_date=due_date,
+    inv=invoice_purchase(user=user,vendor_name=vendor_name,vendor_mail=vendor_mail,vendor_gst_traet=vendor_gst_traet,vendor_gst_no=vendor_gst_no,invoice_no=invoice_no,terms=terms,order_no=order_no,inv_date=inv_date,due_date=due_date,
                 cxnote=cxnote,subtotal=subtotal,igst=igst,cgst=cgst,sgst=sgst,t_tax=totaltax,grandtotal=t_total,status=status,
                 terms_condition=tc,file=file)
     inv.save()
@@ -3288,7 +3287,6 @@ def convert_to_recinvoice_frm_purchaseorder(request,pk):
     purchase = Purchase_Order.objects.get(id=pk)
     recinv_id = Recurring_invoice_purchase.objects.filter(user=request.user.id).last()
     user = User.objects.get(id = request.user.id)
-    custo = customer.objects.get(id=purchase.customer.id)
 
     if recinv_id == None:
         reinvoiceno = "REC-01"
