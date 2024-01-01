@@ -543,48 +543,48 @@
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Source of Supply :</label></div>
                   <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.sos}}</p>
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.source_supply}}</p>
                   </div>
                 </div>
                 <div class="row mt-3">
-                  <div class="col-5"><label class="text-dark" for="">Sale Order Date :</label></div>
+                  <div class="col-5"><label class="text-dark" for="">Order Date :</label></div>
                   <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.sales_date}}</p>
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.Ord_date}}</p>
                   </div>
                 </div>
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Expiry Date :</label></div>
                   <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.ship_date}}</p>
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.exp_date}}</p>
                   </div>
                 </div>
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Payment Term :</label></div>
                   <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.terms.Terms}}</p>
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.payment_terms}}</p>
                   </div>
                 </div>
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Payment Method :</label></div>
                   <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.pay_method}}</p>
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.payment_type}}</p>
                   </div>
                 </div>
-                {% if sale.pay_method == 'upi' %}
+                {% if po_item.payment_type == 'upi' %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">UPI ID :</label></div>
                   <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.upi_id}}</p>
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.upi_id}}</p>
                   </div>
                 </div>
-                {% elif sale.pay_method == 'cheque' %}
+                {% elif po_item.payment_type == 'cheque' %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Cheque ID :</label></div>
                   <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.cheque_id}}</p>
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.cheque_id}}</p>
                   </div>
                 </div>
-                {% elif sale.pay_method != 'cash' %}
+                {% elif po_item.payment_type != 'cash' %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Bank Account :</label></div>
                   <div class="col-7">
@@ -595,71 +595,75 @@
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Subtotal :</label></div>
                   <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.subtotal}}</p>
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.sub_total}}</p>
                   </div>
                 </div>
-                {% if sale.igst != '0.00' %}
+                {% if po_item.igst != 0 %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">IGST :</label></div>
                   <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.igst}}</p>
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.igst}}</p>
                   </div>
                 </div>
                 {% endif %}
-                {% if sale.cgst != '0.00' %}
+                {% if po_item.cgst != 0 %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">CGST :</label></div>
                   <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.cgst}}</p>
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.cgst}}</p>
                   </div>
                 </div>
                 {% endif %}
-                {% if sale.sgst != '0.00' %}
+                {% if po_item.sgst != 0 %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">SGST :</label></div>
                   <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.sgst}}</p>
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.sgst}}</p>
+                  </div>
+                </div>
+                {% endif %}
+                {% if po_item.tax_amount != 0 %}
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Tax Amount :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.tax_amount}}</p>
+                  </div>
+                </div>
+                {% endif %}
+                {% if po_item.shipping_charge != 0 %}
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Shipping Charge :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.shipping_charge}}</p>
+                  </div>
+                </div>
+                {% endif %}
+                {% if po_item.adjustment_charge %}
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Adjustment :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.adjustment_charge}}</p>
                   </div>
                 </div>
                 {% endif %}
                 <div class="row mt-3">
-                  <div class="col-5"><label class="text-dark" for="">Tax Amount :</label></div>
-                  <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.t_tax}}</p>
-                  </div>
-                </div>
-                <div class="row mt-3">
-                  <div class="col-5"><label class="text-dark" for="">Shipping Charge :</label></div>
-                  <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.sh_charge}}</p>
-                  </div>
-                </div>
-                <div class="row mt-3">
-                  <div class="col-5"><label class="text-dark" for="">Adjustment :</label></div>
-                  <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.adjust}}</p>
-                  </div>
-                </div>
-                <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Total Amount :</label></div>
                   <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.grandtotal}}</p>
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.grand_total}}</p>
                   </div>
                 </div>
-                {% if sale.advance != 0.0 %}
-                <div class="row mt-3">
+                <!-- <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Advance :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.advance}}</p>
                   </div>
-                </div>
+                </div> -->
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Balance Amount :</label></div>
                   <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{sale.balance}}</p>
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.grand_total}}</p>
                   </div>
                 </div>
-                {% endif %}
               </div>
               <div class="p-info col-6" style="height: 100%; margin-bottom: 1vh;">
                 <div class="card" style="background-color: rgb(110, 61, 46); padding-left: 1rem; padding-top: 1rem;">

@@ -8578,11 +8578,13 @@ def create_Purchase_order(request):
         cstreet = request.POST.get('custStreet')
         ccity = request.POST.get('custcity')
         cstate = request.POST.get('custstate')
-        
+       
         src_supply = request.POST.get('srcofsupply')
         po = request.POST['pur_ord']
         ref = request.POST['ref']
-        terms = request.POST['terms']
+        terms1 = request.POST['terms']
+        pay=payment_terms.objects.get(id=terms1)
+        terms=pay.Terms
         start = request.POST.get('start_date')
         end =  request.POST.get('end_date')
         sub_total =request.POST['subtotal']
@@ -8648,7 +8650,7 @@ def create_Purchase_order(request):
                                     term=terms_con,
                                     company=company,
                                     custo_id=custo,
-                                    user = u,typ=typ  )
+                                    user = u,typ=typ)
             purchase.save()
 
             p_bill = Purchase_Order.objects.get(id=purchase.id)
@@ -8742,12 +8744,18 @@ def purchase_bill_view(request,id):
     po_table=Purchase_Order.objects.get(id=id)
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
+    bank=''
+    if po_item.payment_type != 'cash':
+        if po_item.payment_type != 'upi':
+            if po_item.payment_type != 'cheque':
+                bank = Bankcreation.objects.get(user=request.user,name=po_item.payment_type)
     context={
         'po':po,
         'pot':po_t,
         'company':company,
         'po_table':po_table,
         'po_item':po_item,
+        'bank':bank
     }
     return render(request, 'purchase_bill_view.html',context)
     

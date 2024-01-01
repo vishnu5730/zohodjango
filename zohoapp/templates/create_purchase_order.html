@@ -911,7 +911,7 @@
                     <div class="d-flex">
                       <select class="form-control bg-light text-dark" id="v_terms" name="v_terms" required>
                         {% for p in payment %}
-                        <option value="{{p.Terms}} {{p.id}}">{{p.Terms}}</option>
+                        <option value="{{p.id}}">{{p.Terms}}</option>
                         {% endfor %}
                       </select>                
                       <a href="#" class="btn btn-outline-secondary py-2 my-1" data-target="#newpayment" data-toggle="modal">+</a>   
@@ -1577,7 +1577,7 @@
                       <select class="form-control bg-light text-dark" id="c_terms" name="c_terms" required>
     
                         {% for p in payment %}
-                        <option value="{{p.Terms}} {{p.id}}">{{p.Terms}}</option>
+                        <option value="{{p.id}}">{{p.Terms}}</option>
                         {% endfor %}
                       </select>                
                     </div>
