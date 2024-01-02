@@ -480,11 +480,11 @@
                 <a class="text-dark" onclick="show_slip()">
                   <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
                   {% if po_item.status == 'Draft' %}
-                  <a class="text-dark"  href="{% url 'change_status' po_item.id %}">
-                    <button class="btn btn-outline-warning" title="Approve"><i class="fa fa-status"></i></button></a>
+                  <a class="text-dark"  href="{% url 'change_status_appr' po_item.id %}">
+                    <button class="btn btn-outline-warning" title="Change Status to Approve"><i class="fa fa-save"></i></button></a>
                     {% else %}
                     <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
-                      <button class="btn btn-outline-warning" title="Draft"><i class="fa fa-status"></i></button></a>
+                      <button class="btn btn-outline-warning" title="Change Status to Draft"><i class="fa fa-save"></i></button></a>
                     {% endif %}
                 </div>
             </div><br>
@@ -531,7 +531,7 @@
                       {{po_item.vendor_gst_traet}}</p>
                   </div>
                 </div>
-                {% if sale.customer.GSTIN %}
+                {% if po_item.vendor_gst_no %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">GST Number :</label></div>
                   <div class="col-7">
@@ -680,12 +680,14 @@
                       <p class="bold">{{i.item}}</p>
                     </div>
                   </div>
+                  {% if i.hsn %}
                   <div class="row mt-2">
-                    <div class="col-5"><label for="">Account :</label></div>
+                    <div class="col-5"><label for="">HSN :</label></div>
                     <div class="col-7">
-                      <p class="bold">{{i.account}}</p>
+                      <p class="bold">{{i.hsn}}</p>
                     </div>
                   </div>
+                  {% endif %}
                   <div class="row mt-2">
                     <div class="col-5"><label for="">Product Quantity :</label></div>
                     <div class="col-7">
@@ -757,11 +759,6 @@
               </div>
 
               <div class="col-md-6" style="text-align: center;">
-                {% if sale.status == "draft" %}
-                <a href="" class="btn btn-outline-warning" title="Save">
-                  <i class="fa fa-save" aria-hidden="true"></i>
-                </a>
-                {% endif %}
                 <a href="{% url 'edit' po_item.id %}" class=" text-dark">
                   <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
                 </a>
@@ -788,11 +785,11 @@
                 <a class="text-dark" onclick="show_slip()">
                   <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
                   {% if po_item.status == 'Draft' %}
-                  <a class="text-dark"  href="{% url 'change_status' po_item.id %}">
-                    <button class="btn btn-outline-warning" title="Approve"><i class="fa fa-status"></i></button></a>
+                  <a class="text-dark"  href="{% url 'change_status_appr' po_item.id %}">
+                    <button class="btn btn-outline-warning" title="Change Status to Approve"><i class="fa fa-save"></i></button></a>
                     {% else %}
                     <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
-                      <button class="btn btn-outline-warning" title="Draft"><i class="fa fa-status"></i></button></a>
+                      <button class="btn btn-outline-warning" title="Change Status to Draft"><i class="fa fa-save"></i></button></a>
                     {% endif %}
                 </div>
             </div>
@@ -841,7 +838,7 @@
                             <hr style="border-bottom: 1px solid black; margin-top:1vh; width:95%">
                           </div>
                           <div class="equal-length-item ml-2" style=" text-align:center;">
-                            Account
+                            HSN
                             <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%;">
                           </div>
                           <div class="equal-length-item" style=" text-align: center; ">
@@ -874,7 +871,7 @@
                             {{i.item}}
                           </div>
                           <div class="equal-length-item" style="text-align: right;">
-                            {{i.account}}
+                            {{i.hsn}}
                           </div>
                           <div class="equal-length-item" style="text-align: center; ">
                             {{i.quantity}}
@@ -906,7 +903,7 @@
                             {{po_item.sub_total}}
                           </div>
                         </div>
-                        {% if po_item.igst != '0.00' %}
+                        {% if po_item.igst != 0 %}
                         <div class="row ">
                           <div class="col-md-5 text-left " style=" color: black;">
                             IGST
@@ -954,14 +951,14 @@
                             Adjustment
                           </div>
                           <div class="col-md-6" style="color: black;text-align: end;">
-                            
+                            {{po_item.adjustment_charge}}
                           </div>
                         </div>
-                        {% if sale.advance != 0.0 %}
+                        {% if po_item.adjustment_charge != 0 %}
                         <div class="row">
                           <div class="col-md-5 text-left" style="color: black;">Advance </div>
                           <div class="col-md-6" style="color: black;text-align: end;">
-                            
+                            {{po_item.adjustment_charge}}
                           </div>
                         </div>
                         {% endif %}
@@ -992,7 +989,7 @@
             <div class="row">
               <div class="col-md-7">
                 <a class="text-white" style="font-size: 1.5rem;">
-                  <h2>{{sale.sales_no}}</h2>
+                  <h2>{{po_item.Pur_no}}</h2>
                 </a>
               </div>
             </div>
@@ -1051,11 +1048,11 @@
                 <a class="text-dark" onclick="show_slip()">
                   <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
                   {% if po_item.status == 'Draft' %}
-                  <a class="text-dark"  href="{% url 'change_status' po_item.id %}">
-                    <button class="btn btn-outline-warning" title="Approve"><i class="fa fa-status"></i></button></a>
+                  <a class="text-dark"  href="{% url 'change_status_appr' po_item.id %}">
+                    <button class="btn btn-outline-warning" title="Change Status to Approve"><i class="fa fa-save"></i></button></a>
                     {% else %}
                     <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
-                      <button class="btn btn-outline-warning" title="Draft"><i class="fa fa-status"></i></button></a>
+                      <button class="btn btn-outline-warning" title="Change Status to Draft"><i class="fa fa-save"></i></button></a>
                     {% endif %}
                 </div>
             </div>
@@ -1291,11 +1288,11 @@
                 <a class="text-dark" onclick="show_slip()">
                   <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
                   {% if po_item.status == 'Draft' %}
-                  <a class="text-dark"  href="{% url 'change_status' po_item.id %}">
-                    <button class="btn btn-outline-warning" title="Approve"><i class="fa fa-status"></i></button></a>
+                  <a class="text-dark"  href="{% url 'change_status_appr' po_item.id %}">
+                    <button class="btn btn-outline-warning" title="Change Status to Approve"><i class="fa fa-save"></i></button></a>
                     {% else %}
                     <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
-                      <button class="btn btn-outline-warning" title="Draft"><i class="fa fa-status"></i></button></a>
+                      <button class="btn btn-outline-warning" title="Change Status to Draft"><i class="fa fa-save"></i></button></a>
                     {% endif %}
                 </div>
             </div>
@@ -1591,11 +1588,11 @@
                 <a class="text-dark" onclick="show_slip()">
                   <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
                   {% if po_item.status == 'Draft' %}
-                  <a class="text-dark"  href="{% url 'change_status' po_item.id %}">
-                    <button class="btn btn-outline-warning" title="Approve"><i class="fa fa-status"></i></button></a>
+                  <a class="text-dark"  href="{% url 'change_status_appr' po_item.id %}">
+                    <button class="btn btn-outline-warning" title="Change Status to Approve"><i class="fa fa-save"></i></button></a>
                     {% else %}
                     <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
-                      <button class="btn btn-outline-warning" title="Draft"><i class="fa fa-status"></i></button></a>
+                      <button class="btn btn-outline-warning" title="Change Status to Draft"><i class="fa fa-save"></i></button></a>
                     {% endif %}
                 </div>
             </div>

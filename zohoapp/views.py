@@ -8998,6 +8998,12 @@ def change_status_draft(request,pk):
     pur.status='Draft'
     pur.save()
     return redirect('purchase_bill_view',pk)
+
+def change_status_appr(request,pk):
+    pur=Purchase_Order.objects.get(id=pk)
+    pur.status='Approved'
+    pur.save()
+    return redirect('purchase_bill_view',pk)
     
 def draft(request,id):
     company = company_details.objects.get(user = request.user)

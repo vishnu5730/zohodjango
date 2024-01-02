@@ -274,6 +274,7 @@ urlpatterns = [
     path('edit/<int:pk>',views.edit,name='edit'),
     path('change_status/<int:pk>',views.change_status,name='change_status'),
     path('change_status_draft/<int:pk>',views.change_status_draft,name='change_status_draft'),
+    path('change_status_appr/<int:pk>',views.change_status_appr,name='change_status_appr'),
     path('draft/<int:id>',views.draft,name='draft'),
     path('Approved/<int:id>',views.Approved,name='Approved'),
 
