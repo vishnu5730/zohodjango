@@ -912,7 +912,8 @@
                             {{po_item.igst}}
                           </div>
                         </div>
-                        {% else %}
+                        {% endif %}
+                        {% if po_item.cgst != 0 %}
                         <div class="row">
                           <div class="col-md-5 text-left" style=" color: black;">
                             CGST
@@ -921,6 +922,8 @@
                             {{po_item.cgst}}
                           </div>
                         </div>
+                        {% endif %}
+                        {% if po_item.scgst != 0 %}
                         <div class="row ">
                           <div class="col-md-5 text-left" style=" color: black;">
                             SGST
@@ -930,6 +933,7 @@
                           </div>
                         </div>
                         {% endif %}
+                        {% if po_item.tax_amount != 0 %}
                         <div class="row">
                           <div class="col-md-5 text-left" style=" color: black;">
                             Tax Amount
@@ -938,6 +942,8 @@
                             {{po_item.tax_amount}}
                           </div>
                         </div>
+                        {% endif %}
+                        {% if po_item.shipping_charge != 0 %}
                         <div class="row">
                           <div class="col-md-5 text-left" style=" color: black;">
                             Shipping Charge
@@ -946,17 +952,12 @@
                             {{po_item.shipping_charge}}
                           </div>
                         </div>
+                        {% endif %}
+                        {% if po_item.adjustment_charge %}
                         <div class="row">
                           <div class="col-md-5 text-left" style=" color: black;">
                             Adjustment
                           </div>
-                          <div class="col-md-6" style="color: black;text-align: end;">
-                            {{po_item.adjustment_charge}}
-                          </div>
-                        </div>
-                        {% if po_item.adjustment_charge != 0 %}
-                        <div class="row">
-                          <div class="col-md-5 text-left" style="color: black;">Advance </div>
                           <div class="col-md-6" style="color: black;text-align: end;">
                             {{po_item.adjustment_charge}}
                           </div>
@@ -1017,11 +1018,6 @@
               </div>
 
               <div class="col-md-6" style="text-align: center;">
-                {% if sale.status == "draft" %}
-                <a href="" class="btn btn-outline-warning" title="Save">
-                  <i class="fa fa-save" aria-hidden="true"></i>
-                </a>
-                {% endif %}
                 <a href="{% url 'edit' po_item.id %}" class=" text-dark">
                   <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
                 </a>
@@ -1122,7 +1118,7 @@
                       <tr>
 
                         <th id="th" style="text-align: center;">Product</th>
-                        <th id="th" style="text-align: center;">Account</th>
+                        <th id="th" style="text-align: center;">HSN</th>
                         <th id="th" style="text-align: center;">Quantity</th>
                         <th id="th" style="text-align: center;">Price</th>
                         <th id="th" style="text-align: center;">Discount</th>
@@ -1134,7 +1130,7 @@
                       {% for i in pot %}
                       <tr style="color: black;">
                         <td style="text-align: center;">{{i.item}}</td>
-                        <td style="text-align: center;">{{i.account}}</td>
+                        <td style="text-align: center;">{{i.hsn}}</td>
                         <td style="text-align: center;">{{i.quantity}}</td>
                         <td style="text-align: center;">{{i.rate}}</td>
                         <td style="text-align: center;">{{i.discount}}</td>
@@ -1162,7 +1158,7 @@
                             <td class="table-cell text-black" style="border: none;">:</td>
                             <td class="table-cell text-black" style="border: none;"><b>{{po_item.sub_total}}</b></td>
                           </tr>
-                          {% if sale.igst != '0.00' %}
+                          {% if po_item.igst != 0 %}
                           <tr>
                             <td class="table-cell text-black" style="border: none;">IGST</td>
                             <td class="table-cell text-black" style="border: none;">:</td>
@@ -1180,28 +1176,33 @@
                             <td class="table-cell text-black" style="border: none;">{{po_item.cgst}}</td>
                           </tr>
                           {% endif %}
+                          {% if po_item.tax_amount != 0 %}
                           <tr>
                             <td class="table-cell text-black" style="border: none;">Tax Amount</td>
                             <td class="table-cell text-black" style="border: none;">:</td>
                             <td class="table-cell text-black" style="border: none;">{{po_item.tax_amount}}</td>
                           </tr>
+                          {% endif %}
+                          {% if po_item.shipping_charge != 0 %}
                           <tr>
                             <td class="table-cell text-black" style="border: none;">Shipping Charge</td>
                             <td class="table-cell text-black" style="border: none;">:</td>
                             <td class="table-cell text-black" style="border: none;">{{po_item.shipping_charge}}</td>
                           </tr>
+                          {% endif %}
+                          {% if po_item.adjustment_charge %}
                           <tr>
                             <td class="table-cell text-black" style="border: none;">Adjustment</td>
                             <td class="table-cell text-black" style="border: none;">:</td>
                             <td class="table-cell text-black" style="border: none;">{{sale.adjust}}</td>
                           </tr>
-                          {% if sale.advance != 0.0 %}
+                          {% endif %}
+                          {% if po_item.advance %}
                           <tr>
                             <td class="table-cell text-black" style="border: none;">Advance</td>
                             <td class="table-cell text-black" style="border: none;">:</td>
-                            <td class="table-cell text-black" style="border: none;">{{sale.advance}}</td>
+                            <td class="table-cell text-black" style="border: none;">{{po_item.advance}}</td>
                           </tr>
-
                           {% endif %}
                           <tr>
                             <td class="table-cell text-black" style="border: none;">Total</td>
@@ -1257,11 +1258,6 @@
               </div>
 
               <div class="col-md-6" style="text-align: center;">
-                {% if sale.status == "draft" %}
-                <a href="" class="btn btn-outline-warning" title="Save">
-                  <i class="fa fa-save" aria-hidden="true"></i>
-                </a>
-                {% endif %}
                 <a href="{% url 'edit' po_item.id %}" class=" text-dark">
                   <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
                 </a>
@@ -1379,7 +1375,7 @@
                       <thead>
                         <tr class="">
                           <th class="text-center" style="color:#8b3131;">Product</th>
-                          <th class="text-center" style="color:#8b3131;">Account</th>
+                          <th class="text-center" style="color:#8b3131;">HSN</th>
                           <th class="text-center" style="color:#8b3131;">Quantity</th>
                           <th class="text-center" style="color:#8b3131;">Price</th>
                           <th class="text-center" style="color:#8b3131;">Discount</th>
@@ -1391,7 +1387,7 @@
                         {% for i in pot %}
                         <tr>
                           <td class="text-center" style="color:#000">{{i.item}}</td>
-                          <td class="text-center" style="color:#000">{{i.account}}</td>
+                          <td class="text-center" style="color:#000">{{i.hsn}}</td>
                           <td class="text-center" style="color:#000">{{i.quantity}}</td>
                           <td class="text-center" style="color:#000">{{i.rate}}</td>
                           <td class="text-center" style="color:#000">{{ i.discount }}</td>
@@ -1450,20 +1446,23 @@
                               <td class="text-center" style="color: #000;">
                                 {{po_item.sub_total}}</td>
                             </tr>
-                            {% if sale.igst != '0.00' %}
+                            {% if po_item.igst != 0 %}
                             <tr>
                               <td style="color: #000;">IGST</td>
                               <td style="color: #000;">:</td>
                               <td class="text-center" style="color: #000;">
                                 {{po_item.igst}}</td>
                             </tr>
-                            {% else %}
+                            {% endif %}
+                            {% if po_item.sgst != 0 %}
                             <tr>
                               <td style="color: #000;">SGST</td>
                               <td style="color: #000;">:</td>
                               <td class="text-center" style="color: #000;">
                                 {{po_item.sgst}}</td>
                             </tr>
+                            {% endif %}
+                            {% if po_item.sgst != 0 %}
                             <tr>
                               <td style="color: #000;">CGST</td>
                               <td style="color: #000;">:</td>
@@ -1471,30 +1470,28 @@
                                 {{po_item.cgst}}</td>
                             </tr>
                             {% endif %}
+                            {% if po_item.tax_amount != 0 %}
                             <tr>
                               <td style="color: #000;">Tax Amount</td>
                               <td style="color: #000;">:</td>
                               <td class="text-center" style="color: #000;">
                                 {{po_item.tax_amount}}</td>
                             </tr>
+                            {% endif %}
+                            {% if po_item.shipping_charge != 0 %}
                             <tr>
                               <td style="color: #000;">Shipping Charge</td>
                               <td style="color: #000;">:</td>
                               <td class="text-center" style="color: #000;">
                                 {{po_item.shipping_charge}}</td>
                             </tr>
+                            {% endif %}
+                            {% if po_item.adjustment_charge %}
                             <tr>
                               <td style="color: #000;">Adjustment</td>
                               <td style="color: #000;">:</td>
                               <td class="text-center" style="color: #000;">
-                                {{sale.adjust}}</td>
-                            </tr>
-                            {% if sale.advance != 0.0 %}
-                            <tr>
-                              <td style="color: #000;">Advance</td>
-                              <td style="color: #000;">:</td>
-                              <td class="text-center" style="color: #000;">
-                                {{sale.advance}}</td>
+                                {{po_item.adjustment_charge}}</td>
                             </tr>
                             {% endif %}
                             <tr>
@@ -1557,11 +1554,6 @@
               </div>
 
               <div class="col-md-6" style="text-align: center;">
-                {% if sale.status == "draft" %}
-                <a href="" class="btn btn-outline-warning" title="Save">
-                  <i class="fa fa-save" aria-hidden="true"></i>
-                </a>
-                {% endif %}
                 <a href="{% url 'edit' po_item.id %}" class=" text-dark">
                   <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
                 </a>
@@ -1596,10 +1588,6 @@
                     {% endif %}
                 </div>
             </div>
-
-
-
-
 
             <div id="template3" class="template3">
               <div class="my-5 page" size="A4" style="background-color: rgb(255, 221, 176);">
@@ -1677,7 +1665,7 @@
                       <thead>
                         <tr>
                           <td style="text-align: center; font-weight:bold; color:black ">Product</td>
-                          <td style="font-weight:bold; color:black">Account</td>
+                          <td style="font-weight:bold; color:black">HSN</td>
                           <td style="font-weight:bold; color:black">Quantity</td>
                           <td style="font-weight:bold; color:black">Price</td>
                           <td style="font-weight:bold; color:black">Discount</td>
@@ -1690,8 +1678,8 @@
 
                         {% for j in pot %}
                         <tr>
-                          <td style="color:black; text-align: center;">{{j.product}}</td>
-                          <td style="color:black">{{j.account}}</td>
+                          <td style="color:black; text-align: center;">{{j.item}}</td>
+                          <td style="color:black">{{j.hsn}}</td>
                           <td style="color:black">{{j.quantity}}</td>
                           <td style="color:black">{{j.rate}} </td>
                           <td style="color:black">{{j.discount}} </td>
@@ -1700,7 +1688,7 @@
                           {% else %}
                           <td style="color:black">{{j.tax}} IGST</td>
                           {% endif %}
-                          <td style="color:black">{{i.amount}}</td>
+                          <td style="color:black">{{j.amount}}</td>
 
                         </tr>
                         {% endfor %}
@@ -1721,20 +1709,23 @@
                               <td class="text-right" style="color: #000;">
                                 {{po_item.sub_total}}</td>
                             </tr>
-                            {% if sale.igst != '0.00' %}
+                            {% if po_item.igst != 0 %}
                             <tr>
                               <td style="color: #000;">IGST</td>
                               <td style="color: #000;">:</td>
                               <td class="text-right" style="color: #000;">
                                 {{po_item.igst}}</td>
                             </tr>
-                            {% else %}
+                            {% endif %}
+                            {% if po_item.sgst != 0 %}
                             <tr>
                               <td style="color: #000;">SGST</td>
                               <td style="color: #000;">:</td>
                               <td class="text-right" style="color: #000;">
                                 {{po_item.sgst}}</td>
                             </tr>
+                            {% endif %}
+                            {% if po_item.cgst != 0 %}
                             <tr>
                               <td style="color: #000;">CGST</td>
                               <td style="color: #000;">:</td>
@@ -1742,29 +1733,27 @@
                                 {{po_item.cgst}}</td>
                             </tr>
                             {% endif %}
+                            {% if po_item.tax_amount != 0 %}
                             <tr>
                               <td style="color: #000;">Tax Amount</td>
                               <td style="color: #000;">:</td>
                               <td class="text-right" style="color: #000;">
                                 {{po_item.tax_amount}}</td>
                             </tr>
+                            {% endif %}
+                            {% if po_item.shipping_charge != 0 %}
                             <tr>
                               <td style="color: #000;">Shipping Charge</td>
                               <td style="color: #000;">:</td>
                               <td class="text-right" style="color: #000;">{{po_item.shipping_charge}}</td>
                             </tr>
+                            {% endif %}
+                            {% if po_item.adjustment_charge %}
                             <tr>
                               <td style="color: #000;">Adjustment</td>
                               <td style="color: #000;">:</td>
-                              <td class="text-right" style="color: #000;">{{sale.adjust}}</td>
+                              <td class="text-right" style="color: #000;">{{po_item.adjustment_charge}}</td>
                             </tr>
-                            {% if sale.advance != 0.0 %}
-                            <tr>
-                              <td style="color: #000;">Advance</td>
-                              <td style="color: #000;">:</td>
-                              <td class="text-center" style="color: #000;">{{sale.advance}}</td>
-                            </tr>
-
                             {% endif %}
                             <tr>
                               <td style="color: #000;">Total</td>
