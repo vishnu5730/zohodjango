@@ -8759,7 +8759,48 @@ def purchase_bill_view(request,id):
     }
     return render(request, 'purchase_bill_view.html',context)
     
-    
+def purchase_bill_view_by_name(request,id):
+    po=Purchase_Order.objects.filter(user=request.user).order_by('vendor_name')
+    po_t=Purchase_Order_items.objects.filter(PO=id)
+    po_table=Purchase_Order.objects.get(id=id)
+    company=company_details.objects.get(user_id=request.user.id)
+    po_item=Purchase_Order.objects.get(id=id)
+    bank=''
+    if po_item.payment_type != 'cash':
+        if po_item.payment_type != 'upi':
+            if po_item.payment_type != 'cheque':
+                bank = Bankcreation.objects.get(user=request.user,name=po_item.payment_type)
+    context={
+        'po':po,
+        'pot':po_t,
+        'company':company,
+        'po_table':po_table,
+        'po_item':po_item,
+        'bank':bank
+    }
+    return render(request, 'purchase_bill_view.html',context)
+
+def purchase_bill_view_by_ordno(request,id):
+    po=Purchase_Order.objects.filter(user=request.user).order_by('Pur_no')
+    po_t=Purchase_Order_items.objects.filter(PO=id)
+    po_table=Purchase_Order.objects.get(id=id)
+    company=company_details.objects.get(user_id=request.user.id)
+    po_item=Purchase_Order.objects.get(id=id)
+    bank=''
+    if po_item.payment_type != 'cash':
+        if po_item.payment_type != 'upi':
+            if po_item.payment_type != 'cheque':
+                bank = Bankcreation.objects.get(user=request.user,name=po_item.payment_type)
+    context={
+        'po':po,
+        'pot':po_t,
+        'company':company,
+        'po_table':po_table,
+        'po_item':po_item,
+        'bank':bank
+    }
+    return render(request, 'purchase_bill_view.html',context)
+
 def EmailAttachementView_purchase(request):
 
         if request.method == 'POST':

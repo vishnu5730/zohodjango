@@ -267,7 +267,8 @@ urlpatterns = [
     path('purchase_account_dropdown',views.purchase_account_dropdown,name='purchase_account_dropdown'),
     path('purchase_delet/<int:id>',views.purchase_delet,name='purchase_delet'),
     path('purchase_bill_view/<int:id>',views.purchase_bill_view,name='purchase_bill_view'),
-
+    path('purchase_bill_view_by_name/<int:id>',views.purchase_bill_view_by_name,name='purchase_bill_view_by_name'),
+    path('purchase_bill_view_by_ordno/<int:id>',views.purchase_bill_view_by_ordno,name='purchase_bill_view_by_ordno'),
     path('EmailAttachementView_purchase', views.EmailAttachementView_purchase, name='EmailAttachementView_purchase'),
     path('export_purchase_pdf/<id>',views.export_purchase_pdf,name = "export_purchase_pdf"),
     

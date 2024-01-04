@@ -3053,7 +3053,7 @@ function fetchItemData(itemName, rowNumber) {
             <select class='form-control bg-transparent text-dark  border-0 item_select itm' name='item[]' id='item${rowCount}' onchange="fetchItemData(this.value, ${rowCount})">
               <option value=" " selected disabled>Select Item</option>
               {% for i in item %}
-                <option value="{{i.Name}}">{{ i.Name }}</option>
+                <option value="{{i.id}}">{{ i.Name }}</option>
               {% endfor %}
             </select>
           </div>
