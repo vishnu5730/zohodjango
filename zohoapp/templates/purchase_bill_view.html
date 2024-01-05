@@ -458,7 +458,8 @@
                   <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                 </a>
                 <div class="dropdown-menu ">
-                  <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a>
+                  <!-- <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a> -->
+                  <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
                 <!-- <a href="#" class="text-dark">
@@ -763,7 +764,7 @@
                   <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                 </a>
                 <div class="dropdown-menu ">
-                  <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a>
+                  <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
                 <!-- <a href="#" class="text-dark">
@@ -920,7 +921,7 @@
                           </div>
                         </div>
                         {% endif %}
-                        {% if po_item.scgst != 0 %}
+                        {% if po_item.sgst != 0 %}
                         <div class="row ">
                           <div class="col-md-5 text-left" style=" color: black;">
                             SGST
@@ -1022,7 +1023,7 @@
                   <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                 </a>
                 <div class="dropdown-menu ">
-                  <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a>
+                  <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
                 <!-- <a href="#" class="text-dark">
@@ -1262,7 +1263,7 @@
                   <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                 </a>
                 <div class="dropdown-menu ">
-                  <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a>
+                  <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
                 <!-- <a href="#" class="text-dark">
@@ -1558,7 +1559,7 @@
                   <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                 </a>
                 <div class="dropdown-menu ">
-                  <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a>
+                  <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
                 <!-- <a href="#" class="text-dark">
@@ -1816,13 +1817,13 @@
             <div class="modal-dialog modal-xl">
               <div class="modal-content" style="background: rgb(32, 35, 37);border-radius: 20px;">
                 <div class="modal-header" style="background: rgb(32, 35, 37);">
-                  <h5 class="m-3 text-uppercase" id="shareBillEmailLabel">Share Sales Order Via Email</h5>
+                  <h5 class="m-3 text-uppercase" id="shareBillEmailLabel">Share Purchase Bill Via Email</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                       aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body" style="background: rgb(32, 35, 37);">
                   <div class="card p-3 m-3">
-                    <form action="" method="post" class="needs-validation"
+                    <form action="{% url 'sharePurchaseBillToEmail' po_item.id %}" method="post" class="needs-validation"
                       id="share_to_email_form" autocomplete="off">
                       {% csrf_token %}
                       <div class="form-group">

@@ -1099,6 +1099,45 @@ def shareTransactionDetailsToEmail(request,pk):
             messages.error(request, f'{e}')
             return redirect(view_vendor_details,pk)
 
+def sharePurchaseBillToEmail(request,id):
+    if request.user:
+        try:
+            if request.method == 'POST':
+                emails_string = request.POST['email_ids']
+
+                # Split the string by commas and remove any leading or trailing whitespace
+                emails_list = [email.strip() for email in emails_string.split(',')]
+                email_message = request.POST['email_message']
+                
+                po=Purchase_Order.objects.filter(user=request.user)
+                po_t=Purchase_Order_items.objects.filter(PO=id)
+                po_table=Purchase_Order.objects.get(id=id)
+                company=company_details.objects.get(user_id=request.user.id)
+                po_item=Purchase_Order.objects.get(id=id)
+                context={
+                    'po':po,
+                    'pot':po_t,
+                    'company':company,
+                    'po_table':po_table,
+                    'po_item':po_item
+                }
+                template_path = 'purchase_bill_view_pdf.html'
+                template = get_template(template_path)
+                subject = "Purchase Bill"
+                html  = template.render(context)
+                result = BytesIO()
+                pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+                pdf = result.getvalue()
+                filename = f'Purchase Bill.pdf'
+                email = EmailMessage(subject,from_email=settings.EMAIL_HOST_USER,to=emails_list)
+                email.attach(filename, pdf, "application/pdf")
+                email.send(fail_silently=False)
+                return redirect(purchase_bill_view,id)
+        except Exception as e:
+            print(e)
+            messages.error(request, f'{e}')
+            return redirect(purchase_bill_view,id)
+
 def view_vendor_details(request,pk):
     company=company_details.objects.get(user=request.user)
     user_id=request.user.id
