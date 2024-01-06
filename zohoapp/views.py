@@ -4322,7 +4322,7 @@ def create_sales_order(request):
     company = company_details.objects.get(user=user)
     cust=customer.objects.filter(user=user)
     pay=payment_terms.objects.filter(user=user)
-    itm=AddItem.objects.filter(user=user)
+    itm=AddItem.objects.all()
     purchase=Purchase.objects.all()
     last_record = SalesOrder.objects.filter(user=request.user.id).last()
     bank = Bankcreation.objects.filter(user=user)

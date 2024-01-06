@@ -521,7 +521,7 @@
                 <td class='text-center text-dark serial-number'></td>
                   <td style="width: 10%;">
                       <div><select class='form-control bg-transparent text-dark item_select itm'
-                              name='item[]' id='item1'>
+                              name='item[]' id='item1' onchange="fetchItemData(this.value, 1)">
                               <option value=" " selected disabled>Select Item</option>
                               {% for i in item %}
                                 <option value="{{i.Name}}">{{ i.Name  }} </option>
