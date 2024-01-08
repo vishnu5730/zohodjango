@@ -199,6 +199,7 @@ urlpatterns = [
     path('get_customerdet',views.get_customerdet,name='get_customerdet'),
     path('recurbills_vendor',views.recurbills_vendor,name='recurbills_vendor'),
     path('vendor_dropdown',views.vendor_dropdown,name = 'vendor_dropdown'),
+    path('custom_dropdown',views.custom_dropdown,name = 'custom_dropdown'),
     path('recurbills_pay',views.recurbills_pay,name='recurbills_pay'),
     path('pay_dropdown',views.pay_dropdown,name = 'pay_dropdown'),
     path('recurbills_unit',views.recurbills_unit,name='recurbills_unit'),

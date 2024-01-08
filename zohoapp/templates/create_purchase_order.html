@@ -2341,18 +2341,10 @@ $(document).ready(function() {
         $("#custstate").hide(); // Hide the field if state doesn't exist
         $("#custstate_row").addClass('d-none');
       }
-
-
       }
     });
   });
 });
-
-
-
-
-
-
 
   $(document).ready(function() {
     $("#fname, #lname").change(function() {
@@ -2597,7 +2589,6 @@ $(document).on("click","#customersave",function(){
       
       success: function(response) {
         document.getElementById("modalCustomer").reset();
-        
 
         reloadcustomer();
         
@@ -2606,19 +2597,18 @@ $(document).on("click","#customersave",function(){
 });
 
 function reloadcustomer() {
-
   $.ajax({
-    url: "{% url 'customer_dropdown' %}",
+    url: "{% url 'custom_dropdown' %}",
     type: "GET",
     dataType: "json",
     data: $(this).serialize(),
     csrfmiddlewaretoken: '{{ csrf_token }}',
 
     success: function(data) {
-      var dropdow = $('#custom');
-      dropdow.empty();
+      var dropdown = $('#custom');
+      dropdown.empty();
       $.each(data, function(key, value) {
-          dropdow.append($('<option></option>').attr('value', key).text(value).val(value));
+          dropdown.append($('<option></option>').attr('value', key).text(value[0]).val(value[0]));
       });
     },
     error: function(xhr, status, error) {
