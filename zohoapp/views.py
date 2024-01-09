@@ -5610,24 +5610,24 @@ def filter_chellan_type(request):
         return render(request,'delivery_chellan.html',{'view':viewitem,"company":company})  
     return redirect("delivery_chellan_home") 
     
-    
 def itemdata_challan(request):
     cur_user = request.user
     user = cur_user.id
-    # try:
-    #     id = request.GET.get('id')
     try:
-        item = AddItem.objects.get(user=user)
-        name = item.Name
-        rate = item.s_price
-        hsn = item.hsn
-        # Assuming `company_name` is a field in the `company_details` model
-        place = company_details.objects.get(user=cur_user).company_name
-        return JsonResponse({"status": "not", 'place': place, 'rate': rate, 'hsn': hsn})
-    except AddItem.DoesNotExist:
-        return JsonResponse({"status": "error", 'message': "Item not found"})
-    # except Exception as e:
-    #     return JsonResponse({"status": "error", 'message': str(e)})
+        id = request.GET.get('id')
+
+        try:
+            item = AddItem.objects.get(Name=id, user=user)
+            name = item.Name
+            rate = item.s_price
+            hsn = item.hsn
+            # Assuming `company_name` is a field in the `company_details` model
+            place = company_details.objects.get(user=cur_user).company_name
+            return JsonResponse({"status": "not", 'place': place, 'rate': rate, 'hsn': hsn})
+        except AddItem.DoesNotExist:
+            return JsonResponse({"status": "error", 'message': "Item not found"})
+    except Exception as e:
+        return JsonResponse({"status": "error", 'message': str(e)})
     
 @login_required(login_url='login')
 def customer_dropdown_estimate(request):
