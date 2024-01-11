@@ -8226,7 +8226,7 @@ def purchase_order(request):
     vendor=vendor_table.objects.filter(user=request.user)
     cust=customer.objects.filter(user = request.user)
     payment=payment_terms.objects.all()
-    item=AddItem.objects.all()
+    item = AddItem.objects.filter(user=request.user)
     account=Account.objects.all()
     unit=Unit.objects.all()
     sales=Sales.objects.all()
