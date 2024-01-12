@@ -5609,7 +5609,7 @@ def filter_chellan_type(request):
             viewitem=DeliveryChellan.objects.filter(user=request.user)
         return render(request,'delivery_chellan.html',{'view':viewitem,"company":company})  
     return redirect("delivery_chellan_home") 
-    
+
 def itemdata_challan(request):
     cur_user = request.user
     user = cur_user.id
