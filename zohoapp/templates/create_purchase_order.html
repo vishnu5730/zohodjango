@@ -2940,7 +2940,7 @@ function reloadAccount() {
 </script>
 
 <script>
-
+var rowCount = 1;
 $(document).ready(function () {
 
   function calculateRowAmount(row) {
@@ -3000,15 +3000,11 @@ function calculateGrandTotal() {
     calculateSubtotal();
     calculateGrandTotal();
   });
-let a;
+
 // Set initial serial number for the existing row
 
-
-
   $('#add-row').click(function () {
-    var rowCount = $('#item_table tbody tr');
     rowCount++; // Increment row counter
-    console.log()
     var newRow = `
     <tr id='row${rowCount}'>
         <td class='text-center text-dark serial-number'></td>
@@ -3177,14 +3173,7 @@ $('#item_table').on('click', '.clone-row', function () {
     var newRowId = 'row' + rowCount; // Generate a new ID for the cloned row
     clonedRow.attr('id', newRowId); // Set the new ID for the cloned row
 
-    // Update the IDs of cloned row elements
-    clonedRow.find('[id^=hsn]').attr('id', 'hsn' + rowCount);
-    clonedRow.find('[id^=qty]').attr('id', 'qty' + rowCount);
-    clonedRow.find('[id^=rate]').attr('id', 'rate' + rowCount);
-    clonedRow.find('[id^=discount]').attr('id', 'discount' + rowCount);
-    clonedRow.find('[id^=tax]').attr('id', 'tax' + rowCount);
-    clonedRow.find('[id^=taxamount]').attr('id', 'taxamount' + rowCount);
-    clonedRow.find('[id^=amount]').attr('id', 'amount' + rowCount);
+
 
     // ... (other elements that need updating) ...
 
