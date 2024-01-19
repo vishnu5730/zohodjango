@@ -5618,6 +5618,7 @@ def itemdata_challan(request):
 
         try:
             item = AddItem.objects.get(Name=id, user=user)
+            print(id)
             name = item.Name
             rate = item.s_price
             hsn = item.hsn

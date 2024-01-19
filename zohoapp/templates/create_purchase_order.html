@@ -7,7 +7,6 @@
 
 <!-- ...................    edited by Sumayya............................ -->
 
-
 <style>
   .modal{
     z-index: 9999;
@@ -87,8 +86,6 @@
     .fields {
       display: none;
     }
-  
-
     </style>
 
 
@@ -107,19 +104,20 @@
       {% csrf_token %}
       <div class="row">
         <div class="col-md-3">
-          <label >Vendor Name *</label>
+          <label>Vendor Name *</label>
         </div>
         <div class="col-md-6">
           <select name="vendor" id="vendor" class="form-control bg-light text-dark">
-            <option value=""></option>
+            <option></option>
             {% for v in vendor %}
-            <option value="{{ v.first_name }} {{ v.last_name }} {{v.id}}">{{ v.first_name }} {{ v.last_name }}</option>
+              <option value="{{ v.first_name }} {{ v.last_name }} {{v.id}}">{{ v.first_name }} {{ v.last_name }}</option>
             {% endfor %}
           </select>
         </div>
         <div class="col-md-3">
-          <a href="#" class="btn btn-outline-secondary py-2 my-1" data-target="#newvendor" data-toggle="modal" style="color: white; background-color: rgb(210, 132, 30);" >+</a>
-      </div>
+          <a href="#" class="btn btn-outline-secondary py-2 my-1" data-target="#newvendor" data-toggle="modal"
+            style="color: white; background-color: rgb(210, 132, 30);">+</a>
+        </div>
       </div>
 
       <div class="row mt-2 d-none" id="email_row">
@@ -2021,9 +2019,6 @@
                   <div class="col-md-4">
                     <select name="cost_acc" class="form-control bg-light text-dark" id="cost_acc">
                       <option value="">Select Account</option>
-
-
-                      
                         <option value="" disabled class="btn btn-dark text-white"><b>PURCHASE</b></option>
                         {% for p in purchase %}
                             <option value="{{p.id}}">{{ p.Account_name }}</option>
@@ -2202,12 +2197,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <script>
-  
-
- 
-
-
-
 $(document).ready(function() {
     $('#vendor').change(function() {
 
@@ -3013,7 +3002,7 @@ function calculateGrandTotal() {
             <select class='form-control bg-transparent text-dark  border-0 item_select itm' name='item[]' id='item${rowCount}'>
               <option value=" " selected disabled>Select Item</option>
               {% for i in item %}
-                <option value="{{i.id}}">{{ i.Name }}</option>
+                <option value="{{i.Name}}">{{ i.Name }}</option>
               {% endfor %}
             </select>
           </div>
