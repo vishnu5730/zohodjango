@@ -4,37 +4,19 @@
 
 
 
-<!-- ...................                  edited by Nikhila Ajayan............................ -->
 
-
-<!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-    crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-    crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-    crossorigin="anonymous"></script> -->
 
     <script src="https://code.jquery.com/jquery-3.6.0.js" 
     integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.js" integrity="sha512-eSeh0V+8U3qoxFnK3KgBsM69hrMOGMBy3CNxq/T4BArsSQJfKVsKb5joMqIPrNMjRQSTl4xG8oJRpgU2o9I7HQ=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+     <style>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.css" integrity="sha512-0nkKORjFgcyxv3HbE4rzFUlENUMNqic/EzDIeYCgsKa/nwqr2B91Vu/tNAu4Q0cBuG4Xe/D1f/freEci/7GDRA=="
-     crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  .custom-select {
+    height: auto; /* Set the desired height */
+}
 
-<style>
-
-    select:focus {
-        outline: none !important;
-        box-shadow: none !important;
-    }
-
-    #customer_sel option:hover {
-        background-color: rgb(210, 132, 30);
-    }
 
     .element-below-fixed {
         padding-top: 100px;
@@ -60,18 +42,93 @@
         background: #555;
     }
 
-    .hide {
-        display: none;
-    }
+    
     .modal{
       z-index: 9999;
       overflow: scroll;
     }
+    
+   
+    /* Style the wrapper container */
+    .selectize-control {
+      width: 200px; /* Set the desired width */
+      margin-bottom: 20px;
+    }
+
+    /* Style the input field */
+    .selectize-input {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 8px;
+      height:50px;
+    }
+
+    /* Style the dropdown menu */
+    .selectize-dropdown {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    }
+
+    /* Style individual items in the dropdown */
+    .selectize-dropdown-content .option {
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    /* Style the selected items */
+    .selectize-control.multi .item {
+      background-color: #e0e0e0;
+      margin-right: 5px;
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+   
+#item1 + .selectize-control {
+  width: 80px; 
+}
+
+
+#item1 + .selectize-control .selectize-input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  height: 50px;
+}
+
+
+#item1 + .selectize-control .selectize-dropdown {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+#item1 + .selectize-control .selectize-dropdown-content .option {
+  padding: 8px;
+  cursor: pointer;
+}
+
+
+#item1 + .selectize-control.multi .item {
+  background-color: #e0e0e0;
+  margin-right: 5px;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
 </style>
 
 <script>
 
-
+ 
+    $(document).ready(function () {
+      $('#customer_sel').selectize({
+          sortField: 'value'
+      });
+    });
+   
+  
 
 function calc() {
     var x=document.getElementById("cus_place").value
@@ -91,9 +148,7 @@ function calc() {
                 var taxamount = parseFloat($(this).find('.taxamount').val());
                 $(this).find('.amount').val(qty * rate - discount);
                 
-                // $(this).find('.taxamount').val((qty * rate) * (tax / 100));
-                // var taxamount = parseFloat($(this).find('.taxamount').val());
-                // $(this).find('.amount').val(qty * rate - discount);
+              
 
                 calc_total();
            
@@ -122,9 +177,7 @@ function calc() {
     $(this).find('.amountt').val(qtyy * ratee - discountt);
     
 
-    // $(this).find('.taxamountt').val((qtyy * ratee) * (taxx / 100));
-    // var taxamountt = parseFloat($(this).find('.taxamountt').val());
-    // $(this).find('.amountt').val(qtyy * ratee - discountt);
+ 
 
     calc_total();
    }
@@ -135,7 +188,7 @@ function calc() {
         var x=document.getElementById("cus_place").value
         var y=document.getElementById("state").value
         if ( x == y )
-        {
+        { 
         total = 0;
         $('.amount').each(function () {
             total += parseFloat($(this).val()) ;
@@ -213,25 +266,11 @@ function calc() {
             document.getElementById('tr_igst').style.display = "table-row";
             document.getElementById('tr_cgst').style.display = "none";
             document.getElementById('tr_sgst').style.display = "none";
-            // document.getElementById('tr_cgst').style.display = "table-row";
-            // document.getElementById('tr_sgst').style.display = "table-row";
+     
 
         }
     }  
-    // Calculate total
-    // $(document).ready(function () {
-    //     $('#shipping, #adjustment').on('keyup', function () {
-    //         var shipping_charge = parseFloat($('#shipping').val() || 0);
-    //         var adjustment_charge = parseFloat($('#adjustment').val() || 0);
-    //         var subtotal = parseFloat($('#subtotal').val() || 0);
-    //         var total_tax = parseFloat($('#total_taxamount').val() || 0);
-    //         var total = subtotal + total_tax + shipping_charge + adjustment_charge;
-
-    //         $('#shipping_charge').val(shipping_charge.toFixed(2));
-    //         $('#adjustment_charge').val(adjustment_charge.toFixed(2));
-    //         $('#total').val(total.toFixed(2));
-    //     });
-    // });
+  
 
     function calc_ship()
     {
@@ -251,7 +290,7 @@ function calc() {
 
 </script>
 
-<!-- <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script> -->
+
 <script>
 
     function cancelDialog() {
@@ -270,11 +309,7 @@ function calc() {
         frm.action = ("{% url 'createestimate'%}")
     }
 
-    // function get_customer_email() {
-    //  var eml = document.getElementById("customer_sel");
-    //  eml.action = ("{% url 'newestimate'%}")
-    // }
-
+    
     function saveAndSendDialog() {
 
         var frm = document.getElementById("forms");
@@ -315,8 +350,7 @@ function calc() {
 
         </div> -->
          <div>
-            <form method="POST" action="" class="p-1" enctype="multipart/form-data" novalidate
-                id="forms">
+            <form method="POST" action="" class="p-1" enctype="multipart/form-data" novalidate id="forms">
                 {% csrf_token %}
                 <input class="hidden"   id="state1" name="hidden_state1" value="{{ company.state }}">
                 <input  class="hidden"  id="state" name="hidden_state" value="">
@@ -329,7 +363,7 @@ function calc() {
                     <div class="col-sm-2"><label for="customer_name">Customer Name*</label></div>
                     <div class="col-sm-6 d-flex ">
                         <!-- <div class="search_select_box"> -->
-                          <select  class="form-control text-dark ch"  id="customer_sel" name="customer_name" >
+                          <select  class="form-control text-dark custom-select"  id="customer_sel" name="customer_name" >
                             <option>Select Customer</option>
                             {% for cust in customers %}
                             <option value="{{cust.id}} {{cust.customerName}}" data-pos="{{cust.placeofsupply}}">
@@ -337,10 +371,8 @@ function calc() {
                             {% endfor %}
                         </select>
                         
-
-                        
                         <!-- </div> -->
-                        <a  href="" data-toggle="modal" data-target="#newcustomer" class="btn" style="background-color: chocolate; color: black; height: 80%; margin-left: 2vh; font-size: large; padding-top: 1vh;">+</a>
+                        <a  href="" data-toggle="modal" data-target="#newcustomer" class="btn" style="background-color: chocolate; color: black; height: 30px; margin-left: 2vh; font-size: large; padding-top: 1vh;">+</a>
                                                                        
                     </div>
                    
@@ -489,7 +521,7 @@ function calc() {
                             <thead>
                                 <tr>
                                   <th class="text-right" style="font-weight: bold;color: rgb(245, 154, 36);">#</th>
-                                  <th class="p-3" style="font-weight: bold;color: rgb(245, 154, 36);" >Item  <a href="" data-toggle="modal" data-target="#newitem"><i class="fas fa-plus p-2 rounded"
+                                  <th class="p-3" style="font-weight: bold;color: rgb(245, 154, 36);" >Item  <a href="{% url 'additem' %}" ><i class="fas fa-plus p-2 rounded"
                                                 style="color: white; background-color: rgb(210, 132, 30);"></i></a></th>
                                    <th class="text-right" style="font-weight: bold;color: rgb(245, 154, 36);">Hsn</th>
                                     <th class="text-right" style="font-weight: bold;color: rgb(245, 154, 36);">Quantity</th>
@@ -509,7 +541,8 @@ function calc() {
                                                 name='item[]' id='item1'>
                                                 <option class='text-dark'>Select</option>
                                                 {% for i in items %}
-                                                <option class="text-dark" value="{{i.Name}}">{{i.Name}}</option>
+                                                <option class="text-dark" value="{{i.Name}}" data-hsn="{{i.HSN}}" data-rate="{{i.Rate}}">{{i.Name}}</option>
+
                                                 {% endfor %}
                                             </select>
                                         </div>
@@ -539,7 +572,7 @@ function calc() {
                                             <option value=0 class="opt1 text-dark">0% GST</option>
                                             <option value=3 class="opt1 text-dark">3% GST</option>
                                             <option value=5 class="opt1 text-dark">5% GST</option>
-                                            <option value=12 class="opt1 text-dark">12% GST</option>
+                                            <option value=12 class="opt1 text-dark" disabled>12% GST</option>
                                             <option value=18 class="opt1 text-dark">18% GST</option>
                                             <option value=28 class="opt1 text-dark">28% GST</option>  
                                         </select>
@@ -572,12 +605,20 @@ function calc() {
                 </div>
 
 
-
-                
+     
 <!-- ..................................................   END TABLE1   .......................................................... -->
 
 <!-- ...................................................  TABLE 2  ..................................................... -->
-
+<script>
+  $(document).ready(function () {
+    // Initialize Selectize on the item dropdown
+    $('#itemm1').selectize({
+    
+      sortField: 'value', // Sort the items by their text content
+      
+    });
+  });
+</script> 
                   
 <div class="row " id="tab_row2" >
     <div class="col-sm-12 col-lg-12 col-md-12" >
@@ -2086,27 +2127,14 @@ function calc() {
 
 </section>
 
-<!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-    crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-    crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-    crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E="
-    crossorigin="anonymous"></script> -->
+
+
 
     
-    <script>
-      $(document).ready(function () {
-        jQuery.noConflict();
-          $(".ch").chosen();
-      });
-    </script>
+  
 
     <script>
+      
       function check_estimate_number(){
         console.log("haiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
            var str=document.getElementById('estimate_number').value;
@@ -2121,18 +2149,19 @@ function calc() {
            if(parseInt(ref_no) == parseInt(sliced_string))
            {
                document.getElementById('credit_span').style.color="green";
-               document.getElementById('credit_span').innerHTML="consicutive number";
+               document.getElementById('credit_span').innerHTML="consecutive number";
 
            }
            else{
                document.getElementById('credit_span').style.color="red";
-               document.getElementById('credit_span').innerHTML="not consicutive number";
+               document.getElementById('credit_span').innerHTML="not consecutive number";
            }
        }
    </script>
 
 
 <script>
+  
   function calculateExpiryDate()
   {
     var estimate=document.getElementById('estimate_date').value;
@@ -2629,7 +2658,7 @@ $.ajax({
     var dropdown = $('#customer_sel');
   +   dropdown.empty();
     $.each(data, function(key, value) {
-        // dropdown.append($('<option></option>').attr('value', key).text(value[1]).val(value[0] + ' ' + value[1]));
+        
         dropdown.append($('<option></option>').attr('value', key).text(value[1]).val(key));
     });
   },
@@ -2678,12 +2707,15 @@ $(document).ready(function() {
               $('#cus_place_second').val(data.cust_place_supply);
               $('#customer_gst_treat').val(data.gst_treatment);
               $('#customer_gstno').val(data.gstin);
-               var adrs=data.address;
+               var adrs=data.cust_address;
               if( adrs != "" )
               {
-                document.getElementById('customer_address').value = data.address + '\n' + data.city + '\n' + data.pincode +'\n' + data.cus_state+'\n'+data.country ;
+                document.getElementById('customer_address').value = value = adrs;
                 $("#cus_billing_address").removeClass('d-none');
                 $("#cus_billing_address").addClass('d-flex');
+              } else {
+                $("#cus_billing_address").removeClass('d-flex');
+                $("#cus_billing_address").addClass('d-none');
               }
 
               var GSTNO=document.getElementById('customer_gstno').value;
@@ -3043,18 +3075,30 @@ function reloadUnit() {
 
 
 </script>
+<script>
+  $(document).ready(function () {
+    // Initialize Selectize on the item dropdown
+    $('#item1').selectize({
+      
+      sortField: 'value', // Sort the items by their text content
+      
+    })
 
+  });
+</script>
+           
 
 <script>
   $(document).ready(function () {
       var roinc = 0
       console.log("ajax");
       // var place = document.getElementById('pos').value;
-      $(document).on('click', '#item1', function () {
+      $(document).on('change', '#item1', function () {
           select = $('#item1').val();
           customer = $('#customer_sel').val();
           console.log(select);
           console.log(customer);
+          console
           $.ajax({
               type: "GET",
               url: "{% url 'itemdata_challan' %}",
@@ -3075,7 +3119,26 @@ function reloadUnit() {
                   document.getElementById('hsn1').value = data4
                   console.log("helloooooooooooooooooooooooooo");
 
-                  console.log(data4);
+                  console.log(data1,'hello');
+                  console.log(data2,'hello2');
+                  var taxselect=document.getElementById('tax')
+                  var newoption=document.createElement('option')
+                  newoption.text=data1
+                  newoption.value=data1
+                  newoption.selected=true
+                  for(var i=0; i<taxselect.options.length;i++){
+                    taxselect.options[i].disabled=true
+                  }
+                  taxselect.add(newoption)
+
+                  newoption.text=data2
+                  newoption.value=data2
+                  newoption.selected=true
+                  for(var i=0; i<taxselect.options.length;i++){
+                    taxselect.options[i].disabled=true
+                  }
+                  taxselect.add(newoption)
+
                   if (data3 == '{{ company.state }}') {
                       document.getElementById('tgst1').innerHTML = data1 + ' % GST';
                       document.getElementById('tgst1').value = data1
@@ -3819,7 +3882,7 @@ function reloadUnit() {
         var roinc = 0
         console.log("ajax");
         // var place = document.getElementById('pos').value;
-        $(document).on('click', '#itemm1', function () {
+        $(document).on('change', '#itemm1', function () {
             select = $('#itemm1').val();
             customer = $('#customer_sel').val();
             console.log(select);
@@ -3840,6 +3903,7 @@ function reloadUnit() {
                     data4=response.hsn
 
                     document.getElementById('ratee1').value = data
+                    console.log('hello world',data);
                     document.getElementById('hsnn1').value = data4
 
                     if (data3 == '{{ company.state }}') {
@@ -4554,15 +4618,89 @@ document.getElementById('hsnn16').value = data4
 
     });
 </script>
-<script>
 
-  $(document).ready(function(){
-    console.log("starrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr  ##############################")
-    $('.search_select_box select').selectpicker();
+<!-- <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Function to update tax options based on place of supply
+    function updateTaxOptions() {
+      var customerSelect = document.getElementById('customer_sel');
+      var selectedCustomer = customerSelect.options[customerSelect.selectedIndex];
+      var placeOfSupply = selectedCustomer.getAttribute('data-pos');
+
+      // Assume your tax select element has an ID of 'tax'
+      var taxSelect = document.getElementById('tax');
+
+      // Clear existing options
+      taxSelect.innerHTML = '';
+
+      // Add new options based on place of supply
+      if (placeOfSupply === 'Kerala') {
+        taxSelect.options.add(new Option('GST0[0%]', 0));
+        taxSelect.options.add(new Option('GST3[3%]', 3));
+        taxSelect.options.add(new Option('GST5[5%]', 5));
+        taxSelect.options.add(new Option('GST12[12%]', 12));
+        taxSelect.options.add(new Option('GST18[18%]', 18));
+        taxSelect.options.add(new Option('GST28[28%]', 28));
+        // Add other intra-state tax options as needed
+      } else {
+        taxSelect.options.add(new Option('IGST0[0%]', 0));
+        taxSelect.options.add(new Option('IGST3[3%]', 3));
+        taxSelect.options.add(new Option('IGST5[5%]', 5));
+        taxSelect.options.add(new Option('IGST12[12%]', 12));
+        taxSelect.options.add(new Option('IGST18[18%]]', 18));
+        taxSelect.options.add(new Option('IGST28[28%]', 28));
+        // Add other inter-state tax options as needed
+      }
+    }
+
+    // Attach the updateTaxOptions function to the change event of the customer select
+    document.getElementById('customer_sel').addEventListener('change', updateTaxOptions);
+
+    // Initial update when the page loads
+    updateTaxOptions();
   });
-</script>
+</script> -->
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
 
 
 {% endblock %}
+
+
+
+
+
+
+<!-- (document).ready(function () {
+  $("#commentSave").click(function () {
+
+      $.ajax({
+
+          type: 'POST',
+          url: "{% url 'recurbill_comment' %}",
+
+          data: {
+              id: $("#com_id").val(),
+              comment: $("#comment").val(),
+
+              csrfmiddlewaretoken: '{{ csrf_token }}'
+
+          },
+
+          success: function (response) {
+              document.getElementById("modalComment").reset();
+Nithya Vijayan1:20 PM
+ef recurbill_comment(request):
+
+company = company_details.objects.get(user = request.user)
+
+if request.method=='POST':
+  id =request.POST.get('id')
+  cmnt =request.POST.get('comment')
+  
+  u = User.objects.get(id = request.user.id)
+  r_bill = recurring_bills.objects.get(user = request.user, id = id)
+  r_bill.comments = cmnt
+  r_bill.save()
+
+  return HttpResponse({"message": "success"}) -->

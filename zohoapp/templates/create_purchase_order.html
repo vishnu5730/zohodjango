@@ -4,10 +4,21 @@
 {% load tz %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <!-- <link rel="stylesheet" href="{% static 'assets/css/style.css' %}"> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.js" 
+integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <!-- ...................    edited by Sumayya............................ -->
 
 <style>
+  .vendor-select {
+    height: auto; /* Set the desired height */
+}
+.element-below-fixed {
+        padding-top: 100px;
+    }
   .modal{
     z-index: 9999;
     overflow: scroll;
@@ -86,6 +97,67 @@
     .fields {
       display: none;
     }
+    .selectize-input {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 8px;
+      height:50px;
+    }
+
+    /* Style the dropdown menu */
+    .selectize-dropdown {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    }
+
+    /* Style individual items in the dropdown */
+    .selectize-dropdown-content .option {
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    /* Style the selected items */
+    .selectize-control.multi .item {
+      background-color: #e0e0e0;
+      margin-right: 5px;
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+   
+#item1 + .selectize-control {
+  width: 80px; 
+}
+
+
+#item1 + .selectize-control .selectize-input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  height: 50px;
+}
+
+
+#item1 + .selectize-control .selectize-dropdown {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+#item1 + .selectize-control .selectize-dropdown-content .option {
+  padding: 8px;
+  cursor: pointer;
+}
+
+
+#item1 + .selectize-control.multi .item {
+  background-color: #e0e0e0;
+  margin-right: 5px;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
     </style>
 
 
@@ -94,7 +166,7 @@
   <div class="card radius-15" style="width: 100%;">
     <div class="card-body">
         <div class="card-title">
-          <h2 class="mb-0 text-uppercase text-right">New PurchaseOrder</h2>
+          <h2 class="mb-0 text-uppercase text-right">New Purchase Order</h2>
         </div>
     </div>
   </div>
@@ -107,7 +179,7 @@
           <label>Vendor Name *</label>
         </div>
         <div class="col-md-6">
-          <select name="vendor" id="vendor" class="form-control bg-light text-dark">
+          <select name="vendor" id="vendor" class="form-control bg-light text-dark vendor-select">
             <option></option>
             {% for v in vendor %}
               <option value="{{ v.first_name }} {{ v.last_name }} {{v.id}}">{{ v.first_name }} {{ v.last_name }}</option>
@@ -4138,5 +4210,10 @@ function toggleDateInput() {
 
 
   });
+  $(document).ready(function () {
+            $('#vendor').selectize({
+                sortField: 'value'
+            });
+        });
 </script>
 {% endblock %}
