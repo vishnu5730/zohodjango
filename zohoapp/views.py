@@ -8754,7 +8754,7 @@ def create_Purchase_order(request):
                 p_bill.save()
                 print('save')
             item = request.POST.getlist("item[]")
-            # accounts = request.POST.getlist("account[]")
+            hsn = request.POST.getlist("hsn[]")
             quantity = request.POST.getlist("quantity[]")
             rate = request.POST.getlist("rate[]")
             tax = request.POST.getlist("tax[]")
@@ -8764,6 +8764,7 @@ def create_Purchase_order(request):
                 for i in range(len(item)):
                     created = Purchase_Order_items.objects.create(
                         item=item[i],
+                        hsn=hsn[i],
                         quantity=quantity[i],
                         rate=rate[i],
                         tax=tax[i],
