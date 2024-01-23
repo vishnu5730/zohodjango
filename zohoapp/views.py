@@ -1197,7 +1197,7 @@ def add_comment(request, expense_id):
         comment_text = request.POST.get('comment', '')
         Expense.objects.create(expense=expense, comment=comment_text)
 
-    return redirect('show_recurring', expense_id=expense_id)
+    return redirect('view_vendor_details', expense_id)
 
 def sendmail(request):
     if request.method=='POST':
@@ -16858,6 +16858,51 @@ def save_journal_comment(request, journal_id):
 def delete_journal_comment(request, comment_id):
     if request.method == 'POST':
         comment = get_object_or_404(JournalComment, id=comment_id)
+        if request.user == comment.user:
+            comment.delete()
+            return JsonResponse({'message': 'Comment deleted successfully.'})
+        else:
+            return JsonResponse({'error': 'Permission denied.'}, status=403)
+    
+    return JsonResponse({'error': 'Invalid request.'}, status=400)
+
+def get_vendor_comments(request, vendor_id):
+    vendor = get_object_or_404(vendor_table, id=vendor_id)
+    comments = comments_table.objects.filter(vendor=vendor)
+    is_current_user_comment = False
+    if request.user.is_authenticated:
+        is_current_user_comment = comments_table.filter(user=request.user).exists()
+
+    comments_data = [{
+        'id': comment.id,
+        'text': comment.comment,
+        'user': comment.user.username,
+    } for comment in comments]
+
+    return JsonResponse({
+        'comments': comments_data,
+        'is_current_user_comment': is_current_user_comment,
+    })
+
+def save_vendor_comment(request, vendor_id):
+    if request.method == 'POST':
+        vendor = get_object_or_404(vendor_table, id=vendor_id)
+        comment_text = request.POST.get('text')
+        
+        if comment_text:
+            comments_table.objects.create(
+                vendor=vendor,
+                user=request.user,
+                comment=comment_text,
+            )
+            
+            return JsonResponse({'message': 'Comment saved successfully.'})
+    
+    return JsonResponse({'error': 'Invalid request.'}, status=400)
+
+def delete_vendor_comment(request, comment_id):
+    if request.method == 'POST':
+        comment = get_object_or_404(comments_table, id=comment_id)
         if request.user == comment.user:
             comment.delete()
             return JsonResponse({'message': 'Comment deleted successfully.'})

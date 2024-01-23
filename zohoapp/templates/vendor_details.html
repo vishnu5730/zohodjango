@@ -191,7 +191,7 @@
                     <div class="col-sm-12 col-md-8 col-lg-8 d-flex justify-content-end" >
                         <a style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;margin-right: 4px;" class="btn btn-warning "  
                         href="{% url 'edit_vendor' vdata2.id %}" data-toggle="tooltip" data-placement="top" title="Edit Vendor"><i class="fas fa-edit"></i></a>
-                    <button onclick="fieldset2_function()" class="btn btn-warning " style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                    <button data-toggle="modal" data-target="#commentModal" class="btn btn-warning " style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                         margin-right: 4px;"><i class="fas fa-comment"></i></button>
                     <button onclick="fieldset3_function()" class="btn btn-warning " style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                         margin-right: 4px;"><i class="far fa-envelope"></i></button>
@@ -545,8 +545,7 @@
                                          <textarea name="comment" id="" cols="60" rows="5" required> </textarea>
                                          <div class="valid-feedback">Valid.</div>
                                          <div class="invalid-feedback">Please fill out this field.</div> 
-                                         <label>(For Internal Use)</label> 
-                                         
+                                         <label>(For Internal Use)</label>
                                     </div>
                                 </div> 
                                 <div class="row mt-4">
@@ -558,7 +557,6 @@
                         </div>
                     </div>                
                   </fieldset2>
-
 
                   <fieldset7 id="view_cmt" style="display: none;">
                     <div class="row">
@@ -1015,8 +1013,33 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title" id="commentModalLabel">Comments</h5>
+      </div>
+      <div class="modal-body">
+        <!-- Existing comments -->
+        <div class="existing-comments">
+          <!-- Comments will be dynamically added here using JavaScript -->
+        </div>
 
+        <!-- New comment entry field -->
+        <div class="form-group">
+          <label for="commentText">Add a Comment:</label>
+          <textarea class="form-control bg-dark" id="commentText" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+        <button type="button" class="btn btn-primary btn-save-comment">Save Comment</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
+    
     $(document).ready(function() {
       $('.filter-button').on('click', function() {
         $(this).closest('th').find('.filter-dropdown').toggle();
