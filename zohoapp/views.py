@@ -1190,6 +1190,32 @@ def view_vendor_details(request,pk):
 
     return render(request,'vendor_details.html',context)
 
+def comment_vendor(request,pk):
+    if request.method == 'POST':
+        comment = request.POST['comment']
+        vdata2=vendor_table.objects.get(id=pk)
+        cmt = comments_table(user=request.user,vendor=vdata2,comment=comment)
+        cmt.save()
+        return redirect('view_vendor_details',pk)
+
+def delete_comment_vendor(request,vid,pk):
+    comment = comments_table.objects.get(id=pk)
+    comment.delete()
+    return redirect('view_vendor_details',vid)
+
+def comment_purchase(request,pk):
+    if request.method == 'POST':
+        comment = request.POST['comment']
+        pdata=Purchase_Order.objects.get(id=pk)
+        cmt = purchase_order_comments(user=request.user,PO=pdata,comment=comment)
+        cmt.save()
+        return redirect('purchase_bill_view',pk)
+
+def delete_comment_purchase(request,vid,pk):
+    comment = purchase_order_comments.objects.get(id=pk)
+    comment.delete()
+    return redirect('purchase_bill_view',vid)
+
 def add_comment(request, expense_id):
     expense = get_object_or_404(Expense, id=expense_id)
     
@@ -8791,6 +8817,7 @@ def purchase_bill_view(request,id):
     po_table=Purchase_Order.objects.get(id=id)
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
+    cmt_data = purchase_order_comments.objects.filter(user=request.user,PO=po_item)
     bank=''
     if po_item.payment_type != 'cash':
         if po_item.payment_type != 'upi':
@@ -8802,7 +8829,8 @@ def purchase_bill_view(request,id):
         'company':company,
         'po_table':po_table,
         'po_item':po_item,
-        'bank':bank
+        'bank':bank,
+        'cmt_data':cmt_data
     }
     return render(request, 'purchase_bill_view.html',context)
     
@@ -8812,6 +8840,7 @@ def purchase_bill_view_by_name(request,id):
     po_table=Purchase_Order.objects.get(id=id)
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
+    cmt_data = purchase_order_comments.objects.filter(user=request.user,PO=po_item)
     bank=''
     if po_item.payment_type != 'cash':
         if po_item.payment_type != 'upi':
@@ -8823,7 +8852,8 @@ def purchase_bill_view_by_name(request,id):
         'company':company,
         'po_table':po_table,
         'po_item':po_item,
-        'bank':bank
+        'bank':bank,
+        'cmt_data':cmt_data
     }
     return render(request, 'purchase_bill_view.html',context)
 
@@ -8833,6 +8863,7 @@ def purchase_bill_view_by_ordno(request,id):
     po_table=Purchase_Order.objects.get(id=id)
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
+    cmt_data = purchase_order_comments.objects.filter(user=request.user,PO=po_item)
     bank=''
     if po_item.payment_type != 'cash':
         if po_item.payment_type != 'upi':
@@ -8844,7 +8875,8 @@ def purchase_bill_view_by_ordno(request,id):
         'company':company,
         'po_table':po_table,
         'po_item':po_item,
-        'bank':bank
+        'bank':bank,
+        'cmt_data':cmt_data
     }
     return render(request, 'purchase_bill_view.html',context)
 

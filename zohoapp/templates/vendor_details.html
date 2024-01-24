@@ -344,56 +344,70 @@
                                         <div class="card-title h4 my-2">General information
                                             <hr>
                                         </div>
-            
+                                        {% if vdata2.gst_treatment %}
                                         <div class="row mt-2">
                                             <div class="col-5"><label for="">GST Treatment :</label></div>
                                             <div class="col-7">
                                                 <p class="bold">{{vdata2.gst_treatment}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.gst_number %}
                                         <div class="row mt-2">
                                             <div class="col-5"><label for="">GST Number :</label></div>
                                             <div class="col-7">
                                                 <p class="bold">{{vdata2.gst_number}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.pan_number %}
                                         <div class="row mt-2">
                                             <div class="col-5"><label for="">PAN Number :</label></div>
                                             <div class="col-7">
                                                 <p class="bold">{{vdata2.pan_number}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.source_supply %}
                                         <div class="row mt-2">
                                             <div class="col-5"><label for="">Source Of Supply :</label></div>
                                             <div class="col-7">
                                                 <p class="bold">{{vdata2.source_supply}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.currency %}
                                         <div class="row mt-2">
                                             <div class="col-5"><label for="">Currency :</label></div>
                                             <div class="col-7">
                                                 <p class="bold">{{vdata2.currency}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.opening_bal_type %}
                                         <div class="row mt-2">
                                             <div class="col-5"><label for="">Opening Balance Type :</label></div>
                                             <div class="col-7">
                                                 <p class="bold">{{vdata2.opening_bal_type}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.opening_bal %}
                                         <div class="row mt-2">
                                             <div class="col-5"><label for="">Opening Balance Amount :</label></div>
                                             <div class="col-7">
                                                 <p class="bold">{{vdata2.opening_bal}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.payment_terms %}
                                         <div class="row mt-2">
                                             <div class="col-5"><label for="">Payment Terms :</label></div>
                                             <div class="col-7">
                                                 <p class="bold">{{vdata2.payment_terms}}</p>
                                             </div>
                                         </div>
-            
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -411,36 +425,46 @@
                                                 <p class="bold">{{vdata2.baddress}}</p>
                                             </div>
                                         </div>
+                                        {% if vdata2.bcity %}
                                         <div class="row mt-2 px-5">
                                             <div class="col-6"><label for="">City:</label></div>
                                             <div class="col-6">
                                                 <p class="bold">{{vdata2.bcity}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.bstate %}
                                         <div class="row mt-2 px-5">
                                             <div class="col-6"><label for="">State:</label></div>
                                             <div class="col-6">
                                                 <p class="bold">{{vdata2.bstate}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.bcountry %}
                                         <div class="row mt-2 px-5">
                                             <div class="col-6"><label for="">Country:</label></div>
                                             <div class="col-6">
                                                 <p class="bold">{{vdata2.bcountry}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.bzip %}
                                         <div class="row mt-2 px-5">
                                             <div class="col-6"><label for="">Zip:</label></div>
                                             <div class="col-6">
                                                 <p class="bold">{{vdata2.bzip}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.bphone %}
                                         <div class="row mt-2 px-5">
                                             <div class="col-6"><label for="">Phone:</label></div>
                                             <div class="col-6">
                                                 <p class="bold">{{vdata2.bphone}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
                                     </div>
                                     {% endif %}
                                 </div>
@@ -457,36 +481,46 @@
                                                 <p class="bold">{{vdata2.saddress}}</p>
                                             </div>
                                         </div>
+                                        {% if vdata2.scity %}
                                         <div class="row mt-2 px-5">
                                             <div class="col-6"><label for="">City:</label></div>
                                             <div class="col-6">
                                                 <p class="bold">{{vdata2.scity}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.sstate %}
                                         <div class="row mt-2 px-5">
                                             <div class="col-6"><label for="">State:</label></div>
                                             <div class="col-6">
                                                 <p class="bold">{{vdata2.sstate}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.scountry %}
                                         <div class="row mt-2 px-5">
                                             <div class="col-6"><label for="">Country:</label></div>
                                             <div class="col-6">
                                                 <p class="bold">{{vdata2.scountry}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.szip %}
                                         <div class="row mt-2 px-5">
                                             <div class="col-6"><label for="">Zip:</label></div>
                                             <div class="col-6">
                                                 <p class="bold">{{vdata2.szip}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
+                                        {% if vdata2.sphone %}
                                         <div class="row mt-2 px-5">
                                             <div class="col-6"><label for="">Phone:</label></div>
                                             <div class="col-6">
                                                 <p class="bold">{{vdata2.sphone}}</p>
                                             </div>
                                         </div>
+                                        {% endif %}
                                     </div>
                                     {% endif %}
                                 </div>
@@ -1016,30 +1050,54 @@
 <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content bg-dark text-white">
-      <div class="modal-header">
-        <h5 class="modal-title" id="commentModalLabel">Comments</h5>
-      </div>
+        <div class="modal-header">
+            <h5 class="modal-title" id="commentModalLabel">Add a comment</h5>
+          </div>
+          <form id="commentForm" method="post" action="{% url 'comment_vendor' vdata2.id %}">
+            {% csrf_token %}
       <div class="modal-body">
-        <!-- Existing comments -->
-        <div class="existing-comments">
-          <!-- Comments will be dynamically added here using JavaScript -->
-        </div>
-
         <!-- New comment entry field -->
         <div class="form-group">
-          <label for="commentText">Add a Comment:</label>
-          <textarea class="form-control bg-dark" id="commentText" rows="3"></textarea>
+          <textarea name="comment" class="form-control bg-dark" id="commentText" rows="3"></textarea>
         </div>
       </div>
       <div class="modal-footer">
         <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
-        <button type="button" class="btn btn-primary btn-save-comment">Save Comment</button>
+        <button type="button" class="btn btn-primary btn-save-comment" id="submitCommentBtn" onclick="submitComment()">Save Comment</button>
+      </div></form>
+      {% if cmt_data %}
+      <div class="modal-header">
+        <h5 class="modal-title" id="commentModalLabel">Comments</h5>
       </div>
+      <div class="container-fluid">
+        <table class="table table-responsive-md mt-4 table text-white">
+          <thead>
+            <tr>
+              <th>Sl no.</th>
+              <th>Comments</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for com in cmt_data %}
+            <tr class="table-row">
+              <td>{{ forloop.counter }}</td>
+              <td>{{ com.comment }}</td>  
+              <td><a href="{% url 'delete_comment_vendor' vdata2.id com.id %}">Delete</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
     </div>
   </div>
 </div>
 <script>
-    
+    function submitComment() {
+            document.getElementById('commentForm').submit();
+          }
+
     $(document).ready(function() {
       $('.filter-button').on('click', function() {
         $(this).closest('th').find('.filter-dropdown').toggle();

@@ -139,6 +139,8 @@ class comments_table(models.Model):
     vendor=models.ForeignKey(vendor_table,on_delete=models.CASCADE,null=True)
     comment=models.TextField(max_length=500)
 
+
+
 class mail_table(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,null=True,default='')
     vendor=models.ForeignKey(vendor_table,on_delete=models.CASCADE,null=True)
@@ -2013,3 +2015,8 @@ class LoanDuration(models.Model):
         ('Years', 'Years'),
         ('Year', 'Year'),
     ))
+
+class purchase_order_comments(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE,null=True,default='')
+    PO = models.ForeignKey(Purchase_Order,on_delete=models.CASCADE,null=True,blank=True)
+    comment=models.TextField(max_length=500)
