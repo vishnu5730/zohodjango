@@ -1055,6 +1055,8 @@ urlpatterns = [
 
 
     path('downloadExpenseSampleImportFile',views.downloadExpenseSampleImportFile,name='downloadExpenseSampleImportFile'),
+    path('downloadVendorSampleImportFile',views.downloadVendorSampleImportFile,name='downloadVendorSampleImportFile'),
+    path('import_vendor',views.import_vendor,name='import_vendor'),
     path('import_expense',views.import_expense,name='import_expense'),
     path('exp_get_customerdet',views.exp_get_customerdet,name='exp_get_customerdet'),
     
