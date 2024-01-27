@@ -92,8 +92,8 @@
                       CONVERT
                     </a>
                     <div class="dropdown-menu m-1">
-                      <a class="dropdown-item" href="#">Convert to Invoie</a>
-                      <a class="dropdown-item" href="#">Convert to Reccurring
+                      <a class="dropdown-item" href="{% url 'convert_to_invoice_purchase' v.id %}">Convert to Invoie</a>
+                      <a class="dropdown-item" href="{% url 'convert_to_recinvoice_frm_purchaseorder' v.id %}">Convert to Reccurring
                         Invoice</a>
                     </div></div>
                 </td>
