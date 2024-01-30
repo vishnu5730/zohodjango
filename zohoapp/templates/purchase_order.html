@@ -3,89 +3,129 @@
 {% load static %}
 
 <style>
-  #over:hover{
-        background-color: rgba(110, 110, 110, 0.616);
-        
-    }
+  #over:hover {
+    background-color: rgba(110, 110, 110, 0.616);
+  }
+
+  .dropdown-item:hover {
+    color: chocolate;
+  }
+
+  #myTable tbody {
+    cursor: pointer;
+  }
+
+  .table-btn:hover {
+    color: black;
+  }
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: rgb(252, 236, 217);
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 </style>
 
-  <div  style="top: 7rem; " >
-    <div class="pb-4"><a class="text-white" style="font-size: 2rem;">All Purchases</a></div>
-    <div class="row mb-4">
-      
-      <div class=" col-md-3 d-flex justify-content-between align-items-center">
-      </div>
-      <div class="col-md-6"></div>
-      <div class="col-md-3 d-flex justify-content-end">
-          <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsXLS()"><i class="fa fa-file-excel-o" aria-hidden="true"></i>EXCEL</a>&nbsp;
-      </div>
-  </div>
-  <div class="row mb-4">
-      
-    <div class=" col-md-3 d-flex justify-content-between align-items-center">
-      
-            <input type="text" id="search" placeholder="Search..." class="form-control text-dark bg-light" autocomplete="off">
-            <!-- <a href="" class="btn btn-outline-warning fa fa-sort text-right px-3 py-2" role="button"
-            style="margin-left: 5px;"></a> -->
-            <a class="btn text-center px-3 py-2 btn-outline-warning" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-            role="button" style="margin-left: 5px;"><i class="fa fa-sort "></i>
-            </a>
-            <div class="dropdown-menu ">
-                <a class="dropdown-item" href="{% url 'purchaseView' %}">All</a>
-                <a class="dropdown-item" href="{% url 'purchaseView_by_name' %}">Name</a>
-                <a class="dropdown-item" href="{% url 'purchaseView_by_ord_no' %}">Purchase Order No</a>
-            </div>
-            
-    </div>
-    <div class="col-md-6"></div>
-    <div class="col-md-3 d-flex justify-content-end">
-        
-        <a class="btn text-center px-4 pt-2 btn-outline-warning" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-        role="button" ><i class="fa fa-filter"></i>
-        </a>
-        <div class="dropdown-menu ">
-            <a class="dropdown-item" href="{% url 'purchaseView' %}">All</a>
-            <a class="dropdown-item" href="{% url 'drf' %}">Draft</a>
-            <a class="dropdown-item" href="{% url 'apr' %}">Save</a>
-        </div>
-        <a href="{% url 'purchase_order' %}" class="btn btn-outline-warning fa fa-plus text-right px-3 py-2" role="button" style="margin-left: 5px;">
-            <span class="mt-2">&nbsp;&nbsp;New</span>
-        </a></div>
-</div>
-        <!-- <div class="row">
-            
-            <div class="col-md-6 form-inline" style="margin-left: 55rem;margin-top: -2rem;"><a style="color: #ccc;background-color: rgb(190, 131, 4);" class="btn  mr-2"  href="{% url 'vendor' %}"><i class="fa-solid fa-plus "></i>New</a>
+<div class="container-fluid">
+  <div class="fixed-top" style="top: 7rem; margin-left: 18rem;">
+    <div style="height: 600px;overflow-y: scroll;">
 
+      <div class="row container-fluid">
+        <div class="col-md-3"><a class="text-white" style="font-size: 2rem;">All Purchases</a></div>
+      </div>
+      <br><br><br>
+
+      <div class="row container-fluid mb-3">
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-4"></div>
+        <div class="col-md-3">
+          <div class="dropdown d-flex">
+            <a class="btn btn-outline-warning p-2 mr-2" onclick="exportAsXLS()"><i class="fa fa-file-excel-o" aria-hidden="true"></i>EXCEL</a>&nbsp;
+          </div>
+        </div>
+      </div>
+      <div class="row container-fluid mb-3">
+        <div class="col-md-3">
+          <input type="text" id="search" class="form-control bg-light text-dark" placeholder="Search.."
+            autocomplete="off">
+        </div>
+        <div class="col-md-2">
+          <div class="dropdown">
+            <a class="btn text-center px-4 pt-2 btn-outline-warning" id="sortbutton" data-bs-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false" role="button">
+              <i class="fas fa-sort m-1"></i>
+            </a>
+            <div class="dropdown-menu m-1">
+              <a class="dropdown-item" href="{% url 'purchaseView' %}">All</a>
+              <a class="dropdown-item" onclick="sortTableName()">Customer Name</a>
+              <a class="dropdown-item" onclick="sortTableTotal()">Purchase Order</a>
             </div>
-        </div>    -->
-    
-        <div class="row">
-            <div class="col-sm-12 ">
-              <div style="width: 100%; overflow-x: auto;">
-                <table class="table  text-white" id="myTable" >
-                    <thead>
-                      <tr>
-                        <th>DATE</th>
-                            <th>ORD NUMBER</th>
-                            <th>VENDOR</th>
-                            <th>E-MAIL</th>
-                            <th>TOTAL AMOUNT</th>
-                            <th>BALANCE</th>
-                            <th>STATUS</th>
-                            <th>ACTION</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                        {% for v in pt %}
-                      <tr id="over" class="clickable-row" data-href="{% url 'purchase_bill_view' v.id %}">
-                        <td><a>{{v.Ord_date}}</a></td>
-                        <td>{{v.Pur_no}}</td>
-                        <td>{{v.vendor_name}} </td>
-                        <td>{{v.vendor_mail}} </td>
-                        <td>{{v.grand_total}}</td>
-                        <td>{{v.grand_total}}</td>
-                        <td>{{v.status}}</td>
-                        {% if v.complete_status == 0 %}
+          </div>
+        </div>
+        <div class="col-md-4"></div>
+        <div class="col-md-3">
+          <div class="dropdown d-flex">
+            <a class="btn text-center px-4 pt-2 btn-outline-warning" data-bs-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false" role="button">
+              <i class="fa fa-filter mt-1"></i>
+            </a>
+            <div class="dropdown-menu m-1">
+              <a class="dropdown-item" href="{% url 'purchaseView' %}">All</a>
+              <a class="dropdown-item" href="{% url 'drf' %}">Draft</a>
+              <a class="dropdown-item" href="{% url 'apr' %}">Save</a>
+            </div>
+            <a style="height: 5vh; margin-left: 2vh;" class="btn btn-outline-warning text-right px-3 py-2" role="button"
+              style="margin-left: 5px;" href="{% url 'create_sales_order' %}">
+              <i class="fa fa-plus" style="font-size: large;"></i><span style="font-size: 3vh;">New</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-11 col-lg-11">
+          <table class="table text-white" id="myTable">
+            <thead>
+              <tr>
+                <th style="text-align: center;">DATE</th>
+                            <th style="text-align: center;">ORD NUMBER</th>
+                            <th style="text-align: center;">VENDOR</th>
+                            <th style="text-align: center;">E-MAIL</th>
+                            <th style="text-align: center;">TOTAL AMOUNT</th>
+                            <th style="text-align: center;">BALANCE</th>
+                            <th style="text-align: center;">STATUS</th>
+                            <th style="text-align: center;">ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for v in pt %}
+              <tr id="over" class='clickable-row'>
+                <td style="text-align: center;" data-href="{% url 'purchase_bill_view' v.id %}">{{v.Ord_date}}</td>
+                <!-- <td style="text-align: center;" onclick="location.href ='' " > {{v.Name}}</td> -->
+                <td style="text-align: center;" data-href="{% url 'purchase_bill_view' v.id %}">{{v.Pur_no}}</td>
+                <td style="text-align: center;" data-href="{% url 'purchase_bill_view' v.id %}">{{v.vendor_name}}
+                </td>
+                <td style="text-align: center;" data-href="{% url 'purchase_bill_view' v.id %}">{{v.vendor_mail}}</td>
+                <td style="text-align: center;" data-href="{% url 'purchase_bill_view' v.id %}">{{v.grand_total}}</td>
+                <td style="text-align: center;" data-href="{% url 'purchase_bill_view' v.id %}">{{v.grand_total}}</td>
+                <td style="text-align: center;" data-href="{% url 'purchase_bill_view' v.id %}">{{v.status}}</td>
+                {% if v.complete_status == 0 %}
                 <td style="text-align: center;" data-href="#">
                   <div class="dropdown ">
                     <a class="dropdown-toggle btn btn-outline-warning" href="" data-toggle="dropdown">
@@ -95,55 +135,94 @@
                       <a class="dropdown-item" href="{% url 'convert_to_invoice_purchase' v.id %}">Convert to Invoie</a>
                       <a class="dropdown-item" href="{% url 'convert_to_recinvoice_frm_purchaseorder' v.id %}">Convert to Reccurring
                         Invoice</a>
-                    </div></div>
+                    </div>
                 </td>
                 {% elif v.complete_status == 1 %}
                 <td style="text-align: center;" class="text-success m-2" data-href="#">Converted to Invoice</td>
                 {% else %}
                 <td style="text-align: center;" class="text-success m-2" data-href="#">Converted to Reccuring Invoice</td>
                 {% endif %}
-                        <td>
-                            <a style="border-radius: 50%;"  href="{% url 'purchase_delet' v.id %}"><i class="fa fa-trash-o" style="font-size:24px"></i>
-                            </a>
-                        </td>
-                      </tr>
-                      {% endfor %}
-                    </tbody>
-                </table>
-                </div>
-                <br><br><br><br><br>
-            </div>
-            <div class="col-sm-12 col-md-1 col-lg-1"></div>
+                <td style="text-align: center;">
+                  <a style="border-radius: 50%;"  href="{% url 'purchase_delet' v.id %}"><i class="fa fa-trash-o" style="font-size:24px"></i>
+                  </a>
+              </td>
 
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-    <!-- </div> -->
-
+      </div>
+    </div>
+  </div>
 </div>
+<script>
+  // Function to sort the table by the selected column
+  function sortTableName() {
+    var table, rows, switching, i, x, y, shouldSwitch;
+    table = document.getElementById("myTable");
+    switching = true;
+    while (switching) {
+      switching = false;
+      rows = table.rows;
+      for (i = 1; i < rows.length - 1; i++) {
+        shouldSwitch = false;
+        x = rows[i].getElementsByTagName("td")[2];
+        y = rows[i + 1].getElementsByTagName("td")[2];
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+      if (shouldSwitch) {
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+      }
+    }
+  }
 
+  function sortTableTotal() {
+    var table, rows, switching, i, x, y, shouldSwitch;
+    table = document.getElementById("myTable");
+    switching = true;
+    while (switching) {
+      switching = false;
+      rows = table.rows;
+      for (i = 1; i < rows.length - 1; i++) {
+        shouldSwitch = false;
+        x = rows[i].getElementsByTagName("td")[1];
+        y = rows[i + 1].getElementsByTagName("td")[1];
+        if (x.innerHTML > y.innerHTML) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+      if (shouldSwitch) {
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+      }
+    }
+  }
+</script>
 
 <script>
-  $(document).ready(function () {
-    $("#search").on("keyup", function () {
-      var value = $(this).val().toLowerCase();
-      $("#myTable tr").filter(function () {
-        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-      });
+  jQuery(document).ready(function ($) {
+    $(".clickable-row td").click(function () {
+      window.location = $(this).data("href");
     });
   });
 </script>
 
-<script>
-  // Add click event listener to all rows with class "clickable-row"
-  const rows = document.querySelectorAll('.clickable-row');
-  rows.forEach(row => {
-    row.addEventListener('click', () => {
-      // Get the URL from the "data-href" attribute
-      const url = row.getAttribute('data-href');
-      // Navigate to the URL
-      window.location.href = url;
-    });
-  });
 
+<script>
+  var $rows = $('table tbody tr');
+  $('#search').keyup(function () {
+    var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+    $rows.hide().filter(function () {
+      var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+      return ~text.indexOf(val);
+    }).show();
+  });
   function exportAsXLS() {
             // Assuming you have data in a table format, you can export it to Excel using SheetJS
             const table = document.querySelector('table');
@@ -153,18 +232,12 @@
             XLSX.writeFile(wb, 'purchase_order.xlsx');
     }
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
   integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
   </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
   integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
-  </script>
-  <script>
-    jQuery(document).ready(function ($) {
-      $(".clickable-row td").click(function () {
-        window.location = $(this).data("href");
-      });
-    });
   </script>
 {% endblock %}

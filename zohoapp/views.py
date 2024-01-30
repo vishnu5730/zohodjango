@@ -3299,7 +3299,7 @@ def convert_to_invoice(request,pk):
 @login_required(login_url='login')
 def convert_to_invoice_purchase(request,pk):
     purchase = Purchase_Order.objects.get(id=pk)
-    inv_id = invoice_purchase.objects.filter(user=request.user.id).last()
+    inv_id = invoice_purchase.objects.filter(user=request.user).last()
     user = User.objects.get(id = request.user.id)
 
     if inv_id == None:
@@ -3350,7 +3350,7 @@ def convert_to_invoice_purchase(request,pk):
 @login_required(login_url='login')
 def convert_to_recinvoice_frm_purchaseorder(request,pk):
     purchase = Purchase_Order.objects.get(id=pk)
-    recinv_id = Recurring_invoice_purchase.objects.filter(user=request.user.id).last()
+    recinv_id = Recurring_invoice_purchase.objects.filter(user=request.user).last()
     user = User.objects.get(id = request.user.id)
 
     if recinv_id == None:
@@ -3391,9 +3391,9 @@ def convert_to_recinvoice_frm_purchaseorder(request,pk):
     pay_method = purchase.payment_type
    
 
-    recinv=Recurring_invoice(cname=customer_name,cemail=customer_email,cadrs=customer_address,gsttr=gst_treatment,gstnum=gst_number,p_supply=place_of_supply,reinvoiceno=reinvoiceno,order_num=order_num,start=inv_date,end=due_date,terms=terms,cust_note=cxnote,conditions=terms_conditions,attachment=file,status=status,sub_total=subtotal,igst=igst,sgst=sgst,cgst=cgst,tax_amount=totaltax,shipping_charge=sh_charge,adjustment=adjust,total=t_total,payment_method=pay_method,cust_name=custo,user=user)
+    recinv=Recurring_invoice_purchase(cname=customer_name,cemail=customer_email,cadrs=customer_address,gsttr=gst_treatment,gstnum=gst_number,p_supply=place_of_supply,reinvoiceno=reinvoiceno,order_num=order_num,start=inv_date,end=due_date,terms=terms,cust_note=cxnote,conditions=terms_conditions,attachment=file,status=status,sub_total=subtotal,igst=igst,sgst=sgst,cgst=cgst,tax_amount=totaltax,shipping_charge=sh_charge,adjustment=adjust,total=t_total,payment_method=pay_method,cust_name=custo,user=user)
     recinv.save()
-    recitem_id = Recurring_invoice.objects.last()
+    recitem_id = Recurring_invoice_purchase.objects.last()
 
 
     purchase.complete_status = -1

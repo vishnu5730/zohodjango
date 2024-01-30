@@ -390,7 +390,7 @@ class invoice_item_purchase(models.Model):
     total = models.FloatField()  
     discount = models.FloatField(null=True, blank=True)
     rate = models.TextField(max_length=255)
-    inv = models.ForeignKey(invoice, on_delete=models.CASCADE)
+    inv = models.ForeignKey(invoice_purchase, on_delete=models.CASCADE)
 
 class Pricelist(models.Model):
     itemtable=models.ForeignKey(AddItem,on_delete=models.CASCADE,null=True)
@@ -685,7 +685,7 @@ class recur_itemtable(models.Model):
 
 class recur_itemtable_purchase(models.Model):
     
-    ri=models.ForeignKey(Recurring_invoice,on_delete=models.CASCADE,null=True)
+    ri=models.ForeignKey(Recurring_invoice_purchase,on_delete=models.CASCADE,null=True)
     iname=models.CharField(max_length=255)
     hsncode=models.FloatField(null=True,blank=True)
     quantity=models.FloatField(null=True,blank=True)
