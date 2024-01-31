@@ -3297,114 +3297,50 @@ def convert_to_invoice(request,pk):
     return redirect('view_sales_order')
 
 @login_required(login_url='login')
-def convert_to_invoice_purchase(request,pk):
-    purchase = Purchase_Order.objects.get(id=pk)
-    inv_id = invoice_purchase.objects.filter(user=request.user).last()
-    user = User.objects.get(id = request.user.id)
-
-    if inv_id == None:
-        invoice_no = "INV-01"
-        order_no = 1
-    else:
-        if (inv_id.id<10):
-            invoice_no = "INV-0"+str(inv_id.id+1)
-            order_no = str(inv_id.id+1)
-        else:
-            invoice_no = "INV-"+str(inv_id.id+1)
-            order_no = str(inv_id.id+1)
-
-    vendor_name=purchase.vendor_name
-    vendor_mail=purchase.vendor_mail
-    vendor_gst_traet=purchase.vendor_gst_traet
-    vendor_gst_no=purchase.vendor_gst_no
-    terms = purchase.payment_terms
-    inv_date = purchase.Ord_date
-    due_date = purchase.exp_date
-    cxnote = purchase.note
-    subtotal = purchase.sub_total
-    igst = purchase.igst
-    cgst = purchase.cgst
-    sgst = purchase.sgst
-    totaltax = purchase.tax_amount
-    t_total = purchase.grand_total
-    status = purchase.status
-    tc = purchase.term
-    file = purchase.document
-
-    inv=invoice_purchase(user=user,vendor_name=vendor_name,vendor_mail=vendor_mail,vendor_gst_traet=vendor_gst_traet,vendor_gst_no=vendor_gst_no,invoice_no=invoice_no,terms=terms,order_no=order_no,inv_date=inv_date,due_date=due_date,
-                cxnote=cxnote,subtotal=subtotal,igst=igst,cgst=cgst,sgst=sgst,t_tax=totaltax,grandtotal=t_total,status=status,
-                terms_condition=tc,file=file)
-    inv.save()
-    invitem_id = invoice_purchase.objects.last()
-
-
-    purchase.complete_status = 1
-    purchase.save()
-    item =Purchase_Order_items.objects.filter(PO=purchase)
-    for i in item:
-        invitem=invoice_item_purchase(product=i.item,quantity=i.quantity,hsn=i.hsn,tax=i.tax,total=i.amount,discount=i.discount,rate=i.rate,inv=invitem_id)
-        invitem.save()
-
-    return redirect('purchaseView')
-
-@login_required(login_url='login')
 def convert_to_recinvoice_frm_purchaseorder(request,pk):
-    purchase = Purchase_Order.objects.get(id=pk)
-    recinv_id = Recurring_invoice_purchase.objects.filter(user=request.user).last()
-    user = User.objects.get(id = request.user.id)
-
-    if recinv_id == None:
-        reinvoiceno = "REC-01"
-        order_num = 1
-    else:
-        if (recinv_id.id<10):
-            reinvoiceno = "REC-0"+str(recinv_id.id+1)
-            order_num = str(recinv_id.id+1)
+    company = company_details.objects.get(user=request.user)
+    vendor = vendor_table.objects.filter(user=request.user)
+    acnt_name = Chart_of_Account.objects.filter(user=request.user)
+    acnt_type = Chart_of_Account.objects.filter(user=request.user).values('account_type').distinct()
+    cust = customer.objects.filter(user=request.user)
+    item = AddItem.objects.filter(user=request.user)
+    payments = payment_terms.objects.exclude(Days__isnull=True).filter(user_id=request.user.id)
+    units = Unit.objects.all()
+    sales = Sales.objects.all()
+    purchase = Purchase.objects.all()
+    sales_type = set(Sales.objects.values_list('Account_type', flat=True))
+    purchase_type = set(Purchase.objects.values_list('Account_type', flat=True))
+    bank=Bankcreation.objects.filter(user=request.user)
+    last_id = recurring_bills.objects.filter(user_id=request.user.id).order_by('-id').values('id').first()
+    print(last_id)
+    if last_id !=  None:
+        if request.user.is_authenticated:
+            last_id = last_id['id']
+            next_no = last_id + 1
         else:
-            reinvoiceno = "REC-"+str(recinv_id.id+1)
-            order_num = str(recinv_id.id+1)
+            next_no = 1
+    else:
+         next_no = 1
 
-    customer_name = purchase.customer_name
-    customer_email = purchase.customer_mail
-    customer_address = purchase.customer_address
-    gst_treatment = purchase.vendor_gst_traet
-    gst_number = purchase.vendor_gst_no
-    place_of_supply = purchase.source_supply
-    # entry_type = sale.customer.Taxpreference
-    inv_date = purchase.Ord_date
-    due_date = purchase.exp_date
-    terms = purchase.payment_terms
-    cxnote = purchase.note
-    terms_conditions = purchase.term
-    file = purchase.document
-    status = purchase.status
-    subtotal = purchase.sub_total
-    igst = purchase.igst
-    sgst = purchase.sgst
-    cgst = purchase.cgst
-    totaltax = purchase.tax_amount
-    sh_charge = purchase.shipping_charge
-    adjust = purchase.adjustment_charge
-    t_total = purchase.grand_total
-    # advance = sale.advance
-    # balance = sale.balance
-    pay_method = purchase.payment_type
-   
+    context = {
+        'company': company,
+        'vendor': vendor,
+        'account': acnt_name,
+        'account_type': acnt_type,
+        'customer': cust,
+        'item': item,
+        'payments': payments,
+        'units': units,
+        'sales': sales,
+        'purchase': purchase,
+        'sales_type': sales_type,
+        'purchase_type': purchase_type,
+        'b_no': next_no,
+        'bank':bank,
 
-    recinv=Recurring_invoice_purchase(cname=customer_name,cemail=customer_email,cadrs=customer_address,gsttr=gst_treatment,gstnum=gst_number,p_supply=place_of_supply,reinvoiceno=reinvoiceno,order_num=order_num,start=inv_date,end=due_date,terms=terms,cust_note=cxnote,conditions=terms_conditions,attachment=file,status=status,sub_total=subtotal,igst=igst,sgst=sgst,cgst=cgst,tax_amount=totaltax,shipping_charge=sh_charge,adjustment=adjust,total=t_total,payment_method=pay_method,cust_name=custo,user=user)
-    recinv.save()
-    recitem_id = Recurring_invoice_purchase.objects.last()
+    }
 
-
-    purchase.complete_status = -1
-    purchase.save()
-    item =Purchase_Order_items.objects.filter(PO=purchase)
-    for i in item:
-        recitem =recur_itemtable_purchase(iname=i.item,hsncode=i.hsn,quantity=i.quantity,rate=i.rate,discount=i.discount,tax=i.tax,amt=i.amount,ri=recitem_id)
-        recitem.save()
-
-
-    return redirect('purchaseView')
+    return render(request, 'new_recinvoice_purchase.html', context)
 
 def convert_view(request,pk):
     sale=SalesOrder.objects.get(id=pk)
@@ -12057,6 +11993,52 @@ def new_bill(request):
 
     return render(request, 'newbill.html',context)
 
+@login_required(login_url='login')
+def convert_to_invoice_purchase(request,pk):
+    user = request.user
+    po_id=Purchase_Order.objects.get(id=pk)
+    company = company_details.objects.get(user_id=user.id)
+    items = AddItem.objects.filter(user_id=user.id)
+    vendors = vendor_table.objects.filter(user_id=user.id)
+    customers = customer.objects.filter(user_id=user.id)
+    terms = payment_terms.objects.exclude(Days__isnull=True).filter(user_id=user.id)
+    units = Unit.objects.all()
+    account = Chart_of_Account.objects.all()
+    account_types = Chart_of_Account.objects.values_list('account_type', flat=True).distinct()
+    sales_acc = Sales.objects.all()
+    pur_acc = Purchase.objects.all()
+    bank=Bankcreation.objects.filter(user_id=user.id)
+    last_id = PurchaseBills.objects.filter(user_id=user.id).order_by('-id').values('id').first()
+    name=''
+    name1 = po_id.vendor_name
+    name1 = name1.split(' ')
+    for i in name1:
+        if i.isalpha():
+            name+=i
+            name+=' '
+    print(name)
+    po_id.vendor_name = name
+    if last_id:
+        last_id = last_id['id']
+        next_no = last_id+1
+    else:
+        next_no = 1
+    context = {'company': company,
+               'items': items,
+               'vendors': vendors,
+               'customers': customers,
+               'terms': terms,
+               'units': units,
+               'b_no': next_no,
+               'acc': account,
+               'acc_types':account_types,
+               's_acc': sales_acc,
+               'p_acc': pur_acc,
+               'bank':bank,
+               'po_item':po_id,
+               }
+
+    return render(request, 'new_invoice_purchase.html',context)
 
 def get_customer_data_bill(request):
     user = request.user
@@ -12498,6 +12480,7 @@ def edit_bill(request,bill_id):
         
     }
     return render(request, 'edit_bill.html', context)
+
 
 
 def update_bills(request,pk):
