@@ -8188,7 +8188,7 @@ def purchase_order(request):
     company=company_details.objects.get(user=request.user)
     vendor=vendor_table.objects.filter(user=request.user)
     cust=customer.objects.filter(user = request.user)
-    payment=payment_terms.objects.all()
+    payment=payment_terms.objects.filter(user=request.user)
     item = AddItem.objects.filter(user=request.user)
     account=Account.objects.all()
     unit=Unit.objects.all()
@@ -12001,13 +12001,14 @@ def convert_to_invoice_purchase(request,pk):
     items = AddItem.objects.filter(user_id=user.id)
     vendors = vendor_table.objects.filter(user_id=user.id)
     customers = customer.objects.filter(user_id=user.id)
-    terms = payment_terms.objects.exclude(Days__isnull=True).filter(user_id=user.id)
+    terms = payment_terms.objects.filter(user=request.user)
     units = Unit.objects.all()
+    poitems = Purchase_Order_items.objects.filter(PO=po_id)
     account = Chart_of_Account.objects.all()
     account_types = Chart_of_Account.objects.values_list('account_type', flat=True).distinct()
     sales_acc = Sales.objects.all()
     pur_acc = Purchase.objects.all()
-    bank=Bankcreation.objects.filter(user_id=user.id)
+    bank=Bankcreation.objects.filter(user=request.user)
     last_id = PurchaseBills.objects.filter(user_id=user.id).order_by('-id').values('id').first()
     name=''
     name1 = po_id.vendor_name
@@ -12016,6 +12017,8 @@ def convert_to_invoice_purchase(request,pk):
         if i.isalpha():
             name+=i
             name+=' '
+    name3=name.split(' ')
+    name = name3[0]+' '+name3[1]
     print(name)
     po_id.vendor_name = name
     if last_id:
@@ -12036,6 +12039,7 @@ def convert_to_invoice_purchase(request,pk):
                'p_acc': pur_acc,
                'bank':bank,
                'po_item':po_id,
+               'poitems':poitems,
                }
 
     return render(request, 'new_invoice_purchase.html',context)
@@ -12448,7 +12452,7 @@ def edit_bill(request,bill_id):
     bill = PurchaseBills.objects.get(id=bill_id)
     bill_items = PurchaseBillItems.objects.filter(purchase_bill=bill)
     units = Unit.objects.all()
-    terms = payment_terms.objects.exclude(Days__isnull=True).filter(user_id=user.id)
+    terms = payment_terms.objects.all()
     account = Chart_of_Account.objects.all()
     account_types = Chart_of_Account.objects.values_list('account_type', flat=True).distinct()
     sales_acc = Sales.objects.all()

@@ -247,7 +247,7 @@ debugger
             <div class="row mb-4">
                 <div class="col-sm-2"><label for="reference">Order Number</label></div>
                 <div class="col-sm-4"> <input type="number" id="order_number" name="order_number"
-                        class="form-control bg-white text-dark" style="width: 132%;"></div>
+                        class="form-control bg-white text-dark" value="{{po_item.Pur_no}}" style="width: 132%;"></div>
             </div>
             <div class="row mb-4">
                 <div class="col-sm-2"><label for="reference">Bill Date*</label></div>
@@ -257,7 +257,7 @@ debugger
             <div class="row ">
                 <div class="col-sm-2"><label for="reference" >Due Date*</label></div>
                 <div class="col-sm-4"> <input type="date" id="due_date" name="due_date"
-                        class="form-control bg-white text-dark" style="width: 132%;">
+                        class="form-control bg-white text-dark" style="width: 132%;" value="{{po_item.exp_date|date:'Y-m-d'}}">
                 </div>
                 <div class="col-sm-5 m-2" style="text-align: right; padding-right: 17%;" >
                   <input type="checkbox" id="never-expire-checkbox" onchange="toggleDateInput()" />
@@ -272,7 +272,7 @@ debugger
                   class="form-control bg-white text-dark" >
                   
                       
-                      <option id="crt_term" selected></option>
+                      <option id="crt_term" value="{{po_item.payment_terms}}" selected>{{po_item.payment_terms}}</option>
                      
                       <option value="30">Net 30</option>
                       
@@ -295,8 +295,7 @@ debugger
               <div class="col-sm-10 d-flex align-items-center">
                   <select class="form-control text-dark" id="customer_sel" name="customer_name"
                       style="width: 50%;  background: white;">
-                      <option>Select Customer</option>
-                      <option id="crt_cust" selected></option>
+                      <option id="crt_cust" selected>{{po_item.customer_name}}</option>
                       {% for cust in customers %}
                       <option value="{{cust.customerName}}" data-pos="{{cust.placeofsupply}}">
                           {{cust.customerName}}
@@ -343,7 +342,7 @@ debugger
           <div class="row mb-4 pt-2">
             <div class="col-sm-2"><label for="paymentmethod">Payment Method</label></div>
             <div class="col-sm-10"><select name="paymentmethod" id="paymentmethod" class="form-control bg-white text-dark" style="width: 50%;">
-              <option id="crt_paymt_method" selected></option>
+              <option id="crt_paymt_method" selected>{{po_item.payment_type}}</option>
               <option value="Cash">Cash</option>
               <option value="Cheque">Cheque</option>
               {% for b in bank %}
@@ -380,70 +379,72 @@ debugger
                 </thead>
                 <tbody>
 
-                    <tr id='row1'>
-                        <td class='text-right'>
-                            <div class='form-group'><select
-                                    class='form-control bg-transparent text-black border-0 item_select itme itemlist'
-                                    name='item[]' id='item1'>
-                                    <option class='text-dark'>Select Items</option>
-                                    <option class='text-dark' id="items_nms" ></option>
+                  {% for item in poitems  %} 
+                    <tr id='row{{ forloop.counter }}'>
+                        <td>
+                            <div class='form-group'>
+                              <select class='form-control bg-transparent text-black border-0 item_select itm itemlist'
+                                    name='item[]' id='item{{ forloop.counter }}'>
                                     {% for i in items %}
-                                    <option class="text-dark" value="{{i.Name}}">{{i.Name}}</option>
+                                    <option class="text-dark" value="{{i.Name}}" {% if i.Name == item.item %} selected="selected"{% endif %}>{{i.Name}}</option>
                                     {% endfor %}
                                 </select></div>
                         </td>
-                        <td class='text-right' style="width: 80px;">
-                          <input type="text" value="0" name='HSN[]' id="HSN1"  placeholder='HSN' class='bg-transparent border-0 text-black text-right HSN' style="width: 52px;" />
+                       
+                        <td class='text-right'><input  type="text" value="{{item.hsn}}"  name='HSN[]' id="HSN{{ forloop.counter }}" placeholder='HSN'  
+                          class='bg-transparent border-0 text-black text-right HSN' style="width: 52px;">
                         </td>
-          
-                        <td class='text-right'><input type='number' id='qty1' style="width: 50px;"
-                                class='bg-transparent border-0 text-black text-right qty' name='quantity[]' value='0'>
+                      
+                        <td class='text-right'><input type='number' id='qty{{ forloop.counter }}' style="width: 50px;"
+                                class='bg-transparent border-0 text-black text-right qty' name='quantity[]' value="{{item.quantity}}">
                         </td>
-                        <td class='text-right'><input type='number' id='rate1'  style="width: 70px;"
-                                class='bg-transparent border-0 text-black text-right rate' name='rate[]' value='0.00'>
+                        <td class='text-right'><input type='number' id='rate{{ forloop.counter }}' style="width: 80px;"
+                                class='bg-transparent border-0 text-black text-right rate' name='rate[]' value="{{item.rate}}">
                         </td>
                         
-                        <td class='text-right' > 
-                          <select name='tax[]' id='tax1' class='bg-transparent border-0 text-black text-right tax'
-                          onclick='handleTaxChange(1)'>
-                            <optgroup label="GST" >
-                                <option value=0>0% GST</option>
-                                <option value=3>3% GST</option>
-                                <option value=5>5% GST</option>
-                                <option value=12>12% GST</option>
-                                <option value=18>18% GST</option>
-                                <option value=28>28% GST</option>
-                            </optgroup>
-                            <optgroup label="IGST" >
-                                <option value=0>0% IGST</option>
-                                <option value=3>3% IGST</option>
-                                <option value=5>5% IGST</option>
-                                <option value=12>12% IGST</option>
-                                <option value=18>18% IGST</option>
-                                <option value=28>28% IGST</option>
-                            </optgroup>
-                        </select>
-                            
-                        </td>
-                        <td class='text-right'> 
-                          <input type="number" id="discount" name="discount[]"  style="width: 60px;"  value='0.00' class='bg-transparent border-0 text-black text-right discount' step="0.00" min="0"/>
-                        </td> 
+                        <td class='text-right'>
+                          
+                        <input type="text" value="{{item.tax}}" hidden id="taxType{{ forloop.counter }}">
+                          <select name='tax[]' id='tax{{ forloop.counter }}' style="width: 80px;"
+                          class='bg-transparent border-0 text-black text-right tax'
+                          onclick='handleTaxChange({{ forloop.counter }})'> 
+                                <optgroup label="GST" style="display: none;">
+                                  <option value=0>0% GST</option>
+                                  <option value=3>3% GST</option>
+                                  <option value=5>5% GST</option>
+                                  <option value=12>12% GST</option>
+                                  <option value=18>18% GST</option>
+                                  <option value=28>28% GST</option>
+                              </optgroup>
+                              <optgroup label="IGST"  style="display: none;">
+                                  <option value=0>0% IGST</option>
+                                  <option value=3>3% IGST</option>
+                                  <option value=5>5% IGST</option>
+                                  <option value=12>12% IGST</option>
+                                  <option value=18>18% IGST</option>
+                                  <option value=28>28% IGST</option>
+                              </optgroup>
+                            </select></td>
                         <td style="display: none;">
-                            <input type="number" name='taxamount[]' id="taxamount1" class="form-control taxamount" />
+                            <input type="number" name='taxamount[]' id="taxamount{{ forloop.counter }}" class="form-control taxamount" style="width: 50px;" />
                         </td>
-                        <td class='text-right'><input type='number' id='amount1'
-                                class='bg-transparent border-0 text-black text-right amount' style="width: 60px;" name='amount[]'
-                                value='0.00'></td>
-                        <td class='text-center'><button type='button' id='copy_btn1'
+                        <td class='text-right'><input type='number' id='discount{{ forloop.counter }}'
+                          class='bg-transparent border-0 text-black text-right discount' style="width: 50px;" name='discount[]' 
+                          value="{{item.discount}}"></td>
+                        <td class='text-right'><input type='number' id='amount{{ forloop.counter }}'
+                                class='bg-transparent border-0 text-black text-right amount' name='amount[]'
+                                value="{{item.amount}}" style="width: 80px;"></td>
+                        <td class='text-center'><button type='button' id='copy_btn{{ forloop.counter }}'
                                 class='btn btn-transparent text-secondary btn-sm   copy_row' data-toggle='tooltip'
-                                data-placement='top' title='Clone' style='width:30px'><i
+                                data-placement='top' title='Clone' style='width:20px'><i
                                     class="fas fa-copy"></i></button>
                         </td>
-                        <td class='text-center'><button type='button' id='del_btn1'
+                        <td class='text-center'><button type='button' id='del_btn{{ forloop.counter }}'
                                 class='btn btn-transparent text-danger btn-sm   delete-row' data-toggle='tooltip'
-                                data-placement='top' title='delete-row' style='width:30px'><i
+                                data-placement='top' title='delete-row' style='width:20px'><i
                                     class='fa fa-times'></i></button></td>
                     </tr>
+                    {% endfor %}
                 </tbody>
 
             </table>
@@ -461,38 +462,38 @@ debugger
                         <tr>
                             <td>Sub Total</td>
                             <td></td>
-                            <td><input type="number" id="subtotal" name="subtotal" step="any" value="0.00"
+                            <td><input type="number" id="subtotal" name="subtotal" step="any" value="{{po_item.sub_total}}"
                                     class="bg-transparent border-0 text-right subtotal "></td>
                         </tr>
                         <tr style="display: none;" id="tr_igst">
                             <td>IGST</td>
                             <td></td>
-                            <td><input type="number" id='igst' name="igst" step="any" value="0.00"
+                            <td><input type="number" id='igst' name="igst" step="any" value="{{po_item.igst}}"
                                     class="form-control bg-transparent border-0 text-right igst text-dark"></td>
                         </tr>
                         <tr style="display: none;" id="tr_cgst">
                             <td>CGST</td>
                             <td></td>
-                            <td><input type="number" id='cgst' name="cgst" step="any" value="0.00"
+                            <td><input type="number" id='cgst' name="cgst" step="any" value="{{po_item.cgst}}"
                                     class="form-control bg-transparent border-0 text-right cgst text-dark"></td>
                         </tr>
                         <tr style="display: none;" id="tr_sgst">
                             <td>SGST</td>
                             <td></td>
-                            <td><input type="number" id='sgst' name="sgst" step="any" value="0.00"
+                            <td><input type="number" id='sgst' name="sgst" step="any" value="{{po_item.sgst}}"
                                     class="form-control bg-transparent border-0 text-right sgst text-dark"></td>
                         </tr>
                         <tr>
                             <td>Tax Amount</td>
                             <td></td>
-                            <td><input type="number" id="total_taxamount" name="total_taxamount" step="any" value="0.00"
+                            <td><input type="number" id="total_taxamount" name="total_taxamount" step="any" value="{{po_item.tax_amount}}"
                                     class="total_taxamount form-control bg-transparent border-0 text-right text-dark">
                             </td>
                         </tr>
                         <tr>
                             <td>Shipping Charges</td>
                             <td></td>
-                            <td><input type="number" id="shipping" name="shipping_charge" value="0" > <i class="fas fa-question"></i></td>
+                            <td><input type="number" id="shipping" name="shipping_charge" value="{{po_item.shipping_charge}}" > <i class="fas fa-question"></i></td>
                             <!-- <td><input type="text" id="shipping_charge" name="shipping_charge" step="any" 
                                     class="form-control bg-transparent border-0 text-right shipping_charge text-dark">
                             </td> -->
@@ -500,7 +501,7 @@ debugger
                         <tr>
                             <td>Adjustment</td>
                             <td></td>
-                            <td><input type="number" id="adjustment" name="add_round_off" value="0" > <i class="fas fa-question"></i></td>
+                            <td><input type="number" id="adjustment" name="add_round_off" value="{{ po_item.adjustment_charge|default:0 }}" > <i class="fas fa-question"></i></td>
                             <!-- <td><input type="number" id="discount" name="discount_amnt" value="0" > <i class="fas fa-question"></i></td> -->
                             <!-- <td><input type="text" id="discount_amnt" name="discount_amnt" step="any" 
                                     class="form-control bg-transparent border-0 text-right discount_amnt text-dark">
@@ -509,14 +510,14 @@ debugger
                         <tr>
                             <th>Total ( &#x20B9; )</th>
                             <th></th>
-                            <th><input type="number" id="total" name="total" step="any" value="0.00"
+                            <th><input type="number" id="total" name="total" step="any" value="{{po_item.grand_total}}"
                                     class="form-control bg-transparent border-0 text-right total text-dark"></th>
                            
                         </tr>
                         <tr>
                           <td><strong>Paid ( &#x20B9; )</strong></td>
                           <th></th>
-                          <th><input type="number" id="amtPaid" name="amtPaid" step="any" value="0.00"></th>
+                          <th><input type="number" id="amtPaid" name="amtPaid" step="any" value="{{ po_item.payed|default:0 }}"></th>
                         </tr>
                     </table>
                 </div>
@@ -2186,9 +2187,9 @@ debugger
 
 <!-- Get customer data -->
 <script>
-    $(document).ready(function () {
-        $('#customer_sel').on('change', function () { debugger
-            select = $('#customer_sel').val();
+  $(document).ready(function() {
+debugger
+select = $('#customer_sel').val();
             // console.log(select);
             $.ajax({
                 type: "GET",
@@ -2196,7 +2197,7 @@ debugger
                 data: {
                     id: select
                 },
-                success: function (response) { debugger
+                success: function (response) {
                     // console.log(response)
                     email = response.email
                     pos = response.pos
@@ -2209,6 +2210,92 @@ debugger
                     $("#pos_row").addClass('d-flex');
                     $("#customer_email_row").removeClass('d-none');
                     $("#customer_email_row").addClass('d-flex');
+                    $("#cgstin_row").removeClass('d-none');
+                    $("#cgstin_row").addClass('d-flex');
+
+                    document.getElementById('customer_email').value = email
+                    document.getElementById('pos').value = pos
+                    document.getElementById('c_gsttype').value = gst_treatment
+                    document.getElementById('cgstin_inp').value = gst_number
+
+                    if( response.gst_treatment == 'Registered Business-Regular Business that is registered under GST'){
+                $("#cgstin_row").removeClass('d-none');
+                $("#cgstin_row").addClass('d-flex');
+                $('#cgstin_inp').val(' '+ response.gst_number)
+              }
+              else if( response.gst_treatment == 'Registered Business-Composition Business that is registered under the Composition scheme in GST'){
+                $("#cgstin_row").removeClass('d-none');
+                $("#cgstin_row").addClass('d-flex');
+                $('#cgstin_inp').val(' '+ response.gst_number)  
+              }
+              else if( response.gst_treatment == 'Overseas- Persons with who you do import or exports of supplies outside india'){
+                $("#cgstin_row").removeClass('d-none');
+                $("#cgstin_row").addClass('d-flex');
+                $('#cgstin_inp').val(' '+ response.gst_number)
+              }
+              
+              else{
+                $("#cgstin_row").addClass('d-none');
+              }
+
+                // gst or igst in tax
+
+              $("#cust_state").val(response.state);
+   debugger 
+                    // var pos = document.getElementById("pos").value.split("-")[1];
+                    // var sos = document.getElementById("state").value;
+
+                   
+
+                    if(isGST()){ debugger
+                      $('#item_table tbody tr').each(function (Value, index,){ debugger
+                       
+                        let ind = Value+1
+                          var tax = $('#taxType'+ind).val();
+                           $('#tax'+ind+' optgroup[label="GST"]').show();
+                           $('#tax'+ind+' optgroup[label="IGST"]').hide();  
+                           $('#tax'+ind+' optgroup[label="GST"] option[value="' + tax + '"]').prop('selected', true);
+                      });
+
+                       } else {
+                        $('#item_table tbody tr').each(function (Value, index,){debugger
+                          let ind = Value+1
+                          var tax = $('#taxType'+ind).val();
+                           $('#tax'+ind+' optgroup[label="GST"]').hide();
+                          $('#tax'+ind+' optgroup[label="IGST"]').show(); 
+                          $('#tax'+ind+' optgroup[label="IGST"] option[value="' + tax + '"]').prop('selected', true);
+                          }); 
+                       } 
+                }
+
+            });
+
+           
+});
+
+    $(document).ready(function () {
+        $('#customer_sel').on('change', function () {
+            select = $('#customer_sel').val();
+            // console.log(select);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'get_customer_data_bill' %}",
+                data: {
+                    id: select
+                },
+                success: function (response) {
+                    // console.log(response)
+                    email = response.email
+                    pos = response.pos
+                    gst_treatment = response.gst_treatment
+                    gst_number = response.gst_number
+
+                    $("#cgst_trt_row").removeClass('d-none');
+                    $("#cgst_trt_row").addClass('d-flex');
+                    $("#pos").removeClass('d-none');
+                    $("#pos").addClass('d-flex');
+                    $("#customer_email").removeClass('d-none');
+                    $("#customer_email").addClass('d-flex');
                     $("#cgstin_row").removeClass('d-none');
                     $("#cgstin_row").addClass('d-flex');
 
@@ -2239,26 +2326,34 @@ debugger
                 // gst or igst in tax
 
               $("#cust_state").val(response.state);
-                if(isGST()) {
-
-                  $('#item_table tbody tr').each(function (index) { debugger
-                    var tax = $(this).find('.tax').val();
-                    let inx = index+1;
-                           $('#tax'+inx+' optgroup[label="GST"]').show();
-                           $('#tax'+inx+' optgroup[label="IGST"]').hide(); 
-                           $('#tax'+inx+' optgroup[label="GST"] option[value="' + tax + '"]').prop('selected', true);
- 
-                  })
+              if(isGST()){debugger
+                       
+                          $('#item_table tbody tr').each(function (Value, index,){ debugger
+                            var tax = $(this).find('.tax').val();
+                            let ind = Value+1
+                           $('#tax'+ind+' optgroup[label="GST"]').show();
+                           $('#tax'+ind+' optgroup[label="IGST"]').hide();  
+                           $('#tax'+ind+' optgroup[label="GST"] option[value="' + tax + '"]').prop('selected', true);
+                      }); 
+                      document.getElementById("tr_cgst").style.display = "table-row";
+                      document.getElementById("tr_sgst").style.display = "table-row";
+                      document.getElementById('tr_igst').style.display = "none";
+                      calc();
                        } else {
+                        $('#item_table tbody tr').each(function (Value, index,){debugger
+                          var tax = $(this).find('.tax').val();
+                          let ind = Value+1
+                           $('#tax'+ind+' optgroup[label="GST"]').hide();
+                           $('#tax'+ind+' optgroup[label="IGST"]').show(); 
+                           $('#tax'+ind+' optgroup[label="IGST"] option[value="' + tax + '"]').prop('selected', true);
+                          }); 
 
-                        $('#item_table tbody tr').each(function (index) { debugger
-                           var tax = $(this).find('.tax').val();
-                           let inx = index+1;
-                           $('#tax'+inx+' optgroup[label="GST"]').hide();
-                           $('#tax'+inx+' optgroup[label="IGST"]').show();
-                           $('#tax'+inx+' optgroup[label="IGST"] option[value="' + tax + '"]').prop('selected', true);
-                  })
-                       }
+                          document.getElementById('tr_igst').style.display = "table-row";
+                          document.getElementById("tr_cgst").style.display = "none";
+                          document.getElementById("tr_sgst").style.display = "none";
+                          calc();
+                       } 
+                
                     
 
                 }
@@ -2272,73 +2367,143 @@ debugger
 
 <!-- Get vendor data -->
 <script>
-    $(document).ready(function () {
-        $('#vendor_sel').on('change', function () {
-            select = $('#vendor_sel').val();
-            // console.log(select);
-            $.ajax({
-                type: "GET",
-                url: "{% url 'get_vendor_data_bill' %}",
-                data: {
-                    id: select
-                },
-                success: function (response) { 
-                    email = response.email
-                    sos = response.sos 
-                    gst_treatment = response.gst_treatment
-                    gst_number = response.gst_number
- 
-                    $("#gst_trt_row").removeClass('d-none');
-                    $("#gst_trt_row").addClass('d-flex');
-                    $("#gstin_row").removeClass('d-none');
-                    $("#gstin_row").addClass('d-flex');
-                    $("#sos_row").removeClass('d-none');
-                    $("#sos_row").addClass('d-flex');
-                    $("#vendor_email_row").removeClass('d-none');
-                    $("#vendor_email_row").addClass('d-flex');
 
-
-                    document.getElementById('vendor_email').value = email
-                    document.getElementById('sos').value = sos
-                    document.getElementById('gstin_inp').value = gst_number
-                    document.getElementById('v_gsttype').value = gst_treatment
-
-                    if( response.gst_treatment == 'Registered Business-Regular Business that is registered under GST'){
+  $(document).ready(function () {
+          
+              select = $('#vendor_sel').val();
+              // console.log(select);
+              $.ajax({
+                  type: "GET",
+                  url: "{% url 'get_vendor_data_bill' %}",
+                  data: {
+                      id: select
+                  },
+                  success: function (response) { 
+                      email = response.email
+                      sos = response.sos 
+                      gst_treatment = response.gst_treatment
+                      gst_number = response.gst_number
+   
+                      $("#gst_trt_row").removeClass('d-none');
+                      $("#gst_trt_row").addClass('d-flex');
                       $("#gstin_row").removeClass('d-none');
                       $("#gstin_row").addClass('d-flex');
-                      $('#gstin_inp').val(' '+ response.gst_number)
-                    }
-                    else if( response.gst_treatment == 'Registered Business-Composition Business that is registered under the Composition scheme in GST'){
-                      $("#gstin_row").removeClass('d-none');
-                      $("#gstin_row").addClass('d-flex');
-                      $('#gstin_inp').val(' '+ response.gst_number)  
-                    }
-                    else if( response.gst_treatment == 'Overseas- Persons with who you do import or exports of supplies outside india'){
-                      $("#gstin_row").removeClass('d-none');
-                      $("#gstin_row").addClass('d-flex');
-                      $('#gstin_inp').val(' '+ response.gst_number)
-                    }
-              
-                    if(response.gst_number != null && response.gst_number != ""){
-                      $("#gstin_row").removeClass('d-none');
-                      $("#gstin_row").addClass('d-flex');
-                    }
-                    else{
-                
-                      $("#gstin_row").removeClass('d-flex');
-                      $("#gstin_row").addClass('d-none');
-
-                    }
-
-
+                      $("#sos_row").removeClass('d-none');
+                      $("#sos_row").addClass('d-flex');
+                      $("#vendor_email_row").removeClass('d-none');
+                      $("#vendor_email_row").addClass('d-flex');
+  
+  
+                      document.getElementById('vendor_email').value = email
+                      document.getElementById('sos').value = sos
+                      document.getElementById('gstin_inp').value = gst_number
+                      document.getElementById('v_gsttype').value = gst_treatment
+  
+                      if( response.gst_treatment == 'Registered Business-Regular Business that is registered under GST'){
+                  $("#gstin_row").removeClass('d-none');
+                  $("#gstin_row").addClass('d-flex');
+                  $('#gstin_inp').val(' '+ response.gst_number)
                 }
-
-            });
-
-
-        });
-    });
-</script>
+                else if( response.gst_treatment == 'Registered Business-Composition Business that is registered under the Composition scheme in GST'){
+                  $("#gstin_row").removeClass('d-none');
+                  $("#gstin_row").addClass('d-flex');
+                  $('#gstin_inp').val(' '+ response.gst_number)  
+                }
+                else if( response.gst_treatment == 'Overseas- Persons with who you do import or exports of supplies outside india'){
+                  $("#gstin_row").removeClass('d-none');
+                  $("#gstin_row").addClass('d-flex');
+                  $('#gstin_inp').val(' '+ response.gst_number)
+                }
+                
+                if(response.gst_number != null && response.gst_number != ""){
+                  $("#gstin_row").removeClass('d-none');
+                  $("#gstin_row").addClass('d-flex');
+                }
+                else{
+                  
+                  $("#gstin_row").removeClass('d-flex');
+                  $("#gstin_row").addClass('d-none');
+  
+                }
+  
+  
+  
+                  }
+  
+              });
+  
+  
+          });
+     
+  
+      $(document).ready(function () {
+          $('#vendor_sel').on('change', function () {
+              select = $('#vendor_sel').val();
+              // console.log(select);
+              $.ajax({
+                  type: "GET",
+                  url: "{% url 'get_vendor_data_bill' %}",
+                  data: {
+                      id: select
+                  },
+                  success: function (response) { 
+                      email = response.email
+                      sos = response.sos 
+                      gst_treatment = response.gst_treatment
+                      gst_number = response.gst_number
+   
+                      $("#gst_trt_row").removeClass('d-none');
+                      $("#gst_trt_row").addClass('d-flex');
+                      $("#gstin_row").removeClass('d-none');
+                      $("#gstin_row").addClass('d-flex');
+                      $("#sos_row").removeClass('d-none');
+                      $("#sos_row").addClass('d-flex');
+                      $("#vendor_email").removeClass('d-none');
+                      $("#vendor_email").addClass('d-flex');
+  
+  
+                      document.getElementById('vendor_email').value = email
+                      document.getElementById('sos').value = sos
+                      document.getElementById('gstin_inp').value = gst_number
+                      document.getElementById('v_gsttype').value = gst_treatment
+  
+                      if( response.gst_treatment == 'Registered Business-Regular Business that is registered under GST'){
+                  $("#gstin_row").removeClass('d-none');
+                  $("#gstin_row").addClass('d-flex');
+                  $('#gstin_inp').val(' '+ response.gst_number)
+                }
+                else if( response.gst_treatment == 'Registered Business-Composition Business that is registered under the Composition scheme in GST'){
+                  $("#gstin_row").removeClass('d-none');
+                  $("#gstin_row").addClass('d-flex');
+                  $('#gstin_inp').val(' '+ response.gst_number)  
+                }
+                else if( response.gst_treatment == 'Overseas- Persons with who you do import or exports of supplies outside india'){
+                  $("#gstin_row").removeClass('d-none');
+                  $("#gstin_row").addClass('d-flex');
+                  $('#gstin_inp').val(' '+ response.gst_number)
+                }
+                
+                if(response.gst_number != null && response.gst_number != ""){
+                  $("#gstin_row").removeClass('d-none');
+                  $("#gstin_row").addClass('d-flex');
+                }
+                else{
+                  
+                  $("#gstin_row").removeClass('d-flex');
+                  $("#gstin_row").addClass('d-none');
+  
+                }
+  
+  
+  
+                  }
+  
+              });
+  
+  
+          });
+      });
+  </script>
 
 <!-- Add row, copy row, delete row -->
 <script>
@@ -4199,7 +4364,6 @@ function reloadPayment() {
     }
   });
 }
-
 
 function toggleDateInput() {
     var checkbox = document.getElementById("never-expire-checkbox");
