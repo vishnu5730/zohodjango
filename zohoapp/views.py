@@ -3312,7 +3312,19 @@ def convert_to_recinvoice_frm_purchaseorder(request,pk):
     purchase_type = set(Purchase.objects.values_list('Account_type', flat=True))
     bank=Bankcreation.objects.filter(user=request.user)
     last_id = recurring_bills.objects.filter(user_id=request.user.id).order_by('-id').values('id').first()
-    print(last_id)
+    po_id=Purchase_Order.objects.get(id=pk)
+    poitems = Purchase_Order_items.objects.filter(PO=po_id)
+    name=''
+    name1 = po_id.vendor_name
+    name1 = name1.split(' ')
+    for i in name1:
+        if i.isalpha():
+            name+=i
+            name+=' '
+    name3=name.split(' ')
+    name = name3[0]+' '+name3[1]
+    print(name)
+    po_id.vendor_name = name
     if last_id !=  None:
         if request.user.is_authenticated:
             last_id = last_id['id']
@@ -3337,7 +3349,8 @@ def convert_to_recinvoice_frm_purchaseorder(request,pk):
         'purchase_type': purchase_type,
         'b_no': next_no,
         'bank':bank,
-
+        'po_item':po_id,
+        'poitems':poitems,
     }
 
     return render(request, 'new_recinvoice_purchase.html', context)

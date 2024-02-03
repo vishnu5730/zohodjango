@@ -106,7 +106,7 @@
         </div>
         <div class="col-md-6 d-flex">
             <select name="vendor" id="vendor" class="form-control text-dark bg-light" style="flex: 1;">
-                <option value="" class="text-dark bg-light"></option>
+                <option value="{{po_item.vendor_name}}" class="text-dark bg-light" selected hidden>{{po_item.vendor_name}}</option>
                 {% for v in vendor %}
                 <option value="{{v.id}} {{ v.first_name }} {{ v.last_name }}" class="text-dark bg-light">{{ v.first_name }} {{ v.last_name }}</option>
                 {% endfor %}
@@ -128,7 +128,7 @@
           <label for="email_inp">Vendor Email</label>
         </div>
         <div class="col-md-6">
-          <input type="text" class="form-control text-dark bg-light" id="email_inp" name="email_inp">
+          <input type="text" value="{{po_item.vendor_mail}}" class="form-control text-dark bg-light" id="email_inp" name="email_inp">
         </div>
       </div>
 
@@ -137,7 +137,7 @@
           <label for="gst_trt_inp">GST Treatment</label>
         </div>
         <div class="col-md-6">
-          <input type="text" class="form-control text-dark bg-light" id="gst_trt_inp" name="gst_trt_inp">
+          <input type="text" value="{{po_item.vendor_gst_traet}}" class="form-control text-dark bg-light" id="gst_trt_inp" name="gst_trt_inp">
         </div>
       </div>
 
@@ -146,7 +146,7 @@
           <label for="gstin_inp">GST Number</label>
         </div>
         <div class="col-md-6">
-          <input type="text" class="form-control text-dark bg-light"  id="gstin_inp" name="gstin_inp">
+          <input type="text" value="{{po_item.vendor_gst_no}}" class="form-control text-dark bg-light"  id="gstin_inp" name="gstin_inp">
         </div>
       </div>
 
@@ -156,7 +156,7 @@
         </div>
 
         <div class="col-md-6">
-          <input type="text" class="form-control text-dark bg-light"  id="vsrcofsupply" name="vsrcofsupply"  >
+          <input type="text" class="form-control text-dark bg-light"  value="{{po_item.source_supply}}" id="vsrcofsupply" name="vsrcofsupply"  >
            
         </div>
       </div> 
@@ -229,7 +229,7 @@
         <div class="col-md-6">
           <div class="d-flex">
             <select class="form-control text-dark bg-light" id="terms" name="terms">
-              
+              <option id="crt_term" value="{{po_item.payment_terms}}" selected>{{po_item.payment_terms}}</option>
               <option value="30">NET 30</option>
               
               <option value="60">NET 60</option>
@@ -237,7 +237,7 @@
              
               <option value="recpt">Due on receipt</option>
               {% for p in payments %}
-                <option selected value="{{p.Days}}" class="text-dark bg-light">{{p.Terms}}</option>
+                <option value="{{p.Days}}" class="text-dark bg-light">{{p.Terms}}</option>
               {% endfor %}
              
             </select>
@@ -265,7 +265,7 @@
         </div>
         <div class="col-md-6 d-flex align-items-center">
             <select name="customer" id="customer" class="form-control text-dark bg-light" style="flex: 1;">
-                <option value=""></option>
+                <option value="{{po_item.customer_name}}">{{po_item.customer_name}}</option>
                 {% for c in customer %}
                 <option value="{{c.id}} {{c.customerName}}">{{ c.customerName }}</option>
                 {% endfor %}
@@ -2189,7 +2189,72 @@ $(document).ready(function() {
     toggleDateInput(); // Call toggleDateInput after the page loads to prevent dateInput from being enabled on page load
 });
 
+$(document).ready(function () {
+          
+          select = $('#vendor').val();
+          // console.log(select);
+          $.ajax({
+              type: "GET",
+              url: "{% url 'get_vendor_data_bill' %}",
+              data: {
+                  id: select
+              },
+              success: function (response) { 
+                  email = response.email
+                  sos = response.sos 
+                  gst_treatment = response.gst_treatment
+                  gst_number = response.gst_number
 
+                  $("#gst_trt_row").removeClass('d-none');
+                  $("#gst_trt_row").addClass('d-flex');
+                  $("#gstin_row").removeClass('d-none');
+                  $("#gstin_row").addClass('d-flex');
+                  $("#vsrcofsupply_row").removeClass('d-none');
+                  $("#vsrcofsupply_row").addClass('d-flex');
+                  $("#email_row").removeClass('d-none');
+                  $("#email_row").addClass('d-flex');
+
+
+                  document.getElementById('vendor_email').value = email
+                  document.getElementById('vsrcofsupply_row').value = sos
+                  document.getElementById('gstin_inp').value = gst_number
+                  document.getElementById('v_gsttype').value = gst_treatment
+
+                  if( response.gst_treatment == 'Registered Business-Regular Business that is registered under GST'){
+              $("#gstin_row").removeClass('d-none');
+              $("#gstin_row").addClass('d-flex');
+              $('#gstin_inp').val(' '+ response.gst_number)
+            }
+            else if( response.gst_treatment == 'Registered Business-Composition Business that is registered under the Composition scheme in GST'){
+              $("#gstin_row").removeClass('d-none');
+              $("#gstin_row").addClass('d-flex');
+              $('#gstin_inp').val(' '+ response.gst_number)  
+            }
+            else if( response.gst_treatment == 'Overseas- Persons with who you do import or exports of supplies outside india'){
+              $("#gstin_row").removeClass('d-none');
+              $("#gstin_row").addClass('d-flex');
+              $('#gstin_inp').val(' '+ response.gst_number)
+            }
+            
+            if(response.gst_number != null && response.gst_number != ""){
+              $("#gstin_row").removeClass('d-none');
+              $("#gstin_row").addClass('d-flex');
+            }
+            else{
+              
+              $("#gstin_row").removeClass('d-flex');
+              $("#gstin_row").addClass('d-none');
+
+            }
+
+
+
+              }
+
+          });
+
+
+      });
   
 $(document).ready(function() {
     $('#vendor').change(function() {
@@ -2259,6 +2324,91 @@ $(document).ready(function() {
         });
     
     });
+});
+$(document).ready(function() {
+debugger
+select = $('#customer_sel').val();
+            // console.log(select);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'get_customer_data_bill' %}",
+                data: {
+                    id: select
+                },
+                success: function (response) {
+                    // console.log(response)
+                    email = response.email
+                    pos = response.pos
+                    gst_treatment = response.gst_treatment
+                    gst_number = response.gst_number
+
+                    $("#cgst_trt_row").removeClass('d-none');
+                    $("#cgst_trt_row").addClass('d-flex');
+                    $("#pos_row").removeClass('d-none');
+                    $("#pos_row").addClass('d-flex');
+                    $("#customer_email_row").removeClass('d-none');
+                    $("#customer_email_row").addClass('d-flex');
+                    $("#cgstin_row").removeClass('d-none');
+                    $("#cgstin_row").addClass('d-flex');
+
+                    document.getElementById('customer_email').value = email
+                    document.getElementById('pos').value = pos
+                    document.getElementById('c_gsttype').value = gst_treatment
+                    document.getElementById('cgstin_inp').value = gst_number
+
+                    if( response.gst_treatment == 'Registered Business-Regular Business that is registered under GST'){
+                $("#cgstin_row").removeClass('d-none');
+                $("#cgstin_row").addClass('d-flex');
+                $('#cgstin_inp').val(' '+ response.gst_number)
+              }
+              else if( response.gst_treatment == 'Registered Business-Composition Business that is registered under the Composition scheme in GST'){
+                $("#cgstin_row").removeClass('d-none');
+                $("#cgstin_row").addClass('d-flex');
+                $('#cgstin_inp').val(' '+ response.gst_number)  
+              }
+              else if( response.gst_treatment == 'Overseas- Persons with who you do import or exports of supplies outside india'){
+                $("#cgstin_row").removeClass('d-none');
+                $("#cgstin_row").addClass('d-flex');
+                $('#cgstin_inp').val(' '+ response.gst_number)
+              }
+              
+              else{
+                $("#cgstin_row").addClass('d-none');
+              }
+
+                // gst or igst in tax
+
+              $("#cust_state").val(response.state);
+   debugger 
+                    // var pos = document.getElementById("pos").value.split("-")[1];
+                    // var sos = document.getElementById("state").value;
+
+                   
+
+                    if(isGST()){ debugger
+                      $('#item_table tbody tr').each(function (Value, index,){ debugger
+                       
+                        let ind = Value+1
+                          var tax = $('#taxType'+ind).val();
+                           $('#tax'+ind+' optgroup[label="GST"]').show();
+                           $('#tax'+ind+' optgroup[label="IGST"]').hide();  
+                           $('#tax'+ind+' optgroup[label="GST"] option[value="' + tax + '"]').prop('selected', true);
+                      });
+
+                       } else {
+                        $('#item_table tbody tr').each(function (Value, index,){debugger
+                          let ind = Value+1
+                          var tax = $('#taxType'+ind).val();
+                           $('#tax'+ind+' optgroup[label="GST"]').hide();
+                          $('#tax'+ind+' optgroup[label="IGST"]').show(); 
+                          $('#tax'+ind+' optgroup[label="IGST"] option[value="' + tax + '"]').prop('selected', true);
+                          }); 
+                       } 
+                }
+
+            });
+
+           
 });
 
 $(document).ready(function() {
