@@ -540,8 +540,8 @@ debugger
                 </div>
             </div>
                
-            <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
-                onclick="saveAsDraftDialog()" value="Save As Draft">
+            <!-- <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
+                onclick="saveAsDraftDialog()" value="Save As Draft"> -->
             <input type="submit" class="btn text-white mt-5" style="background-color: rgb(210, 132, 30) ; "
                 onclick="saveAndOpenDialog()" value="Save And Open">
             <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
@@ -4438,7 +4438,7 @@ $('#due_date').prop('disabled', true);
     }
     else{
       var frm = document.getElementById("forms");
-      frm.action = ("{% url 'create_purchase_bill1' %}")
+      frm.action = ("{% url 'create_purchase_bill1_purchase' %}")
     }
       
   }

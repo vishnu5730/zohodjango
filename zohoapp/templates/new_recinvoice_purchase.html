@@ -170,7 +170,15 @@
           <input type="text" class="form-control text-dark bg-light"  id="prof_name" name="prof_name">
         </div>
       </div>
+      <div class="row mt-2">
+        <div class="col-md-3">
+          <label for="prof_name" style="color: rgb(255, 255, 255);">Order No</label>
+        </div>
 
+        <div class="col-md-6">
+          <input type="text" class="form-control text-dark bg-light" name="ord_no" value="{{po_item.Pur_no}}">
+        </div>
+      </div>
       <div class="row mt-2">
         <div class="col-md-3">
           <label for="" style="color: rgb(190, 88, 88);">Repeat Every *</label>
@@ -214,7 +222,7 @@
           <label for="date2">Ends On</label>
         </div>
         <div class="col-md-6">
-          <input type="date" class="form-control text-dark bg-light" id="date2" name="end_date">
+          <input type="date" class="form-control text-dark bg-light" id="date2" name="end_date" value="{{ po_item.exp_date| date:'Y-m-d' }}">
         </div>
         <div class="col-md-3">
           <input type="checkbox" id="never-expire-checkbox" onchange="toggleDateInput()" />
@@ -229,7 +237,7 @@
         <div class="col-md-6">
           <div class="d-flex">
             <select class="form-control text-dark bg-light" id="terms" name="terms">
-              <option id="crt_term" value="{{po_item.payment_terms}}" selected>{{po_item.payment_terms}}</option>
+              <option id="crt_term" value="{{po_item.payment_terms}}" selected hidden>{{po_item.payment_terms}}</option>
               <option value="30">NET 30</option>
               
               <option value="60">NET 60</option>
@@ -265,7 +273,7 @@
         </div>
         <div class="col-md-6 d-flex align-items-center">
             <select name="customer" id="customer" class="form-control text-dark bg-light" style="flex: 1;">
-                <option value="{{po_item.customer_name}}">{{po_item.customer_name}}</option>
+                <option value="{{po_item.custo.id}} {{po_item.customer_name}}">{{po_item.customer_name}}</option>
                 {% for c in customer %}
                 <option value="{{c.id}} {{c.customerName}}">{{ c.customerName }}</option>
                 {% endfor %}
@@ -300,7 +308,7 @@
           <label for="srcofsupply">Source Of Supply</label>
         </div>
         <div class="col-md-6">
-          <input type="text" class="form-control text-dark bg-light"  id="srcofsupply" name="srcofsupply"  >
+          <input type="text" class="form-control text-dark bg-light" id="srcofsupply" name="srcofsupply">
         </div>
       </div>
 
@@ -339,37 +347,35 @@
               </tr>
             </thead>
             <tbody id="items-table-body">
-              <tr id = 'addr0' class = 'addr'>
-                <td  style="width: 20%;">
-                  <div class="d-flex">
-                    <select name='item[]' id="item0" class="form-control item text-dark bg-light" onchange = "showRate(this.id,this.value);">
-                      <option value=" " selected disabled>Select Item</option>
+              {% for ri in poitems %} 
+              <tr id='addr{{forloop.counter|add:"-1"}}' class="addr">
+                <td style="width: 20%;">
+                  <div class="d-flex" >
+                    <select name='item[]' id="item{{forloop.counter|add:'-1'}}" class="form-control item text-dark bg-light" onchange = "showRate(this.id,this.value);">
+                      <option value="{{ri.id}}" selected >{{ri.item}}</option>
                       {% for i in item %}
                         <option value="{{i.id}}">{{i.Name}}</option>
                       {% endfor %}
-                    
                     </select>
+                    
                   </div>  
                 </td>
-
                 <td  style="width: 11%;">
-                  <input type="text" value="0" name='HSN[]' id="HSN0" placeholder='HSN' style="width: 82px; " class="form-control HSN text-dark bg-light"/>
+                  <input type="text" value="{{ri.hsn}}" name='HSN[]' id="HSN{{forloop.counter|add:'-1'}}" placeholder='HSN' class="form-control HSN text-dark bg-light"  style="width: 82px; " />
                 </td>
 
-                
-                
-                
+               
                 <td style="width: 10%;">
-                  <input type="number" name='qty[]' placeholder='Qty' id="qty0" style="width: 80px;"  class="form-control qty text-dark bg-light" step=0 min=0/>
+                  <input type="text" name='qty[]' placeholder='Qty' id="qty{{forloop.counter|add:'-1'}}" value="{{ri.quantity}}"  class="form-control qty text-dark bg-light" step=0 min=0/>
                 </td>
                 <td style="width: 10%;">
-                  <input type="text" name='rate[]' id="rate0" placeholder='Rate' class="form-control rate text-dark bg-light" style="width: 80px;" />
+                  <input type="text" name='rate[]' id="rate{{forloop.counter|add:'-1'}}" placeholder='Rate' value="{{ ri.rate }}" class="form-control rate text-dark bg-light" step="0.00" min="0" />
                 </td>
                 <td style="width: 15%;">
-                  <input type="hidden" id="tax_total0" class="form-control mb-2 d-none" style="width: 100px;" >
+                  <input type="hidden" id="tax_total{{forloop.counter|add:'-1'}}" class="form-control mb-2 d-none">
                   <input type="text" placeholder="Select TAX" class="form-control selecttax text-dark bg-light" id="selecttax0">
-                  <select name="tax1[]" id="intra_tax0" class="form-control tax1 d-none mb-2 text-dark bg-light">
-                    <option id="ta1" value=0 text=' '>Choose GST</option>
+                  <select name="tax1[]" id="intra_tax{{forloop.counter|add:'-1'}}" class="form-control tax1 d-none mb-2 text-dark bg-light">
+                    <option id="ta1" value="{{ ri.tax  }} " text="{{ cmp1.state }}" >{{ ri.tax }}% GST({{ ri.tax }}%)</option>
                     <option value=28 text="{{ cmp1.state }}">28.0% GST(28%)</option>
                     <option value=18 text="{{ cmp1.state }}">18.0% GST(18%)</option>
                     <option value=12 text="{{ cmp1.state }}">12.0% GST(12%)</option>
@@ -378,8 +384,9 @@
                     <option value=0 text="{{ cmp1.state }}">0.0% GST(0%)</option>
                   </select>
 
-                  <select name="tax2[]" id="inter_tax0" class="form-control tax2 d-none mb-2 text-dark bg-light">
-                    <option id="ta5" value=0 text=" "  >Choose IGST</option>
+                  <select name="tax2[]" id="inter_tax{{forloop.counter|add:'-1'}}" class="form-control tax2 d-none mb-2 text-dark bg-light">
+                    <option id="ta5" value="{{ ri.tax  }} " text="{{ cmp1.state }}">{{ ri.tax }}% IGST({{ ri.tax }}%) </option>                      
+                    <option value=28 text="{{ cmp1.state }}">28.0% IGST(28%)</option>
                     <option value=28 text="{{ cmp1.state }}">28.0% IGST(28%)</option>
                     <option value=18 text="{{ cmp1.state }}">18.0% IGST(18%)</option>
                     <option value=12 text="{{ cmp1.state }}">12.0% IGST(12%)</option>
@@ -388,12 +395,13 @@
                     <option value=0 text="{{ cmp1.state }}">0.0% IGST(0%)</option>
                   </select>
                 </td>
+                
                 <td style="width: 11%;">
-                  <input type="text" name='discount[]' id="disc0" value="0" placeholder='Discount' class="form-control disc text-dark bg-light" step="0.00" min="0"style="width: 90px;" />
+                  <input type="text" name='discount[]' id="disc{{forloop.counter|add:'-1'}}" value="{{ri.discount}}" placeholder='Discount' class="text-dark bg-light form-control disc" step="0.00" min="0"/>
                 </td>
 
                 <td style="width: 11%;">
-                  <input type="text" name='amount[]' id="amount0" placeholder='Amount' class="form-control amount text-dark bg-light" step="0.00" min="0" style="width: 90px;"  />
+                  <input type="text" name='amount[]' id="amount{{forloop.counter|add:'-1'}}" value="{{ri.amount}}" placeholder='Amount' class=" text-dark bg-light form-control amount" step="0.00" min="0" />
                 </td>
                 <td>
                   <button type="button" id="0" class="btn btn-outline-primary clone_row text-center mb-1 p-1 " data-toggle= "tooltip" data-placement="bottom" tooltip="Clone"
@@ -401,13 +409,14 @@
                     <i class="fa-solid fa-clone"></i>
                   </button> 
                     <br>
-                  <button disabled type="button" id="0" class="btn remove_row text-center p-1" data-toggle= "tooltip" data-placement="bottom" tooltip="Remove"
+                  <button type="button" id="0" class="btn btn-outline-danger remove_row text-center p-1" data-toggle= "tooltip" data-placement="bottom" tooltip="Remove"
                       style = "width:25px; height: 25px; border-radius: 90% " >
-                    <i class="fa fa-window-close bg-dark text-dark"></i>
+                    <i class="fa fa-window-close"></i>
                   </button>
                 </td>
 
               </tr>
+              {% endfor %}
             </tbody>
             <tr>
                 <td style="border: none;"><a class="btn btn-outline-secondary ml-1 text-capitalize" role="button" id="add"  
@@ -421,6 +430,7 @@
         <div class="col-md-5 mt-2 p-3 mx-5">
           <label for="paymentmethod">Payment Method</label>
           <select name="paymentmethod" id="paymentmethod" class="form-control text-dark bg-light">
+            <option value="{{po_item.payment_type}}" selected>{{po_item.payment_type}}</option>
               <option value="Cash">Cash</option>
               <option value="Cheque">Cheque</option>
               {% for b in bank %}
@@ -450,7 +460,7 @@
             </div>
             <div class="col-sm-3 mt-2"></div>
             <div class="col-sm-4 mt-2">
-              <input type="number" step="any" name='subtotal' placeholder=0  step="0.00" min="0"
+              <input type="number" step="any" name='subtotal' placeholder=0 value="{{po_item.sub_total|floatformat:2}}" step="0.00" min="0"
                 class="form-control text-dark bg-light" id="subtotal" readonly style="background-color: #2A3038;border: 1px solid #2c2e33;">
             </div>
           </div>
@@ -458,28 +468,28 @@
           <div class="row container-fluid p-2 m-0 d-none" id="igst1">
             <div class="col-sm-5 mt-2"><label for="a" class="text-center">IGST</label></div>
             <div class="col-sm-3 mt-2"></div>
-            <div class="col-sm-4 mt-2"><input type="number" name='igst' step="0.00" min="0" id="igst" placeholder=0 
+            <div class="col-sm-4 mt-2"><input type="number" name='igst' step="0.00" min="0" value="{{po_item.igst|floatformat:2}}" id="igst" placeholder=0 
                 class="form-control text-dark bg-light" readonly style="background-color: #2A3038;border: 1px solid #2c2e33;"/>
             </div>
           </div>
           <div class="row container-fluid p-2 m-0 d-none" id="cgst1">
             <div class="col-sm-5 mt-2"><label for="a" class="text-center">CGST</label></div>
             <div class="col-sm-3 mt-2"></div>
-            <div class="col-sm-4 mt-2"><input type="number" name='cgst' step="0.00" min="0" id="cgst" placeholder=0 
+            <div class="col-sm-4 mt-2"><input type="number" name='cgst' step="0.00" value="{{po_item.cgst|floatformat:2}}" min="0" id="cgst" placeholder=0 
                 class="form-control text-dark bg-light" readonly style="background-color: #2A3038;border: 1px solid #2c2e33;"/>
             </div>
           </div>
           <div class="row container-fluid p-2 m-0 d-none" id="sgst1">
             <div class="col-sm-5 mt-2"><label for="a" class="text-center">SGST</label></div>
             <div class="col-sm-3 mt-2"></div>
-            <div class="col-sm-4 mt-2"><input type="number" name='sgst' step="0.00" min="0" id="sgst" placeholder=0 
+            <div class="col-sm-4 mt-2"><input type="number" name='sgst' value="{{po_item.sgst|floatformat:2}}" step="0.00" min="0" id="sgst" placeholder=0 
                 class="form-control text-dark bg-light" readonly style="background-color: #2A3038;border: 1px solid #2c2e33;"/>
             </div>
           </div>
           <div class="row container-fluid p-2 m-0" id="tax_amount">
             <div class="col-sm-5 mt-2"><label for="a" class="text-center">Tax Amount</label></div>
             <div class="col-sm-3 mt-2"></div>
-            <div class="col-sm-4 mt-2"><input type="number" id="total_taxamount" name="total_taxamount"step="0.00" min="0" placeholder=0 value="0"
+            <div class="col-sm-4 mt-2"><input type="number" id="total_taxamount" value="{{po_item.tax_amount|floatformat:2}}" name="total_taxamount"step="0.00" min="0" placeholder=0
                 class="total_taxamount form-control text-dark bg-light" readonly  style="background-color: #2A3038;border: 1px solid #2c2e33;"/>
             </div>
           </div>
@@ -491,7 +501,7 @@
             <div class="col-sm-3 mt-2">
             </div>
             <div class="col-sm-4 mt-2">
-              <input type="number" name='addcharge' tep="0.00"   id="addcharge" placeholder=0 
+              <input type="number" name='addcharge' tep="0.00" value="{{po_item.shipping_charge|floatformat:2|default:0}}" id="addcharge" placeholder=0 
               class="form-control text-dark bg-light"/>
             </div>
           </div>
@@ -501,14 +511,14 @@
             <div class="col-sm-3 mt-2">
             </div>
             <div class="col-sm-4 mt-2">
-              <input type="number" name='add_round_off' value="0" step="any" id="add_round_off" placeholder=0 class="form-control text-dark bg-light">
+              <input type="number" name='add_round_off' step="any" value="{{po_item.adjustment_charge|default:0|default:0}}" id="add_round_off" placeholder=0 class="form-control text-dark bg-light">
             </div>
           </div><hr>
                  
           <div class="row container-fluid  p-2 m-0">
             <div class="col-sm-5 mt-2"><label for="a" class="text-center" id="grandtotallbl">Grand Total</label></div>
             <div class="col-sm-2 mt-2"></div>
-            <div class="col-sm-5 mt-2"><input type="number" name='grand_total' id="grandtotal" placeholder="0" step="0.00" min="0"
+            <div class="col-sm-5 mt-2"><input type="number" name='grand_total' value="{{po_item.grand_total|floatformat:2}}" id="grandtotal" placeholder="0" step="0.00" min="0"
                 class="form-control text-dark bg-light" readonly>
             </div>
           </div><hr>
@@ -516,7 +526,7 @@
           <div class="row container-fluid  p-2 m-0">
             <div class="col-sm-5 mt-2"><label for="a" class="text-center" id="Paid">Paid</label></div>
             <div class="col-sm-2 mt-2"></div>
-            <div class="col-sm-5 mt-2"><input type="number" name='amtPaid' value="0" id="amtPaid" placeholder="0" step="0.00" min="0"
+            <div class="col-sm-5 mt-2"><input type="number" name='amtPaid' value="{{po_item.payed|floatformat:2|default:0}}" id="amtPaid" placeholder="0" step="0.00" min="0"
                 class="form-control text-dark bg-light">
             </div>
           </div>
@@ -529,8 +539,8 @@
             <!-- <button type="button" class="close btn save_btn rounded-pill text-grey w-50 my-4 mt-2 py-2" aria-label="Close" id="cancelButton">CANCEL</button>
             <input type="submit" class="btn save_btn mt-2 py-2 rounded-pill text-grey w-50 my-4 mx-2" style="width: 200px; text-align: center ;" value="SAVE CHANGES" id="save">
             <button type="button" class="close btn save_btn rounded-pill text-grey w-50 my-4 mt-2 py-2" aria-label="Close" id="cancelButton">CANCEL</button> -->
-            <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
-            onclick="saveAsDraftDialog()" value="Save As Draft"> &nbsp;
+            <!-- <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
+            onclick="saveAsDraftDialog()" value="Save As Draft"> &nbsp; -->
         <input type="submit" class="btn text-white mt-5" style="background-color: rgb(210, 132, 30) ; "
             onclick="saveAndOpenDialog()" value="SAVE CHANGES"> &nbsp;
         <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
@@ -2326,89 +2336,66 @@ $(document).ready(function() {
     });
 });
 $(document).ready(function() {
-debugger
-select = $('#customer_sel').val();
-            // console.log(select);
-            $.ajax({
-                type: "GET",
-                url: "{% url 'get_customer_data_bill' %}",
-                data: {
-                    id: select
-                },
-                success: function (response) {
-                    // console.log(response)
-                    email = response.email
-                    pos = response.pos
-                    gst_treatment = response.gst_treatment
-                    gst_number = response.gst_number
 
-                    $("#cgst_trt_row").removeClass('d-none');
-                    $("#cgst_trt_row").addClass('d-flex');
-                    $("#pos_row").removeClass('d-none');
-                    $("#pos_row").addClass('d-flex');
-                    $("#customer_email_row").removeClass('d-none');
-                    $("#customer_email_row").addClass('d-flex');
-                    $("#cgstin_row").removeClass('d-none');
-                    $("#cgstin_row").addClass('d-flex');
+var name = $("#customer").val();
+var na = name.split(' ')[0];
+$.ajax({
 
-                    document.getElementById('customer_email').value = email
-                    document.getElementById('pos').value = pos
-                    document.getElementById('c_gsttype').value = gst_treatment
-                    document.getElementById('cgstin_inp').value = gst_number
+    url: "{% url 'get_customerdet' %}", 
 
-                    if( response.gst_treatment == 'Registered Business-Regular Business that is registered under GST'){
-                $("#cgstin_row").removeClass('d-none');
-                $("#cgstin_row").addClass('d-flex');
-                $('#cgstin_inp').val(' '+ response.gst_number)
-              }
-              else if( response.gst_treatment == 'Registered Business-Composition Business that is registered under the Composition scheme in GST'){
-                $("#cgstin_row").removeClass('d-none');
-                $("#cgstin_row").addClass('d-flex');
-                $('#cgstin_inp').val(' '+ response.gst_number)  
-              }
-              else if( response.gst_treatment == 'Overseas- Persons with who you do import or exports of supplies outside india'){
-                $("#cgstin_row").removeClass('d-none');
-                $("#cgstin_row").addClass('d-flex');
-                $('#cgstin_inp').val(' '+ response.gst_number)
-              }
-              
-              else{
-                $("#cgstin_row").addClass('d-none');
-              }
+    data: { 
+            // name : na[1]+ " " + na[2] + " "+ na[3],
+            id : na,
+            csrfmiddlewaretoken: '{{ csrf_token }}' 
+        },
 
-                // gst or igst in tax
+    type : 'POST',
 
-              $("#cust_state").val(response.state);
-   debugger 
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
+    success: function(data) {
+      console.log('na');
+      $("#cemail_row").removeClass('d-none');
+      $("#cemail_row").addClass('d-flex');
+      
+      $("#cgst_trt_row").removeClass('d-none');
+      $("#cgst_trt_row").addClass('d-flex');
 
-                   
+      $("#c_sou_supply_row").removeClass('d-none');
+      $("#c_sou_supply_row").addClass('d-flex');
+      
+      $('#cemail_inp').val(data.customer_email);
+      $('#srcofsupply').val(data.cust_place_supply);
+      $('#cgst_trt_inp').val(data.gst_treatment);
+      $('#cgstin_inp').val(data.gstin); 
+      if( data.gst_treatment == 'Registered Business-Regular Business that is registered under GST'){
+        $("#cgstin_row").removeClass('d-none');
+        $("#cgstin_row").addClass('d-flex');
+        $('#cgstin_inp').val(data.gstin);
 
-                    if(isGST()){ debugger
-                      $('#item_table tbody tr').each(function (Value, index,){ debugger
-                       
-                        let ind = Value+1
-                          var tax = $('#taxType'+ind).val();
-                           $('#tax'+ind+' optgroup[label="GST"]').show();
-                           $('#tax'+ind+' optgroup[label="IGST"]').hide();  
-                           $('#tax'+ind+' optgroup[label="GST"] option[value="' + tax + '"]').prop('selected', true);
-                      });
+      }
+      else if( data.gst_treatment == 'Registered Business-Composition Business that is registered under the Composition scheme in GST'){
+        $("#cgstin_row").removeClass('d-none');
+        $("#cgstin_row").addClass('d-flex');
+        $('#cgstin_inp').val(data.gstin);
+      }
+      else if( data.gst_treatment == 'Overseas- Persons with who you do import or exports of supplies outside india'){
+        $("#cgstin_row").removeClass('d-none');
+        $("#cgstin_row").addClass('d-flex');
+        $('#cgstin_inp').val(data.gstin);
+      }
+      
+      else{
+        $("#cgstin_row").addClass('d-none');
+      }
 
-                       } else {
-                        $('#item_table tbody tr').each(function (Value, index,){debugger
-                          let ind = Value+1
-                          var tax = $('#taxType'+ind).val();
-                           $('#tax'+ind+' optgroup[label="GST"]').hide();
-                          $('#tax'+ind+' optgroup[label="IGST"]').show(); 
-                          $('#tax'+ind+' optgroup[label="IGST"] option[value="' + tax + '"]').prop('selected', true);
-                          }); 
-                       } 
-                }
+        // gst or igst in tax
 
-            });
+      $("#cust_state").val(data.state);
+      srcofsupply()
+      isGST()
+    }
+    
+});
 
-           
 });
 
 $(document).ready(function() {
@@ -4144,7 +4131,7 @@ debugger
     }
     else{
       var frm = document.getElementById("forms");
-      frm.action = ("{% url 'create_recurring_bills' %}")
+      frm.action = ("{% url 'create_recurring_bills_purchase' %}")
     }
       
   }

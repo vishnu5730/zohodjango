@@ -3314,6 +3314,10 @@ def convert_to_recinvoice_frm_purchaseorder(request,pk):
     last_id = recurring_bills.objects.filter(user_id=request.user.id).order_by('-id').values('id').first()
     po_id=Purchase_Order.objects.get(id=pk)
     poitems = Purchase_Order_items.objects.filter(PO=po_id)
+    for i in poitems:
+        for j in item:
+            if i.item == j.Name:
+                i.id=j.id
     name=''
     name1 = po_id.vendor_name
     name1 = name1.split(' ')
@@ -3354,6 +3358,96 @@ def convert_to_recinvoice_frm_purchaseorder(request,pk):
     }
 
     return render(request, 'new_recinvoice_purchase.html', context)
+
+@login_required(login_url='login')
+def create_recurring_bills_purchase(request):
+
+    company = company_details.objects.get(user = request.user)
+    print(request.POST.get('customer').split(" ")[0])
+    cust = customer.objects.get(id=request.POST.get('customer').split(" ")[0],user = request.user)
+    
+    if request.method == 'POST':
+        # vname = request.POST.get('vendor').rsplit(' ', 1)
+        # cname = request.POST.get('customer').split(" ")[1:]
+        vname  = request.POST.get('vendor')
+        cname = request.POST.get('customer')
+        #cus=customer.objects.get(customerName=cname)   
+        custo=cust.id 
+        # cname = " ".join(cname)
+        v_gst_no=request.POST.get('gstin_inp') 
+        src_supply = request.POST.get('srcofsupply')
+        prof = request.POST['prof_name']
+        repeat = request.POST['repeats']
+        start = request.POST.get('start_date')
+        end = None if request.POST.get('end_date') == "" else  request.POST.get('end_date')
+        pay_term =request.POST['terms']
+        payment_method =request.POST['paymentmethod']
+        amt_paid =request.POST['amtPaid']
+        ordno =request.POST['ord_no']
+        po_item = Purchase_Order.objects.get(Pur_no=ordno)
+        po_item.complete_status = 2
+        po_item.save()
+        bill_no =  request.POST.get('bills')
+        sub_total =request.POST['subtotal']
+        adjustment =request.POST['add_round_off']
+
+        sgst=None if request.POST.get('sgst') == "" else  request.POST.get('sgst')
+        cgst=None if request.POST.get('cgst') == "" else  request.POST.get('cgst')
+        igst= None if request.POST.get('igst') == "" else  request.POST.get('igst')
+
+        status = 'Save'
+        taxamount =request.POST['total_taxamount']
+
+        shipping_charge=0 if request.POST['addcharge'] == "" else request.POST['addcharge']
+        grand_total=request.POST['grand_total']
+        note=request.POST.get('note')
+        balance = float(grand_total) - float(amt_paid)
+        u = User.objects.get(id = request.user.id)
+
+        bills = recurring_bills(vendor_name=vname,profile_name=prof,customer_name = cname,vendor_gst_number=v_gst_no,
+                    source_supply=src_supply,repeat_every = repeat,start_date = start,end_date = end,
+                    payment_terms =pay_term,sub_total=sub_total,sgst=sgst,cgst=cgst,igst=igst,
+                    tax_amount=taxamount, shipping_charge = shipping_charge,
+                    grand_total=grand_total,note=note,company=company,user = u,cname_recur_id=custo,bill_no = bill_no,status = status,payment_method=payment_method, amt_paid=amt_paid,
+                    adjustment = adjustment,balance = balance)
+        bills.save()
+
+        r_bill = recurring_bills.objects.get(id=bills.id)
+
+        if len(request.FILES) != 0:
+            r_bill.document=request.FILES['file'] 
+            r_bill.save()
+
+        items = request.POST.getlist("item[]")
+        
+        quantity = request.POST.getlist("qty[]")
+        rate = request.POST.getlist("rate[]")
+        
+        # if (src_supply.split("-")[1]) == company.state:
+        if(isGST(src_supply)):
+            tax = request.POST.getlist("tax1[]")
+        else:
+            tax = request.POST.getlist("tax2[]")
+
+        discount = request.POST.getlist("discount[]") 
+        amount = request.POST.getlist("amount[]")
+        hsn = request.POST.getlist('HSN[]')
+
+        if len(items)==len(amount) == len(quantity) == len(rate)==len(tax) == len(discount) == len(hsn) and items and  quantity and rate and tax and discount and amount and hsn:
+                
+                mapped=zip(items,quantity,rate,tax,discount,amount,hsn)
+                mapped=list(mapped)
+
+                for ele in mapped:
+
+                    it = AddItem.objects.get(user = request.user, id = ele[0]).Name
+                        
+                    created = recurring_bills_items.objects.create(item = it,quantity=ele[1],rate=ele[2],
+                    tax=ele[3],discount = ele[4],amount=ele[5],hsn=ele[6], user = u,company = company, recur_bills = r_bill)
+                
+        return redirect('recurring_bill')
+    
+    return redirect('recurring_bill')
 
 def convert_view(request,pk):
     sale=SalesOrder.objects.get(id=pk)
@@ -8670,7 +8764,7 @@ def create_Purchase_order(request):
                                     payment_type = payment_type,
                                     term=terms_con,
                                     company=company,
-                                    custo_id=custo,
+                                    custo=cus,
                                     user = u,typ=typ)
             purchase.save()
 
@@ -8715,7 +8809,7 @@ def create_Purchase_order(request):
                                     shipping_charge = shipping_charge,
                                     grand_total=grand_total,
                                     note=note,
-                                    
+                                    custo=cus,
                                     term=terms_con,
                                     company=company,
                                     user = u,typ=typ)
@@ -12056,6 +12150,71 @@ def convert_to_invoice_purchase(request,pk):
                }
 
     return render(request, 'new_invoice_purchase.html',context)
+
+def create_purchase_bill1_purchase(request):
+    cur_user = request.user
+    user = User.objects.get(id=cur_user.id)
+    if request.method == 'POST':
+        vendor_name = request.POST['vendor_name']
+        vendor_email = request.POST['vendor_email']
+        vendor_gst = request.POST['gstin_inp']
+        sos = request.POST['sos']
+        cust_name = request.POST['customer_name']
+        cus=customer.objects.get(customerName=cust_name)   
+        custo=cus.id 
+        cust_email = request.POST['customer_email']
+        pos = request.POST['pos']
+        bill_number = request.POST['bill_number']
+        order_number = request.POST['order_number']
+        bill_date = request.POST['bill_date']
+        due_date = request.POST['due_date']
+        terms = request.POST['p_terms']
+        repeat_every = request.POST['repeats']
+        payment_method = request.POST['paymentmethod']
+        adjustment = request.POST['add_round_off']
+        amt_paid = request.POST['amtPaid']
+        po_item = Purchase_Order.objects.get(Pur_no=order_number)
+        po_item.complete_status = 1
+        po_item.save()
+
+        item = request.POST.getlist('item[]')
+        # account = request.POST.getlist('account[]')
+        quantity = request.POST.getlist('quantity[]')
+        rate = request.POST.getlist('rate[]')
+        tax = request.POST.getlist('tax[]')
+        amount = request.POST.getlist('amount[]')
+        hsn = request.POST.getlist('HSN[]')
+        discount = request.POST.getlist('discount[]')
+
+        # cust_note = request.POST['customer_note']
+        sub_total = request.POST['subtotal']
+        igst = request.POST['igst']
+        sgst = request.POST['sgst']
+        cgst = request.POST['cgst']
+        tax_amnt = request.POST['total_taxamount']
+        shipping = request.POST['shipping_charge']
+       
+        total = request.POST['total']
+        # tearms_conditions = request.POST['tearms_conditions']
+        attachment = request.FILES.get('file')
+        status = 'Save'
+        balance = float(total) - float(amt_paid)
+       
+        bill = PurchaseBills(user=user,cusname_id=custo, customer_name=cust_name,customer_email= cust_email,place_of_supply=pos,vendor_name=vendor_name,
+                             vendor_email=vendor_email,vendor_gst_no=vendor_gst,source_of_supply=sos,bill_no=bill_number, order_number=order_number, bill_date=bill_date, 
+                             due_date=due_date,payment_terms=terms, sub_total=sub_total,igst=igst,sgst=sgst,cgst=cgst,tax_amount=tax_amnt, 
+                             shipping_charge=shipping,total=total, status=status,attachment=attachment,repeat_every=repeat_every,
+                             payment_method=payment_method,amt_paid=amt_paid,balance=balance,adjustment=adjustment)
+        bill.save()
+       
+
+        if len(item) == len(quantity) == len(rate) == len(tax) == len(amount) == len(hsn) == len(discount):
+            mapped = zip(item, quantity, rate,tax, amount, hsn, discount)
+            mapped = list(mapped)
+            for element in mapped:
+                created = PurchaseBillItems.objects.create(
+                    purchase_bill=bill, item_name=element[0], quantity=element[1], rate=element[2], tax_percentage=element[3], amount=element[4], hsn=element[5], discount=element[6])
+    return redirect('view_bills')
 
 def get_customer_data_bill(request):
     user = request.user
