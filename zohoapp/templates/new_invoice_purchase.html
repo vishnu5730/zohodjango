@@ -214,7 +214,7 @@ debugger
           </div>
             <div class="row mb-4 d-none pt-2" id="sos_row">
                 <div class="col-sm-2"><label for="vendor_sos">Source Of Supply</label></div>
-                <div class="col-sm-10"><input type="text" value="{{po_item.source_supply}}" id="sos" name="sos" class="form-control bg-white text-dark"
+                <div class="col-sm-10"><input type="text" id="sos" name="sos" class="form-control bg-white text-dark"
                         style="width: 50%;">
 
                 </div>
@@ -332,9 +332,9 @@ debugger
               <input type="text" class="form-control text-dark bg-light"  id="cgstin_inp" name="cgstin_inp"style="width: 50%;" >
             </div>
           </div>
-          <div class="row mb-4 pt-2 d-none" id="pos_row" >
+          <div class="row mb-4 pt-2" id="pos_row" >
               <div class="col-sm-2"><label for="customer_pos">Place Of Supply</label></div>
-              <div class="col-sm-10"><input type="text" id="pos" name="pos" class="form-control bg-white text-dark"
+              <div class="col-sm-10"><input type="text" id="pos" value="{{po_item.source_supply}}" name="pos" class="form-control bg-white text-dark"
                       style="width: 50%;">
 
               </div>
@@ -2206,15 +2206,15 @@ select = $('#customer_sel').val();
 
                     $("#cgst_trt_row").removeClass('d-none');
                     $("#cgst_trt_row").addClass('d-flex');
-                    $("#pos_row").removeClass('d-none');
-                    $("#pos_row").addClass('d-flex');
+                    // $("#pos_row").removeClass('d-none');
+                    // $("#pos_row").addClass('d-flex');
                     $("#customer_email_row").removeClass('d-none');
                     $("#customer_email_row").addClass('d-flex');
                     $("#cgstin_row").removeClass('d-none');
                     $("#cgstin_row").addClass('d-flex');
 
                     document.getElementById('customer_email').value = email
-                    document.getElementById('pos').value = pos
+                    // document.getElementById('pos').value = pos
                     document.getElementById('c_gsttype').value = gst_treatment
                     document.getElementById('cgstin_inp').value = gst_number
 
@@ -2292,15 +2292,15 @@ select = $('#customer_sel').val();
 
                     $("#cgst_trt_row").removeClass('d-none');
                     $("#cgst_trt_row").addClass('d-flex');
-                    $("#pos").removeClass('d-none');
-                    $("#pos").addClass('d-flex');
+                    // $("#pos").removeClass('d-none');
+                    // $("#pos").addClass('d-flex');
                     $("#customer_email").removeClass('d-none');
                     $("#customer_email").addClass('d-flex');
                     $("#cgstin_row").removeClass('d-none');
                     $("#cgstin_row").addClass('d-flex');
 
                     document.getElementById('customer_email').value = email
-                    document.getElementById('pos').value = pos
+                    // document.getElementById('pos').value = pos
                     document.getElementById('c_gsttype').value = gst_treatment
                     document.getElementById('cgstin_inp').value = gst_number
                     if( response.gst_treatment == 'Registered Business-Regular Business that is registered under GST'){
@@ -2388,8 +2388,8 @@ select = $('#customer_sel').val();
                       $("#gst_trt_row").addClass('d-flex');
                       $("#gstin_row").removeClass('d-none');
                       $("#gstin_row").addClass('d-flex');
-                      $("#sos_row").removeClass('d-none');
-                      $("#sos_row").addClass('d-flex');
+                      // $("#sos_row").removeClass('d-none');
+                      // $("#sos_row").addClass('d-flex');
                       $("#vendor_email_row").removeClass('d-none');
                       $("#vendor_email_row").addClass('d-flex');
   
@@ -2456,14 +2456,14 @@ select = $('#customer_sel').val();
                       $("#gst_trt_row").addClass('d-flex');
                       $("#gstin_row").removeClass('d-none');
                       $("#gstin_row").addClass('d-flex');
-                      $("#sos_row").removeClass('d-none');
-                      $("#sos_row").addClass('d-flex');
+                      // $("#sos_row").removeClass('d-none');
+                      // $("#sos_row").addClass('d-flex');
                       $("#vendor_email").removeClass('d-none');
                       $("#vendor_email").addClass('d-flex');
   
   
                       document.getElementById('vendor_email').value = email
-                      document.getElementById('sos').value = sos
+                      // document.getElementById('sos').value = sos
                       document.getElementById('gstin_inp').value = gst_number
                       document.getElementById('v_gsttype').value = gst_treatment
   

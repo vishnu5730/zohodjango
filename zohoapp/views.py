@@ -3327,8 +3327,8 @@ def convert_to_recinvoice_frm_purchaseorder(request,pk):
             name+=' '
     name3=name.split(' ')
     name = name3[0]+' '+name3[1]
-    print(name)
     po_id.vendor_name = name
+    nameid = name1[-1]
     if last_id !=  None:
         if request.user.is_authenticated:
             last_id = last_id['id']
@@ -3355,6 +3355,7 @@ def convert_to_recinvoice_frm_purchaseorder(request,pk):
         'bank':bank,
         'po_item':po_id,
         'poitems':poitems,
+        'nameid':nameid
     }
 
     return render(request, 'new_recinvoice_purchase.html', context)
