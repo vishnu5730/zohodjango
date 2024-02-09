@@ -8687,8 +8687,7 @@ def create_Purchase_order(request):
         org_state = request.POST.get('orgstate')
             
         cname = request.POST.get('custom')
-        cus=customer.objects.get(customerName=cname)   
-        custo=cus.id 
+        
         cmail = request.POST.get('custMail')
         caddress = request.POST.get('custAddress')
         cstreet = request.POST.get('custStreet')
@@ -8765,7 +8764,6 @@ def create_Purchase_order(request):
                                     payment_type = payment_type,
                                     term=terms_con,
                                     company=company,
-                                    custo=cus,
                                     user = u,typ=typ)
             purchase.save()
 
@@ -8775,7 +8773,29 @@ def create_Purchase_order(request):
                 p_bill.document=request.FILES['file'] 
                 p_bill.save()
                 print('save')
+            item = request.POST.getlist("item[]")
+            hsn = request.POST.getlist("hsn[]")
+            quantity = request.POST.getlist("quantity[]")
+            rate = request.POST.getlist("rate[]")
+            tax = request.POST.getlist("tax[]")
+            discount = request.POST.getlist("discount[]")
+            amount = request.POST.getlist("amount[]")
+            if len(item) == len(quantity) == len(rate) == len(discount) == len(tax) == len(amount):
+                for i in range(len(item)):
+                    created = Purchase_Order_items.objects.create(
+                        item=item[i],
+                        hsn=hsn[i],
+                        quantity=quantity[i],
+                        rate=rate[i],
+                        tax=tax[i],
+                        discount=discount[i],
+                        amount=amount[i],
+                        user=u,
+                        company=company,
+                        PO=p_bill
+                    )
         else:
+            cus=customer.objects.get(customerName=cname)   
             purchase = Purchase_Order(vendor_name=vname,
                                     vendor_mail=vmail,
                                     vendor_gst_traet=vgst_t,
