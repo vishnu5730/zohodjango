@@ -435,21 +435,26 @@ debugger
                           class='bg-transparent border-0 text-black text-right tax'
                           onclick='handleTaxChange({{ forloop.counter }})'> 
                                 <optgroup label="GST" style="display: none;">
-                                  <option value=0>0% GST</option>
+                                {% if po_item.source_supply == "[KL] Kerala" %}
+                                <option value={{item.tax}}>{{item.tax}}% GST</option>
+                                {% else %}
+                                <option value={{item.tax}}>{{item.tax}}% IGST</option>
+                                {% endif %}
+                                  <!-- <option value=0>0% GST</option>
                                   <option value=3>3% GST</option>
                                   <option value=5>5% GST</option>
                                   <option value=12>12% GST</option>
                                   <option value=18>18% GST</option>
-                                  <option value=28>28% GST</option>
+                                  <option value=28>28% GST</option> -->
                               </optgroup>
-                              <optgroup label="IGST"  style="display: none;">
+                              <!-- <optgroup label="IGST"  style="display: none;">
                                   <option value=0>0% IGST</option>
                                   <option value=3>3% IGST</option>
                                   <option value=5>5% IGST</option>
                                   <option value=12>12% IGST</option>
                                   <option value=18>18% IGST</option>
                                   <option value=28>28% IGST</option>
-                              </optgroup>
+                              </optgroup> -->
                             </select></td>
                         <td style="display: none;">
                             <input type="number" name='taxamount[]' id="taxamount{{ forloop.counter }}" class="form-control taxamount" style="width: 50px;" />
@@ -460,25 +465,25 @@ debugger
                         <td class='text-right'><input type='number' id='amount{{ forloop.counter }}'
                                 class='bg-transparent border-0 text-black text-right amount' name='amount[]'
                                 value="{{item.amount}}" style="width: 80px;"></td>
-                        <td class='text-center'><button type='button' id='copy_btn{{ forloop.counter }}'
+                        <!-- <td class='text-center'><button type='button' id='copy_btn{{ forloop.counter }}'
                                 class='btn btn-transparent text-secondary btn-sm   copy_row' data-toggle='tooltip'
                                 data-placement='top' title='Clone' style='width:20px'><i
                                     class="fas fa-copy"></i></button>
-                        </td>
-                        <td class='text-center'><button type='button' id='del_btn{{ forloop.counter }}'
+                        </td> -->
+                        <!-- <td class='text-center'><button type='button' id='del_btn{{ forloop.counter }}'
                                 class='btn btn-transparent text-danger btn-sm   delete-row' data-toggle='tooltip'
                                 data-placement='top' title='delete-row' style='width:20px'><i
-                                    class='fa fa-times'></i></button></td>
+                                    class='fa fa-times'></i></button></td> -->
                     </tr>
                     {% endfor %}
                 </tbody>
 
             </table>
-            <button type="button" class="btn btn-sm text-white" style="background-color: rgb(210, 132, 30) ;"
-                id="add-row">Add another line</button>
+            <!-- <button type="button" class="btn btn-sm text-white" style="background-color: rgb(210, 132, 30) ;"
+                id="add-row">Add another line</button> -->
             
 
-            <div class="row  pb-5">
+            <div class="row pt-3 pb-5">
                 <div class="col-sm-6 d-flex flex-column mt-auto">
 
 
