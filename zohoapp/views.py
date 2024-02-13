@@ -24170,6 +24170,27 @@ def downloadEstimateSampleImportFile(request):
     wb.save(response)
     return response
 
+def downloadVendorSampleImportFile(request):
+    estimate_table_data = [['SLNO','CUSTOMER NAME','CUSTOMER MAILID','ESTIMATE DATE','EXPIRY DATE','PLACE OF SUPPLY','SUB TOTAL','IGST','CGST','SGST','TAX AMOUNT','SHIPPING CHARGE','ADJUSTMENT','GRAND TOTAL','STATUS'],['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1']]      
+    items_table_data = [['ESTIMATE NO','ITEM NAME','HSN','QUANTITY','RATE','TAX PERCENTAGE','DISCOUNT','AMOUNT']] 
+    wb = Workbook()
+    sheet1 = wb.active
+    sheet1.title = 'Sheet1'
+    sheet2 = wb.create_sheet()
+    sheet2.title = 'Sheet2'
+
+    # Populate the sheets with data
+    for row in estimate_table_data:
+        sheet1.append(row)  
+    for row in items_table_data:
+        sheet2.append(row)
+    # Create a response with the Excel file
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=estimate_sample_file.xlsx'
+     # Save the workbook to the response
+    wb.save(response)
+    return response
+
 def import_vendor(request):
     user1=request.user.id
     user2=User.objects.get(id=user1)
@@ -24275,28 +24296,6 @@ def import_vendor(request):
                 EstimateItems.objects.create(item_name = item_name,hsn=hsn,quantity=int(quantity),rate = float(rate),tax_percentage=tax_percentage,discount = float(discount),amount=amount,estimate=challn)
         messages.success(request, 'Data imported successfully.!')
         return redirect("allestimates")
-           
-            
-def downloadVendorSampleImportFile(request):
-    estimate_table_data = [['SLNO','CUSTOMER NAME','CUSTOMER MAILID','ESTIMATE DATE','EXPIRY DATE','PLACE OF SUPPLY','SUB TOTAL','IGST','CGST','SGST','TAX AMOUNT','SHIPPING CHARGE','ADJUSTMENT','GRAND TOTAL','STATUS'],['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1']]      
-    items_table_data = [['ESTIMATE NO','ITEM NAME','HSN','QUANTITY','RATE','TAX PERCENTAGE','DISCOUNT','AMOUNT']] 
-    wb = Workbook()
-    sheet1 = wb.active
-    sheet1.title = 'Sheet1'
-    sheet2 = wb.create_sheet()
-    sheet2.title = 'Sheet2'
-
-    # Populate the sheets with data
-    for row in estimate_table_data:
-        sheet1.append(row)  
-    for row in items_table_data:
-        sheet2.append(row)
-    # Create a response with the Excel file
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=estimate_sample_file.xlsx'
-     # Save the workbook to the response
-    wb.save(response)
-    return response
 
 def attach_estimate_file(request,pk):
     user1=request.user.id
