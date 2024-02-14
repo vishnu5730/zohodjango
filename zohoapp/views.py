@@ -972,6 +972,91 @@ def sample(request):
     print("hello")
     return redirect('base')
 
+import pandas as pd
+
+def downloadVendorSampleImportFile(request):
+    estimate_table_data = [['SLNO','CUSTOMER NAME','CUSTOMER MAILID','ESTIMATE DATE','EXPIRY DATE','PLACE OF SUPPLY','SUB TOTAL','IGST','CGST','SGST','TAX AMOUNT','SHIPPING CHARGE','ADJUSTMENT','GRAND TOTAL','STATUS'],['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1']]      
+    items_table_data = [['ESTIMATE NO','ITEM NAME','HSN','QUANTITY','RATE','TAX PERCENTAGE','DISCOUNT','AMOUNT']] 
+    wb = Workbook()
+    sheet1 = wb.active
+    sheet1.title = 'Sheet1'
+    sheet2 = wb.create_sheet()
+    sheet2.title = 'Sheet2'
+
+    # Populate the sheets with data
+    for row in estimate_table_data:
+        sheet1.append(row)  
+    for row in items_table_data:
+        sheet2.append(row)
+    # Create a response with the Excel file
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=estimate_sample_file.xlsx'
+     # Save the workbook to the response
+    wb.save(response)
+    return response
+
+def import_vendor(request):
+    if request.method == 'POST':
+
+      file = request.FILES['excel_file']
+
+      df = pd.read_excel(file)
+
+      errors = []
+      count_rows = 0
+
+      try:    
+        for index, row in df.iterrows():
+          count_rows +=1
+
+          party_name = row.get('Party Name').capitalize()
+          contact = str(row.get('Contact'))
+
+          current_date = date.today() if 'nan' else datetime.strptime(str(row.get('Current Date')), '%Y-%m-%d').date()
+
+          vendor_obj = vendor_table(
+              party_name = party_name, 
+              contact = contact,
+              gst_no = '' if 'nan' else str(row.get('GST No.', '')),
+              gst_type = '' if 'nan' else row.get('GST Type', ''),
+              email = '' if 'nan' else row.get('Email'),
+              state = '' if 'nan' else row.get('Supply State', ''),
+              address =  '' if 'nan' else row.get('Billing Address', ''),
+              openingbalance = 0 if 'nan' else row.get('Opening Balance'),
+              payment ='' if 'nan' else row.get('Payment', ''),
+              creditlimit = '' if 'nan' else row.get('Credit Limit'),
+              current_date = current_date,
+              End_date = current_date,
+              additionalfield1 = '' if 'nan' else row.get('Additional Field 1', ''),
+              additionalfield2 = '' if 'nan' else row.get('Additional Field 2', ''),
+              additionalfield3 = '' if 'nan' else row.get('Additional Field 3', ''),
+              current_balance = 0 if 'nan' else row.get('Opening Balance'),
+              user = staff.company.user,
+              company = staff.company
+          )
+
+          if not party_name or not contact or contact == " ":
+            messages.error(request, f'Row "{count_rows}" :Please Enter Party Name and Contact Number.')
+          else:
+            
+            if party.objects.filter(contact=contact).exists(): 
+              if party.objects.filter(party_name=party_name, contact=contact).exists():
+                messages.error(request, f'Row "{count_rows}" :Party with the same party name "{party_name}"  and contact number "{contact}" already exists.')
+              else:
+                messages.error(request, f'Row "{count_rows}" :Party with the same contact number "{contact}" already exists.')
+            else:
+              party_obj.save() 
+              party_history.objects.create(party = party_obj,company=staff.company,staff=staff,action='Created').save()
+
+        party_final = party.objects.filter(company=cmp).last()
+        return redirect('view_parties', party_final.id)
+      
+      except Exception as e:
+          error_message = f"Error in row {index + 1}: {e}"
+          errors.append(error_message)
+          return redirect('view_parties', 0)
+    return redirect('view_parties', 0)
+
 def view_vendor_list(request):
     company=company_details.objects.get(user=request.user)
     user_id=request.user.id
@@ -24169,133 +24254,6 @@ def downloadEstimateSampleImportFile(request):
      # Save the workbook to the response
     wb.save(response)
     return response
-
-def downloadVendorSampleImportFile(request):
-    estimate_table_data = [['SLNO','CUSTOMER NAME','CUSTOMER MAILID','ESTIMATE DATE','EXPIRY DATE','PLACE OF SUPPLY','SUB TOTAL','IGST','CGST','SGST','TAX AMOUNT','SHIPPING CHARGE','ADJUSTMENT','GRAND TOTAL','STATUS'],['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1']]      
-    items_table_data = [['ESTIMATE NO','ITEM NAME','HSN','QUANTITY','RATE','TAX PERCENTAGE','DISCOUNT','AMOUNT']] 
-    wb = Workbook()
-    sheet1 = wb.active
-    sheet1.title = 'Sheet1'
-    sheet2 = wb.create_sheet()
-    sheet2.title = 'Sheet2'
-
-    # Populate the sheets with data
-    for row in estimate_table_data:
-        sheet1.append(row)  
-    for row in items_table_data:
-        sheet2.append(row)
-    # Create a response with the Excel file
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=estimate_sample_file.xlsx'
-     # Save the workbook to the response
-    wb.save(response)
-    return response
-
-def import_vendor(request):
-    user1=request.user.id
-    user2=User.objects.get(id=user1)
-    cmp=company_details.objects.get(user=user1)
-    if request.method == 'POST' and 'excel_file' in request.FILES:
-        excel_file = request.FILES.get('excel_file')
-        
-        wb = load_workbook(excel_file)
-        try:
-            ws = wb["Sheet1"]
-            header_row = ws[1]
-            column_names = [cell.value for cell in header_row]
-            print("Column Names:", column_names)
-        except:
-          print('sheet not found')
-          messages.error(request,'`challan` sheet not found.! Please check.')
-          return redirect('allestimates')
-        
-        ws = wb["Sheet1"]
-        estimate_columns = ['SLNO','CUSTOMER NAME','CUSTOMER MAILID','ESTIMATE DATE','EXPIRY DATE','PLACE OF SUPPLY','SUB TOTAL','IGST','CGST','SGST','TAX AMOUNT','SHIPPING CHARGE','ADJUSTMENT','GRAND TOTAL','STATUS']
-        estimate_sheet = [cell.value for cell in ws[1]]
-        if estimate_sheet != estimate_columns:
-          print('invalid sheet')
-          messages.error(request,'`challan` sheet column names or order is not in the required formate.! Please check.')
-          return redirect("allestimates")
-        
-        for row in ws.iter_rows(min_row=2, values_only=True):
-          slno,customer_name,customer_mailid,estimate_date,expiry_date,place_of_supply,subtotal,igst,cgst,sgst,taxamount,shipping_charge,adjustment,grandtotal,status = row
-          if slno is None or place_of_supply is None or taxamount is None or grandtotal is None:
-            print('challan == invalid data')
-            messages.error(request,'`challan` sheet entries missing required fields.! Please check.')
-            return redirect("allestimates")
-          
-        # checking items sheet columns
-        ws = wb["Sheet2"]
-        items_columns = ['ESTIMATE NO','ITEM NAME','HSN','QUANTITY','RATE','TAX PERCENTAGE','DISCOUNT','AMOUNT']
-        items_sheet = [cell.value for cell in ws[1]]
-        if items_sheet != items_columns:
-          print('invalid sheet')
-          messages.error(request,'`items` sheet column names or order is not in the required formate.! Please check.')
-          return redirect("allestimates")
-        
-        for row in ws.iter_rows(min_row=2, values_only=True):
-          chl_no,item_name,hsn,quantity,rate,tax_percentage,discount,amount=row
-          if chl_no is None or item_name is None or quantity is None or tax_percentage is None or amount is None:
-            print('items == invalid data')
-            messages.error(request,'`items` sheet entries missing required fields.! Please check.')
-            return redirect("allestimates")
-        
-         # getting data from estimate sheet and create estimate.
-        ws = wb['Sheet1']
-        for row in ws.iter_rows(min_row=2, values_only=True):
-            slno,customer_name,customer_mailid,estimate_date,expiry_date,place_of_supply,subtotal,igst,cgst,sgst,taxamount,shipping_charge,adjustment,grandtotal,status = row
-            dcNo = slno
-            if slno is None:
-                continue
-            # Fetching last bill and assigning upcoming bill no as current + 1
-            # Also check for if any bill is deleted and bill no is continuos w r t the deleted bill
-            latest_bill = Estimates.objects.filter(company = cmp).order_by('-reference').first()
-            if latest_bill:
-                last_number = int(latest_bill.reference)
-                new_number = last_number + 1
-            else:
-                new_number = 1
-            if deletedestimates.objects.filter(cid = cmp).exists():
-                    deleted = deletedestimates.objects.get(cid = cmp)
-                    if deleted:
-                        while int(deleted.reference_number) >= new_number:
-                            new_number+=1
-            if Estimates.objects.filter(company=cmp,reference=1).exists():
-                estobj=Estimates.objects.get(company=cmp,reference=1)
-                estno=estobj.estimate_no
-                refno=estobj.reference
-                print("eeeeeeeeee   ssssssssssssssss   tttttttttttttttttttt")
-                ref_len=len(str(refno))
-                ref_len2=int(ref_len)
-                
-                sliced_str=estno[:-ref_len2]
-                print("eeeeeeeeee   ssssssssssssssss   tttttttttttttttttttt")
-                print(sliced_str)
-                print("-------------------------------------------------------------")
-                estno=sliced_str+str(new_number)
-            else:
-                estno="EST-"+str(new_number)
-            custname=customer_name.upper()
-            cust=customer.objects.get(customerEmail=customer_mailid)
-            challn=Estimates(customer_name=custname,customer_mailid=customer_mailid,customer_placesupply=place_of_supply,
-                            reference=new_number,estimate_date=estimate_date,expiry_date=expiry_date,sub_total=subtotal,igst=igst,
-                            cgst=cgst,sgst=sgst,tax_amount=taxamount,shipping_charge=shipping_charge,adjustment=adjustment,total=grandtotal,
-                            status=status,estimate_no=estno,convert_invoice='not_converted',convert_sales='not_converted',
-                            convert_recinvoice='not_converted',company=cmp,customer=cust,user=user2)
-            challn.save()
-            # Items for the estimate
-            ws = wb['Sheet2']
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                chl_no,item_name,hsn,quantity,rate,tax_percentage,discount,amount=row
-                if int(chl_no) == int(dcNo):
-                    print(row)
-                if discount is None:
-                    discount=0
-                # if price is None:
-                #     price=0
-                EstimateItems.objects.create(item_name = item_name,hsn=hsn,quantity=int(quantity),rate = float(rate),tax_percentage=tax_percentage,discount = float(discount),amount=amount,estimate=challn)
-        messages.success(request, 'Data imported successfully.!')
-        return redirect("allestimates")
 
 def attach_estimate_file(request,pk):
     user1=request.user.id
