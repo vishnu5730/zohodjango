@@ -997,65 +997,99 @@ def downloadVendorSampleImportFile(request):
 
 def import_vendor(request):
     if request.method == 'POST':
-
-      file = request.FILES['excel_file']
-
-      df = pd.read_excel(file)
-
-      errors = []
-      count_rows = 0
-
-      try:    
+        file = request.FILES['excel_file']
+        df = pd.read_excel(file)
         for index, row in df.iterrows():
-          count_rows +=1
+            salutation = row.get('Salutation').capitalize()
+            first_name = row.get('First Name').capitalize()
+            last_name = row.get('Last Name').capitalize()
+            vendor_mail = row.get('Email')
+            gst_treatment = row.get('GST Treatment')
+            gst_number = row.get('GST Number')
+            opening_bal = row.get('Opening Balance')
+            vendor_display_name = salutation + ' ' + first_name + ' ' + last_name
+            company_name = row.get('Company Name') if row.get('Company Name') is not None else ''
+            vendor_wphone = row.get('vendor_wphone') if row.get('vendor_wphone') is not None else ''
+            vendor_mphone = row.get('vendor_mphone') if row.get('vendor_mphone') is not None else ''
+            skype_number = row.get('skype_number') if row.get('skype_number') is not None else ''
+            designation = row.get('designation') if row.get('designation') is not None else ''
+            department = row.get('department') if row.get('department') is not None else ''
+            website = row.get('website') if row.get('website') is not None else ''
+            pan_number = row.get('pan_number') if row.get('pan_number') is not None else ''
+            source_supply = row.get('source_supply') if row.get('source_supply') is not None else ''
+            currency = row.get('currency') if row.get('currency') is not None else ''
+            opening_bal_type = row.get('opening_bal_type') if row.get('opening_bal_type') is not None else ''
+            payment_terms = row.get('payment_terms') if row.get('payment_terms') is not None else ''
+            battention = row.get('battention') if row.get('battention') is not None else ''
+            bstreet = row.get('bstreet') if row.get('bstreet') is not None else ''
+            bcountry = row.get('bcountry') if row.get('bcountry') is not None else ''
+            baddress = row.get('baddress') if row.get('baddress') is not None else ''
+            bcity = row.get('bcity') if row.get('bcity') is not None else ''
+            bstate = row.get('bstate') if row.get('bstate') is not None else ''
+            bpin = row.get('bpin') if row.get('bpin') is not None else ''
+            bzip = row.get('bzip') if row.get('bzip') is not None else ''
+            bphone = row.get('bphone') if row.get('bphone') is not None else ''
+            bfax = row.get('bfax') if row.get('bfax') is not None else ''
+            sattention = row.get('sattention') if row.get('sattention') is not None else ''
+            sstreet = row.get('sstreet') if row.get('sstreet') is not None else ''
+            scountry = row.get('scountry') if row.get('scountry') is not None else ''
+            saddress = row.get('saddress') if row.get('saddress') is not None else ''
+            scity = row.get('scity') if row.get('scity') is not None else ''
+            sstate = row.get('sstate') if row.get('sstate') is not None else ''
+            szip = row.get('szip') if row.get('szip') is not None else ''
+            spin = row.get('spin') if row.get('spin') is not None else ''
+            sphone = row.get('sphone') if row.get('sphone') is not None else ''
+            sfax = row.get('sfax') if row.get('sfax') is not None else ''
+            status = row.get('status') if row.get('status') is not None else ''
+            credit_limit = row.get('Credit Limit') if row.get('Credit Limit') is not None else 0
+            vendor_obj = vendor_table(
+                user=request.user,
+                salutation=salutation,
+                first_name=first_name,
+                last_name=last_name,
+                company_name=company_name,
+                vendor_display_name=vendor_display_name,
+                vendor_email=vendor_mail,
+                vendor_wphone=vendor_wphone,
+                vendor_mphone=vendor_mphone,
+                skype_number=skype_number,
+                designation=designation,
+                department=department,
+                website=website,
+                gst_treatment=gst_treatment,
+                gst_number=gst_number,
+                pan_number=pan_number,
+                source_supply=source_supply,
+                currency=currency,
+                opening_bal=opening_bal,
+                opening_bal_type=opening_bal_type,
+                payment_terms=payment_terms,
+                battention=battention,
+                bstreet=bstreet,
+                bcountry=bcountry,
+                baddress=baddress,
+                bcity=bcity,
+                bstate=bstate,
+                bpin=bpin,
+                bzip=bzip,
+                bphone=bphone,
+                bfax=bfax,
+                sattention=sattention,
+                sstreet=sstreet,
+                scountry=scountry,
+                saddress=saddress,
+                scity=scity,
+                sstate=sstate,
+                szip=szip,
+                spin=spin,
+                sphone=sphone,
+                sfax=sfax,
+                status=status,
+                credit_limit=credit_limit
+            )
+            vendor_obj.save()
+    return redirect('view_vendor_list')
 
-          party_name = row.get('Party Name').capitalize()
-          contact = str(row.get('Contact'))
-
-          current_date = date.today() if 'nan' else datetime.strptime(str(row.get('Current Date')), '%Y-%m-%d').date()
-
-          vendor_obj = vendor_table(
-              party_name = party_name, 
-              contact = contact,
-              gst_no = '' if 'nan' else str(row.get('GST No.', '')),
-              gst_type = '' if 'nan' else row.get('GST Type', ''),
-              email = '' if 'nan' else row.get('Email'),
-              state = '' if 'nan' else row.get('Supply State', ''),
-              address =  '' if 'nan' else row.get('Billing Address', ''),
-              openingbalance = 0 if 'nan' else row.get('Opening Balance'),
-              payment ='' if 'nan' else row.get('Payment', ''),
-              creditlimit = '' if 'nan' else row.get('Credit Limit'),
-              current_date = current_date,
-              End_date = current_date,
-              additionalfield1 = '' if 'nan' else row.get('Additional Field 1', ''),
-              additionalfield2 = '' if 'nan' else row.get('Additional Field 2', ''),
-              additionalfield3 = '' if 'nan' else row.get('Additional Field 3', ''),
-              current_balance = 0 if 'nan' else row.get('Opening Balance'),
-              user = staff.company.user,
-              company = staff.company
-          )
-
-          if not party_name or not contact or contact == " ":
-            messages.error(request, f'Row "{count_rows}" :Please Enter Party Name and Contact Number.')
-          else:
-            
-            if party.objects.filter(contact=contact).exists(): 
-              if party.objects.filter(party_name=party_name, contact=contact).exists():
-                messages.error(request, f'Row "{count_rows}" :Party with the same party name "{party_name}"  and contact number "{contact}" already exists.')
-              else:
-                messages.error(request, f'Row "{count_rows}" :Party with the same contact number "{contact}" already exists.')
-            else:
-              party_obj.save() 
-              party_history.objects.create(party = party_obj,company=staff.company,staff=staff,action='Created').save()
-
-        party_final = party.objects.filter(company=cmp).last()
-        return redirect('view_parties', party_final.id)
-      
-      except Exception as e:
-          error_message = f"Error in row {index + 1}: {e}"
-          errors.append(error_message)
-          return redirect('view_parties', 0)
-    return redirect('view_parties', 0)
 
 def view_vendor_list(request):
     company=company_details.objects.get(user=request.user)
