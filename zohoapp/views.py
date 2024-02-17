@@ -8500,24 +8500,30 @@ def purchaseView(request):
     return render(request,'purchase_order.html',context)
 
 def downloadPurchaseSampleImportFile(request):
-    estimate_table_data = [['SLNO','CUSTOMER NAME','CUSTOMER MAILID','ESTIMATE DATE','EXPIRY DATE','PLACE OF SUPPLY','SUB TOTAL','IGST','CGST','SGST','TAX AMOUNT','SHIPPING CHARGE','ADJUSTMENT','GRAND TOTAL','STATUS'],['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1']]      
-    items_table_data = [['ESTIMATE NO','ITEM NAME','HSN','QUANTITY','RATE','TAX PERCENTAGE','DISCOUNT','AMOUNT']] 
-    wb = Workbook()
-    sheet1 = wb.active
-    sheet1.title = 'Sheet1'
-    sheet2 = wb.create_sheet()
-    sheet2.title = 'Sheet2'
+    sheet1_columns = [
+        'vendor_name', 'vendor_mail', 'vendor_gst_treatment', 'vendor_gst_no', 'Organisation',
+        'Org_address', 'Org_gst', 'Org_street', 'Org_state', 'Org_city', 'Type (Organisation/Customer)', 'Org_mail',
+        'customer_name', 'customer_mail', 'customer_address', 'customer_street',
+        'customer_state', 'customer_city', 'Purchase Order No', 'Place of Supply','Ord_date[yyyy-mm-dd]',
+        'exp_date[yyyy-mm-dd]','payment_terms', 'shipping_charge', 'adjustment_charge',
+        'advance', 'note', 'payment_type', 'cheque_id', 'upi_id', 'document', 'comments',
+        'term', 'status']
+    sheet2_columns = ['hsn', 'item', 'quantity', 'rate', 'tax', 'discount','Purchase Order No']
 
-    # Populate the sheets with data
-    for row in estimate_table_data:
-        sheet1.append(row)  
-    for row in items_table_data:
-        sheet2.append(row)
-    # Create a response with the Excel file
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=estimate_sample_file.xlsx'
-     # Save the workbook to the response
-    wb.save(response)
+    # Create empty dataframes with only column titles
+    df_sheet1 = pd.DataFrame(columns=sheet1_columns)
+    df_sheet2 = pd.DataFrame(columns=sheet2_columns)
+
+    # Create Excel Writer
+    with pd.ExcelWriter('sample_purchase_order.xlsx') as writer:
+        # Write empty dataframes to Excel file
+        df_sheet1.to_excel(writer, sheet_name='Sheet1', index=False)
+        df_sheet2.to_excel(writer, sheet_name='Sheet2', index=False)
+
+    # Generate response
+    excel_data = open('sample_purchase_order.xlsx', 'rb').read()
+    response = HttpResponse(excel_data, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=sample_purchase_order.xlsx'
     return response
 
 def import_purchase(request):
@@ -8525,23 +8531,24 @@ def import_purchase(request):
         file = request.FILES['excel_file']
         df = pd.read_excel(file)
         df2 = pd.read_excel(file, sheet_name='Sheet2')
+        last_reference = purchaseOrderReference.objects.filter(user=request.user.id).last()
+        count = last_reference.reference
         for index, row in df.iterrows():
             user = request.user
             company = company_details.objects.get(user=request.user)
-            # custo = row.get('custo') if row.get('custo') is not None else ''
 
             vendor_name = row.get('vendor_name') if row.get('vendor_name') is not None else ''
             vendor_mail = row.get('vendor_mail') if row.get('vendor_mail') is not None else ''
             vendor_gst_traet = row.get('vendor_gst_treatment') if row.get('vendor_gst_treatment') is not None else ''
             vendor_gst_no = row.get('vendor_gst_no') if row.get('vendor_gst_no') is not None else ''
 
-            Org_name = row.get('Org_name') if row.get('Org_name') is not None else ''
+            Org_name = row.get('Organisation') if row.get('Organisation') is not None else ''
             Org_address = row.get('Org_address') if row.get('Org_address') is not None else ''
             Org_gst = row.get('Org_gst') if row.get('Org_gst') is not None else ''
             Org_street = row.get('Org_street') if row.get('Org_street') is not None else ''
             Org_state = row.get('Org_state') if row.get('Org_state') is not None else ''
             Org_city = row.get('Org_city') if row.get('Org_city') is not None else ''
-            typ = row.get('Type (Organisation/Customer)*')
+            typ = row.get('Type (Organisation/Customer)')
             Org_mail = row.get('Org_mail') if row.get('Org_mail') is not None else ''
 
             customer_name = row.get('customer_name') if row.get('customer_name') is not None else ''
@@ -8551,23 +8558,16 @@ def import_purchase(request):
             customer_state = row.get('customer_state') if row.get('customer_state') is not None else ''
             customer_city = row.get('customer_city') if row.get('customer_city') is not None else ''
 
-            Pur_no = row.get('Pur_no') if row.get('Pur_no') is not None else ''
+            Pur_no = row.get('Purchase Order No')
 
-            source_supply = row.get('source_supply') if row.get('source_supply') is not None else ''
+            source_supply = row.get('Place of Supply')
 
-            ref = row.get('ref') if row.get('ref') is not None else ''
-            Ord_date = row.get('Ord_date') if row.get('Ord_date') is not None else None
-            exp_date = row.get('exp_date') if row.get('exp_date') is not None else None
+            Ord_date = row.get('ord_date[yyyy-mm-dd]')
+            exp_date = row.get('exp_date[yyyy-mm-dd]')
             payment_terms = row.get('payment_terms') if row.get('payment_terms') is not None else ''
-            sub_total = row.get('sub_total') if row.get('sub_total') is not None else None
-            igst = row.get('igst') if row.get('igst') is not None else None
-            cgst = row.get('cgst') if row.get('cgst') is not None else None
-            sgst = row.get('sgst') if row.get('sgst') is not None else None
-            tax_amount = row.get('tax_amount') if row.get('tax_amount') is not None else None
-            shipping_charge = row.get('shipping_charge') if row.get('shipping_charge') is not None else None
-            adjustment_charge = row.get('adjustment_charge') if row.get('adjustment_charge') is not None else None
-            grand_total = row.get('grand_total') if row.get('grand_total') is not None else None
-            payed = row.get('payed') if row.get('payed') is not None else None
+            shipping_charge = row.get('shipping_charge') if row.get('shipping_charge') is not None else 0
+            adjustment_charge = row.get('adjustment_charge') if row.get('adjustment_charge') is not None else 0
+            payed = row.get('advance') if row.get('advance') is not None else 0
             note = row.get('note') if row.get('note') is not None else ''
             payment_type = row.get('payment_type')
             cheque_id = row.get('cheque_id') if row.get('cheque_id') is not None else ''
@@ -8576,8 +8576,6 @@ def import_purchase(request):
             comments = row.get('comments') if row.get('comments') is not None else ''
             term = row.get('term') if row.get('term') is not None else ''
             status = 'Draft'
-            convert_status = 0
-            complete_status = 0
 
             purchase_obj = Purchase_Order(
                 user=user,
@@ -8602,18 +8600,18 @@ def import_purchase(request):
                 customer_city=customer_city,
                 Pur_no=Pur_no,
                 source_supply=source_supply,
-                ref=ref,
+                ref=count+1,
+                sub_total = 0,
+                igst = 0,
+                cgst = 0,
+                sgst = 0,
+                tax_amount = 0,
+                grand_total=0,
                 Ord_date=Ord_date,
                 exp_date=exp_date,
                 payment_terms=payment_terms,
-                sub_total=sub_total,
-                igst=igst,
-                cgst=cgst,
-                sgst=sgst,
-                tax_amount=tax_amount,
                 shipping_charge=shipping_charge,
                 adjustment_charge=adjustment_charge,
-                grand_total=grand_total,
                 payed=payed,
                 note=note,
                 payment_type=payment_type,
@@ -8623,23 +8621,27 @@ def import_purchase(request):
                 comments=comments,
                 term=term,
                 status=status,
-                convert_status=convert_status,
-                complete_status=complete_status
+                convert_status=0,
+                complete_status=0
             )
             purchase_obj.save()
+            count_tax = 0
+            count_amt = 0
             for index, row in df2.iterrows():
-                purchase_no = row.get('Purchase Order No*')
+                purchase_no = row.get('Purchase Order No')
                 if purchase_no == purchase_obj.Pur_no:
                     user = request.user
                     hsn = row.get('hsn') if row.get('hsn') is not None else ''
                     company = company_details.objects.get(user=request.user)
                     PO = purchase_obj
-                    item = row.get('item') if row.get('item') is not None else ''
-                    quantity = row.get('quantity') if row.get('quantity') is not None else None
-                    rate = row.get('rate') if row.get('rate') is not None else None
-                    tax = row.get('tax') if row.get('tax') is not None else ''
-                    discount = row.get('discount') if row.get('discount') is not None else None
-                    amount = row.get('amount') if row.get('amount') is not None else None
+                    item = row.get('item')
+                    quantity = row.get('quantity')
+                    rate = row.get('rate')
+                    tax = row.get('tax')
+                    discount = row.get('discount') if row.get('discount') is not None else 0
+                    amount = (quantity*rate)-discount
+                    count_tax=count_tax+((tax/100)*amount)
+                    count_amt=count_amt+amount
                     purchase_obj_items = Purchase_Order_items(
                         user=user,
                         hsn=hsn,
@@ -8653,6 +8655,15 @@ def import_purchase(request):
                         amount=amount
                     )
                     purchase_obj_items.save()
+            purchase_obj.tax_amount=count_tax
+            if purchase_obj.source_supply == '[KL] Kerala':
+                purchase_obj.cgst=count_tax/2
+                purchase_obj.sgst=count_tax/2
+            else:
+                purchase_obj.igst=count_tax
+            purchase_obj.sub_total=count_amt
+            purchase_obj.grand_total=count_tax+count_amt+purchase_obj.shipping_charge+purchase_obj.adjustment_charge
+            purchase_obj.save()
     return redirect('purchaseView')
 
 @login_required(login_url='login')
