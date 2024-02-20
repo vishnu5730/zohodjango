@@ -3482,7 +3482,6 @@ def convert_to_recinvoice_frm_purchaseorder(request,pk):
 def create_recurring_bills_purchase(request):
 
     company = company_details.objects.get(user = request.user)
-    print(request.POST.get('customer').split(" ")[0])
     cust = customer.objects.get(id=request.POST.get('customer').split(" ")[0],user = request.user)
     
     if request.method == 'POST':
@@ -8501,14 +8500,13 @@ def purchaseView(request):
 
 def downloadPurchaseSampleImportFile(request):
     sheet1_columns = [
-        'vendor_name', 'vendor_mail', 'vendor_gst_treatment', 'vendor_gst_no', 'Organisation',
+        'vendor_name', 'vendor_mail', 'Organisation',
         'Org_address', 'Org_gst', 'Org_street', 'Org_state', 'Org_city', 'Type (Organisation/Customer)', 'Org_mail',
-        'customer_name', 'customer_mail', 'customer_address', 'customer_street',
-        'customer_state', 'customer_city', 'Purchase Order No', 'Place of Supply','Ord_date[yyyy-mm-dd]',
+        'customer_name', 'customer_mail', 'Purchase Order No', 'Place of Supply','ord_date[yyyy-mm-dd]',
         'exp_date[yyyy-mm-dd]','payment_terms', 'shipping_charge', 'adjustment_charge',
         'advance', 'note', 'payment_type', 'cheque_id', 'upi_id', 'document', 'comments',
-        'term', 'status']
-    sheet2_columns = ['hsn', 'item', 'quantity', 'rate', 'tax', 'discount','Purchase Order No']
+        'term']
+    sheet2_columns = ['item', 'quantity', 'rate', 'tax', 'discount','Purchase Order No']
 
     # Create empty dataframes with only column titles
     df_sheet1 = pd.DataFrame(columns=sheet1_columns)
@@ -8539,8 +8537,9 @@ def import_purchase(request):
 
             vendor_name = row.get('vendor_name') if row.get('vendor_name') is not None else ''
             vendor_mail = row.get('vendor_mail') if row.get('vendor_mail') is not None else ''
-            vendor_gst_traet = row.get('vendor_gst_treatment') if row.get('vendor_gst_treatment') is not None else ''
-            vendor_gst_no = row.get('vendor_gst_no') if row.get('vendor_gst_no') is not None else ''
+            vendor_obj = vendor_table.objects.get(user=request.user,vendor_diplay_name=vendor_name,vendor_email=vendor_mail)
+            vendor_gst_traet = vendor_obj.gst_treatment
+            vendor_gst_no = vendor_obj.gst_number
 
             Org_name = row.get('Organisation') if row.get('Organisation') is not None else ''
             Org_address = row.get('Org_address') if row.get('Org_address') is not None else ''
@@ -8553,6 +8552,7 @@ def import_purchase(request):
 
             customer_name = row.get('customer_name') if row.get('customer_name') is not None else ''
             customer_mail = row.get('customer_mail') if row.get('customer_mail') is not None else ''
+            customer_obj = customer.objects.get()
             customer_address = row.get('customer_address') if row.get('customer_address') is not None else ''
             customer_street = row.get('customer_street') if row.get('customer_street') is not None else ''
             customer_state = row.get('customer_state') if row.get('customer_state') is not None else ''
@@ -8569,11 +8569,9 @@ def import_purchase(request):
             adjustment_charge = row.get('adjustment_charge') if row.get('adjustment_charge') is not None else 0
             payed = row.get('advance') if row.get('advance') is not None else 0
             note = row.get('note') if row.get('note') is not None else ''
-            payment_type = row.get('payment_type')
+            payment_type = row.get('payment_type') if row.get('payment_type') is not None else ''
             cheque_id = row.get('cheque_id') if row.get('cheque_id') is not None else ''
             upi_id = row.get('upi_id') if row.get('upi_id') is not None else ''
-            document = row.get('document') if row.get('document') is not None else None
-            comments = row.get('comments') if row.get('comments') is not None else ''
             term = row.get('term') if row.get('term') is not None else ''
             status = 'Draft'
 
@@ -8584,6 +8582,8 @@ def import_purchase(request):
                 vendor_mail=vendor_mail,
                 vendor_gst_traet=vendor_gst_traet,
                 vendor_gst_no=vendor_gst_no,
+                Ord_date=Ord_date,
+                exp_date=exp_date,
                 Org_name=Org_name,
                 Org_address=Org_address,
                 Org_gst=Org_gst,
@@ -8601,14 +8601,6 @@ def import_purchase(request):
                 Pur_no=Pur_no,
                 source_supply=source_supply,
                 ref=count+1,
-                sub_total = 0,
-                igst = 0,
-                cgst = 0,
-                sgst = 0,
-                tax_amount = 0,
-                grand_total=0,
-                Ord_date=Ord_date,
-                exp_date=exp_date,
                 payment_terms=payment_terms,
                 shipping_charge=shipping_charge,
                 adjustment_charge=adjustment_charge,
@@ -8617,11 +8609,9 @@ def import_purchase(request):
                 payment_type=payment_type,
                 cheque_id=cheque_id,
                 upi_id=upi_id,
-                document=document,
-                comments=comments,
                 term=term,
                 status=status,
-                convert_status=0,
+                convert_status='0',
                 complete_status=0
             )
             purchase_obj.save()

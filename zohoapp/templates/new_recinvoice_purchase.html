@@ -267,7 +267,6 @@
           <label for="rvsCharge" class="mx-3 mt-2">This transaction is applicable for Reverse Charge</label>
         </div>
       </div>
-      {% if po_item.typ == "Customer" %}
       <div class="row mt-2">
         <div class="col-md-3">
             <label style="color: rgb(190, 88, 88);">Customer Name *</label><br>
@@ -323,32 +322,6 @@
           <input type="text" class="form-control text-dark bg-light"  id="cgstin_inp" name="cgstin_inp" >
         </div>
       </div>
-      {% else %}
-      <div class="row mt-2 mb-2">
-        <div class="col-md-3">
-          <label for="gstin_inp">Organization Name</label>
-        </div>
-        <div class="col-md-6">
-          <input type="text" class="form-control text-dark bg-light" id="customer" value="{{po_item.Org_name}}" name="org_name">
-        </div>
-      </div>
-      <div class="row mt-2 mb-2">
-        <div class="col-md-3">
-          <label for="gstin_inp">GST Number</label>
-        </div>
-        <div class="col-md-6">
-          <input type="text" class="form-control text-dark bg-light" value="{{po_item.Org_gst}}" name="org_gstin" >
-        </div>
-      </div>
-      <div class="row mt-2 mb-2">
-        <div class="col-md-3">
-          <label for="gstin_inp">Email</label>
-        </div>
-        <div class="col-md-6">
-          <input type="text" class="form-control text-dark bg-light" value="{{po_item.Org_mail}}" name="org_email" >
-        </div>
-      </div>
-      {% endif %}
       <div class="row mt-2" id="c_sou_supply_row">
         <div class="col-md-3">
           <label for="srcofsupply">Place of Supply</label>
