@@ -974,24 +974,27 @@ def sample(request):
     return redirect('base')
 
 def downloadVendorSampleImportFile(request):
-    estimate_table_data = [['SLNO','CUSTOMER NAME','CUSTOMER MAILID','ESTIMATE DATE','EXPIRY DATE','PLACE OF SUPPLY','SUB TOTAL','IGST','CGST','SGST','TAX AMOUNT','SHIPPING CHARGE','ADJUSTMENT','GRAND TOTAL','STATUS'],['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1']]      
-    items_table_data = [['ESTIMATE NO','ITEM NAME','HSN','QUANTITY','RATE','TAX PERCENTAGE','DISCOUNT','AMOUNT']] 
-    wb = Workbook()
-    sheet1 = wb.active
-    sheet1.title = 'Sheet1'
-    sheet2 = wb.create_sheet()
-    sheet2.title = 'Sheet2'
+    sheet1_columns = ['user', 'salutation', 'first_name', 'last_name', 'company_name', 
+                      'vendor_display_name', 'vendor_email', 'vendor_wphone', 'vendor_mphone', 
+                      'skype_number', 'designation', 'department', 'website', 'gst_treatment', 
+                      'gst_number', 'pan_number', 'source_supply', 'currency', 'opening_bal', 
+                      'opening_bal_type', 'payment_terms', 'battention', 'bstreet', 'bcountry', 
+                      'baddress', 'bcity', 'bstate', 'bpin', 'bzip', 'bphone', 'bfax', 'sattention', 
+                      'sstreet', 'scountry', 'saddress', 'scity', 'sstate', 'szip', 'spin', 'sphone', 
+                      'sfax', 'status', 'credit_limit']
+    
+    # Create empty dataframes with only column titles
+    df_sheet1 = pd.DataFrame(columns=sheet1_columns)
 
-    # Populate the sheets with data
-    for row in estimate_table_data:
-        sheet1.append(row)  
-    for row in items_table_data:
-        sheet2.append(row)
-    # Create a response with the Excel file
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=estimate_sample_file.xlsx'
-     # Save the workbook to the response
-    wb.save(response)
+    # Create Excel Writer
+    with pd.ExcelWriter('sample_vendor_table.xlsx') as writer:
+        # Write empty dataframes to Excel file
+        df_sheet1.to_excel(writer, sheet_name='Sheet1', index=False)
+
+    # Generate response
+    excel_data = open('sample_vendor_table.xlsx', 'rb').read()
+    response = HttpResponse(excel_data, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=sample_vendor_table.xlsx'
     return response
 
 def import_vendor(request):
@@ -8467,6 +8470,12 @@ def purchase_order(request):
 
 def purchaseView_by_name(request):
     purchase_table=Purchase_Order.objects.filter(user=request.user).order_by('vendor_name')
+    for i in purchase_table:
+        name=i.vendor_name.split(' ')
+        if len(name) == 3:
+            i.vendor_name = name[0]+' '+name[1]
+        else:
+            i.vendor_name = name[0]
     purchase_order_table=Purchase_Order_items.objects.all()
     company=company_details.objects.get(id=request.user.id)
     context={
@@ -8478,6 +8487,12 @@ def purchaseView_by_name(request):
 
 def purchaseView_by_ord_no(request):
     purchase_table=Purchase_Order.objects.filter(user=request.user).order_by('Pur_no')
+    for i in purchase_table:
+        name=i.vendor_name.split(' ')
+        if len(name) == 3:
+            i.vendor_name = name[0]+' '+name[1]
+        else:
+            i.vendor_name = name[0]
     purchase_order_table=Purchase_Order_items.objects.all()
     company=company_details.objects.get(id=request.user.id)
     context={
@@ -8489,6 +8504,12 @@ def purchaseView_by_ord_no(request):
 
 def purchaseView(request):
     purchase_table=Purchase_Order.objects.filter(user=request.user)
+    for i in purchase_table:
+        name=i.vendor_name.split(' ')
+        if len(name) == 3:
+            i.vendor_name = name[0]+' '+name[1]
+        else:
+            i.vendor_name = name[0]
     purchase_order_table=Purchase_Order_items.objects.all()
     company=company_details.objects.get(id=request.user.id)
     context={
@@ -8500,13 +8521,13 @@ def purchaseView(request):
 
 def downloadPurchaseSampleImportFile(request):
     sheet1_columns = [
-        'vendor_name', 'vendor_mail', 'Organisation',
-        'Org_address', 'Org_gst', 'Org_street', 'Org_state', 'Org_city', 'Type (Organisation/Customer)', 'Org_mail',
+        'vendor_name', 'vendor_mail', 'Type (Organisation/Customer)', 'Organisation',
+        'Org_address', 'Org_gst', 'Org_street', 'Org_state', 'Org_city', 'Org_mail',
         'customer_name', 'customer_mail', 'Purchase Order No', 'Place of Supply','ord_date[yyyy-mm-dd]',
         'exp_date[yyyy-mm-dd]','payment_terms', 'shipping_charge', 'adjustment_charge',
         'advance', 'note', 'payment_type', 'cheque_id', 'upi_id', 'document', 'comments',
         'term']
-    sheet2_columns = ['item', 'quantity', 'rate', 'tax', 'discount','Purchase Order No']
+    sheet2_columns = ['item', 'quantity', 'tax', 'discount','Purchase Order No']
 
     # Create empty dataframes with only column titles
     df_sheet1 = pd.DataFrame(columns=sheet1_columns)
@@ -8535,11 +8556,19 @@ def import_purchase(request):
             user = request.user
             company = company_details.objects.get(user=request.user)
 
-            vendor_name = row.get('vendor_name') if row.get('vendor_name') is not None else ''
-            vendor_mail = row.get('vendor_mail') if row.get('vendor_mail') is not None else ''
-            vendor_obj = vendor_table.objects.get(user=request.user,vendor_diplay_name=vendor_name,vendor_email=vendor_mail)
+            vendor_mail = row.get('vendor_mail')
+            vendor_obj = vendor_table.objects.get(user=request.user,vendor_email=vendor_mail)
+            vendor_name = row.get('vendor_name')
+            new_name=''
+            a = vendor_name.split(' ')
+            if len(a) == 3:
+                new_name = a[1]+' '+a[2]
+            else:
+                new_name = a[1]
+            vendor_name = new_name+' '+str(vendor_obj.id)
             vendor_gst_traet = vendor_obj.gst_treatment
             vendor_gst_no = vendor_obj.gst_number
+            typ = row.get('Type (Organisation/Customer)')
 
             Org_name = row.get('Organisation') if row.get('Organisation') is not None else ''
             Org_address = row.get('Org_address') if row.get('Org_address') is not None else ''
@@ -8547,16 +8576,19 @@ def import_purchase(request):
             Org_street = row.get('Org_street') if row.get('Org_street') is not None else ''
             Org_state = row.get('Org_state') if row.get('Org_state') is not None else ''
             Org_city = row.get('Org_city') if row.get('Org_city') is not None else ''
-            typ = row.get('Type (Organisation/Customer)')
+            
             Org_mail = row.get('Org_mail') if row.get('Org_mail') is not None else ''
-
-            customer_name = row.get('customer_name') if row.get('customer_name') is not None else ''
-            customer_mail = row.get('customer_mail') if row.get('customer_mail') is not None else ''
-            customer_obj = customer.objects.get()
-            customer_address = row.get('customer_address') if row.get('customer_address') is not None else ''
-            customer_street = row.get('customer_street') if row.get('customer_street') is not None else ''
-            customer_state = row.get('customer_state') if row.get('customer_state') is not None else ''
-            customer_city = row.get('customer_city') if row.get('customer_city') is not None else ''
+            if typ == 'Customer':
+                customer_name = row.get('customer_name') if row.get('customer_name') is not None else ''
+                customer_mail = row.get('customer_mail') if row.get('customer_mail') is not None else ''
+                if customer.objects.get(user=request.user,customerName=customer_name,customerEmail=customer_mail):
+                    customer_obj = customer.objects.get(user=request.user,customerName=customer_name,customerEmail=customer_mail)
+                    customer_address = customer_obj.Address1
+                    customer_state = customer_obj.state
+                    customer_city = customer_obj.city
+                    custo = customer_obj
+                else:
+                    return redirect('purchaseView')
 
             Pur_no = row.get('Purchase Order No')
 
@@ -8574,59 +8606,95 @@ def import_purchase(request):
             upi_id = row.get('upi_id') if row.get('upi_id') is not None else ''
             term = row.get('term') if row.get('term') is not None else ''
             status = 'Draft'
-
-            purchase_obj = Purchase_Order(
-                user=user,
-                company=company,
-                vendor_name=vendor_name,
-                vendor_mail=vendor_mail,
-                vendor_gst_traet=vendor_gst_traet,
-                vendor_gst_no=vendor_gst_no,
-                Ord_date=Ord_date,
-                exp_date=exp_date,
-                Org_name=Org_name,
-                Org_address=Org_address,
-                Org_gst=Org_gst,
-                Org_street=Org_street,
-                Org_state=Org_state,
-                Org_city=Org_city,
-                typ=typ,
-                Org_mail=Org_mail,
-                customer_name=customer_name,
-                customer_mail=customer_mail,
-                customer_address=customer_address,
-                customer_street=customer_street,
-                customer_state=customer_state,
-                customer_city=customer_city,
-                Pur_no=Pur_no,
-                source_supply=source_supply,
-                ref=count+1,
-                payment_terms=payment_terms,
-                shipping_charge=shipping_charge,
-                adjustment_charge=adjustment_charge,
-                payed=payed,
-                note=note,
-                payment_type=payment_type,
-                cheque_id=cheque_id,
-                upi_id=upi_id,
-                term=term,
-                status=status,
-                convert_status='0',
-                complete_status=0
-            )
-            purchase_obj.save()
+            if typ == 'Customer':
+                purchase_obj = Purchase_Order(
+                    user=user,
+                    company=company,
+                    vendor_name=vendor_name,
+                    vendor_mail=vendor_mail,
+                    vendor_gst_traet=vendor_gst_traet,
+                    vendor_gst_no=vendor_gst_no,
+                    Ord_date=Ord_date,
+                    exp_date=exp_date,
+                    Org_name=Org_name,
+                    Org_address=Org_address,
+                    Org_gst=Org_gst,
+                    Org_street=Org_street,
+                    Org_state=Org_state,
+                    Org_city=Org_city,
+                    typ=typ,
+                    custo=custo,
+                    Org_mail=Org_mail,
+                    customer_name=customer_name,
+                    customer_mail=customer_mail,
+                    customer_address=customer_address,
+                    customer_state=customer_state,
+                    customer_city=customer_city,
+                    Pur_no=Pur_no,
+                    source_supply=source_supply,
+                    ref=count+1,
+                    payment_terms=payment_terms,
+                    shipping_charge=shipping_charge,
+                    adjustment_charge=adjustment_charge,
+                    payed=payed,
+                    note=note,
+                    payment_type=payment_type,
+                    cheque_id=cheque_id,
+                    upi_id=upi_id,
+                    term=term,
+                    status=status,
+                    convert_status='0',
+                    complete_status=0
+                )
+                purchase_obj.save()
+            else:
+                purchase_obj = Purchase_Order(
+                    user=user,
+                    company=company,
+                    vendor_name=vendor_name,
+                    vendor_mail=vendor_mail,
+                    vendor_gst_traet=vendor_gst_traet,
+                    vendor_gst_no=vendor_gst_no,
+                    Ord_date=Ord_date,
+                    exp_date=exp_date,
+                    Org_name=Org_name,
+                    Org_address=Org_address,
+                    Org_gst=Org_gst,
+                    Org_street=Org_street,
+                    Org_state=Org_state,
+                    Org_city=Org_city,
+                    typ=typ,
+                    Org_mail=Org_mail,
+                    Pur_no=Pur_no,
+                    source_supply=source_supply,
+                    ref=count+1,
+                    payment_terms=payment_terms,
+                    shipping_charge=shipping_charge,
+                    adjustment_charge=adjustment_charge,
+                    payed=payed,
+                    note=note,
+                    payment_type=payment_type,
+                    cheque_id=cheque_id,
+                    upi_id=upi_id,
+                    term=term,
+                    status=status,
+                    convert_status='0',
+                    complete_status=3
+                )
+                purchase_obj.save()
             count_tax = 0
             count_amt = 0
             for index, row in df2.iterrows():
                 purchase_no = row.get('Purchase Order No')
                 if purchase_no == purchase_obj.Pur_no:
                     user = request.user
-                    hsn = row.get('hsn') if row.get('hsn') is not None else ''
                     company = company_details.objects.get(user=request.user)
                     PO = purchase_obj
                     item = row.get('item')
+                    item_obj = AddItem.objects.get(user=user,Name=item)
                     quantity = row.get('quantity')
-                    rate = row.get('rate')
+                    rate = float(item_obj.s_price)
+                    hsn = item_obj.hsn
                     tax = row.get('tax')
                     discount = row.get('discount') if row.get('discount') is not None else 0
                     amount = (quantity*rate)-discount
@@ -8649,8 +8717,11 @@ def import_purchase(request):
             if purchase_obj.source_supply == '[KL] Kerala':
                 purchase_obj.cgst=count_tax/2
                 purchase_obj.sgst=count_tax/2
+                purchase_obj.igst=0
             else:
                 purchase_obj.igst=count_tax
+                purchase_obj.cgst=0
+                purchase_obj.sgst=0
             purchase_obj.sub_total=count_amt
             purchase_obj.grand_total=count_tax+count_amt+purchase_obj.shipping_charge+purchase_obj.adjustment_charge
             purchase_obj.save()
@@ -9156,6 +9227,11 @@ def purchase_bill_view(request,id):
     po_table=Purchase_Order.objects.get(id=id)
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
+    name=po_item.vendor_name.split(' ')
+    if len(name) == 3:
+        po_item.vendor_name = name[0]+' '+name[1]
+    else:
+        po_item.vendor_name = name[0]
     cmt_data = purchase_order_comments.objects.filter(user=request.user,PO=po_item)
     bank=''
     if po_item.payment_type != 'cash':
@@ -10240,12 +10316,24 @@ def itemdata_challan_save(request):
 def apr(request):
     company = company_details.objects.get(user=request.user)
     pt=Purchase_Order.objects.filter(status='Approved')
+    for i in pt:
+        name=i.vendor_name.split(' ')
+        if len(name) == 3:
+            i.vendor_name = name[0]+' '+name[1]
+        else:
+            i.vendor_name = name[0]
     return render(request,'purchase_order.html',{'pt':pt,"company":company})
 
 
 def drf(request):
     company = company_details.objects.get(user=request.user)
     pt=Purchase_Order.objects.filter(status='Draft')
+    for i in pt:
+        name=i.vendor_name.split(' ')
+        if len(name) == 3:
+            i.vendor_name = name[0]+' '+name[1]
+        else:
+            i.vendor_name = name[0]
     return render(request,'purchase_order.html',{'pt':pt,"company":company})
 
 

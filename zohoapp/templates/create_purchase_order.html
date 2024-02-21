@@ -2741,6 +2741,7 @@ $(document).on("click","#vendorSave",function(){
       success: function(response) {
         document.getElementById("modalVendor").reset();
         reloadVendor();
+        location.reload();
       },
   });        
 });

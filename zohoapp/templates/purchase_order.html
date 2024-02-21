@@ -173,84 +173,72 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content" style="background: rgb(32, 35, 37);border-radius: 20px;">
       <div class="modal-header " style="background: rgb(32, 35, 37);">
-        <h1 class="text-light">Import Vendor</h1>
+        <h1 class="text-light">Import Purchase Order</h1>
       </div>
       <div class="modal-body" style="background: rgb(32, 35, 37);">
         <div class="card p-3 m-3">        
           <div class="row">
             <div class="col-md-12 col-lg-12 col-sm-12">
               <h5 class="text-danger">IMPORTANT:</h5>
-              <p class="text-light">File should have  sheet named 'Sheet1' and column name & order should be in the given format(Uppercase)</p><br>
               <p class="text-light">Place of supply should be in the following format ,eg: for kerala  Type [KL]-Kerala  </p><br>
               <div class="row">
                   <div class="col-md-4">
-                      [AN]-Andaman and Nicobar Islads<br>
-                      [AD]-Andhra Predhesh <br>
-                      [AR]-Arunachal Predesh <br>
-                      [AS]-Assam<br>
-                      [BR]-Bihar<br>
-                      [CH]-Chandigarh<br>
-                      [CG]-Chhattisgarh<br>
-                      [DNH]-Dadra and Nagar Haveli<br>
-                      [DD]-Damn anad Diu<br>
-                      [DL]-Delhi<br>
-                      [GA]-Goa<br>
-                      [GJ]-Gujarat<br>
-                      [HR]-Haryana<br>
+                      [AN] Andaman and Nicobar Islads<br>
+                      [AD] Andhra Predhesh <br>
+                      [AR] Arunachal Predesh <br>
+                      [AS] Assam<br>
+                      [BR] Bihar<br>
+                      [CH] Chandigarh<br>
+                      [CG] Chhattisgarh<br>
+                      [DNH] Dadra and Nagar Haveli<br>
+                      [DD] Damn anad Diu<br>
+                      [DL] Delhi<br>
+                      [GA] Goa<br>
+                      [GJ] Gujarat<br>
+                      [HR] Haryana<br>
 
                   </div>
                   <div class="col-md-4">
-                      [HP]-Himachal Predesh<br>
-                      [JK]-Jammu and Kashmir<br>
-                      [JH]-Jharkhand<br>
-                      [KA]-Karnataka<br>
-                      [KL]-Kerala<br>
-                      [LA]-Ladakh<br>
-                      [LD]-Lakshadweep<br>
-                      [MP]-Madhya Predesh<br>
-                      [MH]-Maharashtra<br>
-                      [MN]-Manipur<br>
-                      [ML]-Meghalaya<br>
-                      [MZ]-Mizoram<br>
+                      [HP] Himachal Predesh<br>
+                      [JK] Jammu and Kashmir<br>
+                      [JH] Jharkhand<br>
+                      [KA] Karnataka<br>
+                      [KL] Kerala<br>
+                      [LA] Ladakh<br>
+                      [LD] Lakshadweep<br>
+                      [MP] Madhya Predesh<br>
+                      [MH] Maharashtra<br>
+                      [MN] Manipur<br>
+                      [ML] Meghalaya<br>
+                      [MZ] Mizoram<br>
                       
                   </div>
                   <div class="col-md-4">
-                      [NL]-Nagaland<br>
-                      [OD]-Odisha<br>
-                      [PY]-Puducherry<br>
-                      [PB]-Punjab<br>
-                      [RJ]-Rajasthan<br>
-                      [SK]-Sikkim<br>
-                      [TN]-Tamil Nadu<br>
-                      [TS]-Telangana<br>
-                      [TR]-Tripura<br>
-                      [UP]-Uttar Predesh<br>
-                      [UK]-Uttarakhand<br>
-                      [WB]-West Bengal<br>
-                      [OT]-Other Territory<br>
+                      [NL] Nagaland<br>
+                      [OD] Odisha<br>
+                      [PY] Puducherry<br>
+                      [PB] Punjab<br>
+                      [RJ] Rajasthan<br>
+                      [SK] Sikkim<br>
+                      [TN] Tamil Nadu<br>
+                      [TS] Telangana<br>
+                      [TR] Tripura<br>
+                      [UP] Uttar Predesh<br>
+                      [UK] Uttarakhand<br>
+                      [WB] West Bengal<br>
+                      [OT] Other Territory<br>
                   </div>
               </div><br><br>
-              <p class="text-light">Vendor and customer name should be given with salutaion  and the name and salutaion should be in uppercase<br>
-                  eg :MR. ADITHYA CHOPRA
-              </p><br>
-              <p class="text-light">Status should be given in one of the following format <br>
-                  draft  <br>
-                  save
-              </p><br>
-              <p class="text-light">If you have IGST Tax ,then fill CGST and SGST filled with 0  <br>
-                  If you have CGST and SGST Tax ,then fill IGST filled with 0
-                  
+              <p class="text-danger">NOTE: Vendor, customer and items should be saved in database before importing. The names in the file must be in prescribed format.<br>
+                  eg: Mr. Adithya Chopra
               </p>
-
-
             </div>
           </div>
         </div>
-        <a href="{% url 'downloadPurchaseSampleImportFile' %}" class="text-primary" style="font-size:medium;">Download Sample File here</a> <br>
+        <a href="{% url 'downloadPurchaseSampleImportFile' %}" class="text-primary" style="font-size:medium;">Download Sample File here</a><br><br>
 
         <form action="{% url 'import_purchase' %}" method="post" enctype="multipart/form-data">
           {% csrf_token %}
-          <h6 class="text-light">File</h6>
           <input type="file" name="excel_file" class="form-control text-dark" style="width: 50%;"><br>
           <button class="btn btn-outline-warning mt-3">IMPORT</button>
         </form>

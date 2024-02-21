@@ -128,7 +128,6 @@
           <div class="row">
             <div class="col-md-12 col-lg-12 col-sm-12">
               <h5 class="text-danger">IMPORTANT:</h5>
-              <p class="text-light">File should have  sheet named 'Sheet1' and column name & order should be in the given format(Uppercase)</p><br>
               <p class="text-light">Place of supply should be in the following format ,eg: for kerala  Type [KL]-Kerala  </p><br>
               <div class="row">
                   <div class="col-md-4">
@@ -177,28 +176,14 @@
                       [WB]-West Bengal<br>
                       [OT]-Other Territory<br>
                   </div>
-              </div><br><br>
-              <p class="text-light">Vendor and customer name should be given with salutaion  and the name and salutaion should be in uppercase<br>
-                  eg :MR. ADITHYA CHOPRA
-              </p><br>
-              <p class="text-light">Status should be given in one of the following format <br>
-                  draft  <br>
-                  save
-              </p><br>
-              <p class="text-light">If you have IGST Tax ,then fill CGST and SGST filled with 0  <br>
-                  If you have CGST and SGST Tax ,then fill IGST filled with 0
-                  
-              </p>
-
-
+              </div>
             </div>
           </div>
         </div>
-        <a href="{% url 'downloadVendorSampleImportFile' %}" class="text-primary" style="font-size:medium;">Download Sample File here</a> <br>
+        <a href="{% url 'downloadVendorSampleImportFile' %}" class="text-primary" style="font-size:medium;">Download Sample File here</a><br><br>
 
         <form action="{% url 'import_vendor' %}" method="post" enctype="multipart/form-data">
           {% csrf_token %}
-          <h6 class="text-light">File</h6>
           <input type="file" name="excel_file" class="form-control text-dark" style="width: 50%;"><br>
           <button class="btn btn-outline-warning mt-3">IMPORT</button>
         </form>
