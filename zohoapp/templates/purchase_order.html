@@ -50,6 +50,14 @@
     <div style="height: 600px;overflow-y: scroll;">
 
       <div class="row container-fluid">
+        {% if messages %}
+        <div class="alert bg-danger alert-dismissible fade show" role="alert" style="z-index: 9999;">
+            {% for message in messages %}
+            {{ message }}
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
         <div class="col-md-3"><a class="text-white" style="font-size: 2rem;">All Purchases</a></div>
       </div>
       <br><br><br>

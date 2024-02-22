@@ -162,7 +162,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
 
 
 <div class="container-fulid containerprof">
-
+  
   <div class="card radius-15" style="width: 100%;">
     <div class="card-body">
         <div class="card-title">
@@ -226,13 +226,14 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
           <input type="text" class="form-control bg-light text-dark"  id="baddress_inp" name="baddress_inp">
         </div>
       </div>
-      <div class="row mt-5 ">
+      <div class="row mt-2 mb-4 d-none" id="srcofsupply_row">
         <div class="col-md-3">
           <label >Place of Supply*</label>
         </div>
 
         <div class="col-md-6">
             <select name="srcofsupply" id="srcofsupply" onclick="toggleDateInput()" onselect="calculateTaxAmount()" class="form-control bg-light text-dark">
+                <option selected="selected"></option>
                 <option value="[AN] Andaman and Nicobar Islads">[AN] Andaman and Nicobar Islads</option>
                 <option value="[AD] Andhra Predhesh">[AD] Andhra Predhesh</option>
                 <option value="[AR] Arunachal Predesh">[AR] Arunachal Predesh</option>
@@ -250,7 +251,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                 <option value="[JK] Jammu and Kashmir">[JK] Jammu and Kashmir</option>
                 <option value="[JH] Jharkhand">[JH] Jharkhand</option>
                 <option value="[KA] Karnataka">[KA] Karnataka</option>
-                <option selected="selected" value="[KL] Kerala">[KL] Kerala</option>
+                <option value="[KL] Kerala">[KL] Kerala</option>
                 <option value="[LA] Ladakh">[LA] Ladakh</option>
                 <option value="[LD] Lakshadweep">[LD] Lakshadweep</option>
                 <option value="[MP] Madhya Predesh">[MP] Madhya Predesh</option>
@@ -463,6 +464,56 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
   
           </div>
 
+        </div>
+        <div class="row mt-2 mb-4 d-none" id="custsrcofsupply_row">
+          <div class="col-md-3">
+            <label >Place of Supply</label>
+          </div>
+  
+          <div class="col-md-6">
+              <select id="custsrcofsupply" class="form-control bg-light text-dark">
+                  <option selected="selected"></option>
+                  <option value="[AN] Andaman and Nicobar Islads">[AN] Andaman and Nicobar Islads</option>
+                  <option value="[AD] Andhra Predhesh">[AD] Andhra Predhesh</option>
+                  <option value="[AR] Arunachal Predesh">[AR] Arunachal Predesh</option>
+                  <option value="[AS] Assam">[AS] Assam</option>
+                  <option value="[BR] Bihar">[BR] Bihar</option>
+                  <option value="[CH] Chandigarh">[CH] Chandigarh</option>
+                  <option value="[CG] Chhattisgarh">[CG] Chhattisgarh</option>
+                  <option value="[DNH] Dadra and Nagar Haveli">[DNH] Dadra and Nagar Haveli</option>
+                  <option value="[DD] Damn anad Diu">[DD] Damn anad Diu</option>
+                  <option value="[DL] Delhi">[DL] Delhi</option>
+                  <option value="[GA] Goa">[GA] Goa</option>
+                  <option value="[GJ] Gujarat">[GJ] Gujarat</option>
+                  <option value="[HR] Haryana">[HR] Haryana</option>
+                  <option value="[HP] Himachal Predesh">[HP] Himachal Predesh</option>
+                  <option value="[JK] Jammu and Kashmir">[JK] Jammu and Kashmir</option>
+                  <option value="[JH] Jharkhand">[JH] Jharkhand</option>
+                  <option value="[KA] Karnataka">[KA] Karnataka</option>
+                  <option value="[KL] Kerala">[KL] Kerala</option>
+                  <option value="[LA] Ladakh">[LA] Ladakh</option>
+                  <option value="[LD] Lakshadweep">[LD] Lakshadweep</option>
+                  <option value="[MP] Madhya Predesh">[MP] Madhya Predesh</option>
+                  <option value="[MH] Maharashtra">[MH] Maharashtra</option>
+                  <option value="[MN] Manipur">[MN] Manipur</option>
+                  <option value="[ML] Meghalaya">[ML] Meghalaya</option>
+                  <option value="[MZ] Mizoram">[MZ] Mizoram</option>
+                  <option value="[NL] Nagaland">[NL] Nagaland</option>
+                  <option value="[OD] Odisha">[OD] Odisha</option>
+                  <option value="[PY] Puducherry">[PY] Puducherry</option>
+                  <option value="[PB] Punjab">[PB] Punjab</option>
+                  <option value="[RJ] Rajasthan">[RJ] Rajasthan</option>
+                  <option value="[SK] Sikkim">[SK] Sikkim</option>
+                  <option value="[TN] Tamil Nadu">[TN] Tamil Nadu</option>
+                  <option value="[TS] Telangana">[TS] Telangana</option>
+                  <option value="[TR] Tripura">[TR] Tripura</option>
+                  <option value="[UP] Uttar Predesh">[UP] Uttar Predesh</option>
+                  <option value="[UK] Uttarakhand">[UK] Uttarakhand</option>
+                  <option value="[WB] West Bengal">[WB] West Bengal</option>
+                  <option value="[OT] Other Territory">[OT] Other Territory</option>
+              </select>
+              
+          </div>
         </div>
     </div>
 
@@ -2344,7 +2395,16 @@ $(document).ready(function() {
         $("#baddress_row").addClass('d-none');
         $("#baddress_row").removeClass('d-flex');
     }
-
+    if (data.source_supply) {
+        $("#srcofsupply_row").removeClass('d-none');
+        $("#srcofsupply_row").addClass('d-flex');
+        $("#srcofsupply").show();
+        $("#srcofsupply option:selected").text(data.source_supply).attr('value', data.source_supply);
+    } else {
+        $("#srcofsupply").hide();
+        $("#srcofsupply_row").addClass('d-none');
+        $("#srcofsupply_row").removeClass('d-flex');
+    }
 
             }
         });
@@ -2414,6 +2474,16 @@ $(document).ready(function() {
     } else {
         $("#custstate").hide(); // Hide the field if state doesn't exist
         $("#custstate_row").addClass('d-none');
+      }
+
+      if (data.ssupply) {
+        console.log(data.ssupply);
+        $("#custsrcofsupply_row").removeClass('d-none');
+        $("#custsrcofsupply").show();
+        $("#custsrcofsupply option:selected").text(data.ssupply).attr('value', data.ssupply);
+    } else {
+        $("#custsrcofsupply").hide(); // Hide the field if state doesn't exist
+        $("#custsrcofsupply_row").addClass('d-none');
       }
       }
     });
@@ -3241,11 +3311,12 @@ function calculateGrandTotal() {
 $('#item_table').on('click', '.item_select, .acnt, .rate, .qty, .tax, .discount', function () {
   var row = $(this).closest('tr');
   var taxElement = row.find('.tax');
-
+  var comp_state1 = document.getElementById('company_state');
+  var comp_state = comp_state1.value;
   var checkbox = document.getElementById("srcofsupply");
-  var vale = checkbox.value;
+  var vale = checkbox.value.slice(5);
 
-  if (vale === "[KL] Kerala") {
+  if (vale === comp_state) {
     taxElement.find('optgroup[label="GST"]').show();
     taxElement.find('optgroup[label="IGST"]').hide();
   } else {
@@ -3281,7 +3352,7 @@ function calculateTaxAmount() {
         var checkbox = document.getElementById("srcofsupply");
         var vale=checkbox.value;
         var srcofsupply = vale; // Replace with the actual value of srcofsupply
-        var companyState = "[KL] Kerala"; // Replace with the actual value of company state
+        var companyState = "[PB] Punjab"; // Replace with the actual value of company state
 
         var subtotal = parseFloat(document.getElementById("subtotal").value);
         var shipping = parseFloat(document.getElementById("shipping").value);

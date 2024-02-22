@@ -8546,186 +8546,188 @@ def downloadPurchaseSampleImportFile(request):
     return response
 
 def import_purchase(request):
-    if request.method == 'POST':
-        file = request.FILES['excel_file']
-        df = pd.read_excel(file)
-        df2 = pd.read_excel(file, sheet_name='Sheet2')
-        last_reference = purchaseOrderReference.objects.filter(user=request.user.id).last()
-        count = last_reference.reference
-        for index, row in df.iterrows():
-            user = request.user
-            company = company_details.objects.get(user=request.user)
+    try:
+        if request.method == 'POST':
+            file = request.FILES['excel_file']
+            df = pd.read_excel(file)
+            df2 = pd.read_excel(file, sheet_name='Sheet2')
+            last_reference = purchaseOrderReference.objects.filter(user=request.user.id).last()
+            count = last_reference.reference
+            for index, row in df.iterrows():
+                user = request.user
+                company = company_details.objects.get(user=request.user)
 
-            vendor_mail = row.get('vendor_mail')
-            vendor_obj = vendor_table.objects.get(user=request.user,vendor_email=vendor_mail)
-            vendor_name = row.get('vendor_name')
-            new_name=''
-            a = vendor_name.split(' ')
-            if len(a) == 3:
-                new_name = a[1]+' '+a[2]
-            else:
-                new_name = a[1]
-            vendor_name = new_name+' '+str(vendor_obj.id)
-            vendor_gst_traet = vendor_obj.gst_treatment
-            vendor_gst_no = vendor_obj.gst_number
-            typ = row.get('Type (Organisation/Customer)')
+                vendor_mail = row.get('vendor_mail')
+                vendor_obj = vendor_table.objects.get(user=request.user,vendor_email=vendor_mail)
+                vendor_name = row.get('vendor_name')
+                new_name=''
+                a = vendor_name.split(' ')
+                if len(a) == 3:
+                    new_name = a[1]+' '+a[2]
+                else:
+                    new_name = a[1]
+                vendor_name = new_name+' '+str(vendor_obj.id)
+                vendor_gst_traet = vendor_obj.gst_treatment
+                vendor_gst_no = vendor_obj.gst_number
+                typ = row.get('Type (Organisation/Customer)')
 
-            Org_name = row.get('Organisation') if row.get('Organisation') is not None else ''
-            Org_address = row.get('Org_address') if row.get('Org_address') is not None else ''
-            Org_gst = row.get('Org_gst') if row.get('Org_gst') is not None else ''
-            Org_street = row.get('Org_street') if row.get('Org_street') is not None else ''
-            Org_state = row.get('Org_state') if row.get('Org_state') is not None else ''
-            Org_city = row.get('Org_city') if row.get('Org_city') is not None else ''
-            
-            Org_mail = row.get('Org_mail') if row.get('Org_mail') is not None else ''
-            if typ == 'Customer':
-                customer_name = row.get('customer_name') if row.get('customer_name') is not None else ''
-                customer_mail = row.get('customer_mail') if row.get('customer_mail') is not None else ''
-                if customer.objects.get(user=request.user,customerName=customer_name,customerEmail=customer_mail):
+                Org_name = row.get('Organisation') if row.get('Organisation') is not None else ''
+                Org_address = row.get('Org_address') if row.get('Org_address') is not None else ''
+                Org_gst = row.get('Org_gst') if row.get('Org_gst') is not None else ''
+                Org_street = row.get('Org_street') if row.get('Org_street') is not None else ''
+                Org_state = row.get('Org_state') if row.get('Org_state') is not None else ''
+                Org_city = row.get('Org_city') if row.get('Org_city') is not None else ''
+                
+                Org_mail = row.get('Org_mail') if row.get('Org_mail') is not None else ''
+                if typ == 'Customer':
+                    customer_name = row.get('customer_name') 
+                    customer_mail = row.get('customer_mail') 
                     customer_obj = customer.objects.get(user=request.user,customerName=customer_name,customerEmail=customer_mail)
                     customer_address = customer_obj.Address1
                     customer_state = customer_obj.state
                     customer_city = customer_obj.city
                     custo = customer_obj
-                else:
-                    return redirect('purchaseView')
 
-            Pur_no = row.get('Purchase Order No')
+                Pur_no = row.get('Purchase Order No')
 
-            source_supply = row.get('Place of Supply')
+                source_supply = row.get('Place of Supply')
 
-            Ord_date = row.get('ord_date[yyyy-mm-dd]')
-            exp_date = row.get('exp_date[yyyy-mm-dd]')
-            payment_terms = row.get('payment_terms') if row.get('payment_terms') is not None else ''
-            shipping_charge = row.get('shipping_charge') if row.get('shipping_charge') is not None else 0
-            adjustment_charge = row.get('adjustment_charge') if row.get('adjustment_charge') is not None else 0
-            payed = row.get('advance') if row.get('advance') is not None else 0
-            note = row.get('note') if row.get('note') is not None else ''
-            payment_type = row.get('payment_type') if row.get('payment_type') is not None else ''
-            cheque_id = row.get('cheque_id') if row.get('cheque_id') is not None else ''
-            upi_id = row.get('upi_id') if row.get('upi_id') is not None else ''
-            term = row.get('term') if row.get('term') is not None else ''
-            status = 'Draft'
-            if typ == 'Customer':
-                purchase_obj = Purchase_Order(
-                    user=user,
-                    company=company,
-                    vendor_name=vendor_name,
-                    vendor_mail=vendor_mail,
-                    vendor_gst_traet=vendor_gst_traet,
-                    vendor_gst_no=vendor_gst_no,
-                    Ord_date=Ord_date,
-                    exp_date=exp_date,
-                    Org_name=Org_name,
-                    Org_address=Org_address,
-                    Org_gst=Org_gst,
-                    Org_street=Org_street,
-                    Org_state=Org_state,
-                    Org_city=Org_city,
-                    typ=typ,
-                    custo=custo,
-                    Org_mail=Org_mail,
-                    customer_name=customer_name,
-                    customer_mail=customer_mail,
-                    customer_address=customer_address,
-                    customer_state=customer_state,
-                    customer_city=customer_city,
-                    Pur_no=Pur_no,
-                    source_supply=source_supply,
-                    ref=count+1,
-                    payment_terms=payment_terms,
-                    shipping_charge=shipping_charge,
-                    adjustment_charge=adjustment_charge,
-                    payed=payed,
-                    note=note,
-                    payment_type=payment_type,
-                    cheque_id=cheque_id,
-                    upi_id=upi_id,
-                    term=term,
-                    status=status,
-                    convert_status='0',
-                    complete_status=0
-                )
-                purchase_obj.save()
-            else:
-                purchase_obj = Purchase_Order(
-                    user=user,
-                    company=company,
-                    vendor_name=vendor_name,
-                    vendor_mail=vendor_mail,
-                    vendor_gst_traet=vendor_gst_traet,
-                    vendor_gst_no=vendor_gst_no,
-                    Ord_date=Ord_date,
-                    exp_date=exp_date,
-                    Org_name=Org_name,
-                    Org_address=Org_address,
-                    Org_gst=Org_gst,
-                    Org_street=Org_street,
-                    Org_state=Org_state,
-                    Org_city=Org_city,
-                    typ=typ,
-                    Org_mail=Org_mail,
-                    Pur_no=Pur_no,
-                    source_supply=source_supply,
-                    ref=count+1,
-                    payment_terms=payment_terms,
-                    shipping_charge=shipping_charge,
-                    adjustment_charge=adjustment_charge,
-                    payed=payed,
-                    note=note,
-                    payment_type=payment_type,
-                    cheque_id=cheque_id,
-                    upi_id=upi_id,
-                    term=term,
-                    status=status,
-                    convert_status='0',
-                    complete_status=3
-                )
-                purchase_obj.save()
-            count_tax = 0
-            count_amt = 0
-            for index, row in df2.iterrows():
-                purchase_no = row.get('Purchase Order No')
-                if purchase_no == purchase_obj.Pur_no:
-                    user = request.user
-                    company = company_details.objects.get(user=request.user)
-                    PO = purchase_obj
-                    item = row.get('item')
-                    item_obj = AddItem.objects.get(user=user,Name=item)
-                    quantity = row.get('quantity')
-                    rate = float(item_obj.s_price)
-                    hsn = item_obj.hsn
-                    tax = row.get('tax')
-                    discount = row.get('discount') if row.get('discount') is not None else 0
-                    amount = (quantity*rate)-discount
-                    count_tax=count_tax+((tax/100)*amount)
-                    count_amt=count_amt+amount
-                    purchase_obj_items = Purchase_Order_items(
+                Ord_date = row.get('ord_date[yyyy-mm-dd]')
+                exp_date = row.get('exp_date[yyyy-mm-dd]')
+                payment_terms = row.get('payment_terms') if row.get('payment_terms') is not None else ''
+                shipping_charge = row.get('shipping_charge') if row.get('shipping_charge') is not None else 0
+                adjustment_charge = row.get('adjustment_charge') if row.get('adjustment_charge') is not None else 0
+                payed = row.get('advance') if row.get('advance') is not None else 0
+                note = row.get('note') if row.get('note') is not None else ''
+                payment_type = row.get('payment_type') if row.get('payment_type') is not None else ''
+                cheque_id = row.get('cheque_id') if row.get('cheque_id') is not None else ''
+                upi_id = row.get('upi_id') if row.get('upi_id') is not None else ''
+                term = row.get('term') if row.get('term') is not None else ''
+                status = 'Draft'
+                if typ == 'Customer':
+                    purchase_obj = Purchase_Order(
                         user=user,
-                        hsn=hsn,
                         company=company,
-                        PO=PO,
-                        item=item,
-                        quantity=quantity,
-                        rate=rate,
-                        tax=tax,
-                        discount=discount,
-                        amount=amount
+                        vendor_name=vendor_name,
+                        vendor_mail=vendor_mail,
+                        vendor_gst_traet=vendor_gst_traet,
+                        vendor_gst_no=vendor_gst_no,
+                        Ord_date=Ord_date,
+                        exp_date=exp_date,
+                        Org_name=Org_name,
+                        Org_address=Org_address,
+                        Org_gst=Org_gst,
+                        Org_street=Org_street,
+                        Org_state=Org_state,
+                        Org_city=Org_city,
+                        typ=typ,
+                        custo=custo,
+                        Org_mail=Org_mail,
+                        customer_name=customer_name,
+                        customer_mail=customer_mail,
+                        customer_address=customer_address,
+                        customer_state=customer_state,
+                        customer_city=customer_city,
+                        Pur_no=Pur_no,
+                        source_supply=source_supply,
+                        ref=count+1,
+                        payment_terms=payment_terms,
+                        shipping_charge=shipping_charge,
+                        adjustment_charge=adjustment_charge,
+                        payed=payed,
+                        note=note,
+                        payment_type=payment_type,
+                        cheque_id=cheque_id,
+                        upi_id=upi_id,
+                        term=term,
+                        status=status,
+                        convert_status='0',
+                        complete_status=0
                     )
-                    purchase_obj_items.save()
-            purchase_obj.tax_amount=count_tax
-            if purchase_obj.source_supply == '[KL] Kerala':
-                purchase_obj.cgst=count_tax/2
-                purchase_obj.sgst=count_tax/2
-                purchase_obj.igst=0
-            else:
-                purchase_obj.igst=count_tax
-                purchase_obj.cgst=0
-                purchase_obj.sgst=0
-            purchase_obj.sub_total=count_amt
-            purchase_obj.grand_total=count_tax+count_amt+purchase_obj.shipping_charge+purchase_obj.adjustment_charge
-            purchase_obj.save()
-    return redirect('purchaseView')
+                    purchase_obj.save()
+                else:
+                    purchase_obj = Purchase_Order(
+                        user=user,
+                        company=company,
+                        vendor_name=vendor_name,
+                        vendor_mail=vendor_mail,
+                        vendor_gst_traet=vendor_gst_traet,
+                        vendor_gst_no=vendor_gst_no,
+                        Ord_date=Ord_date,
+                        exp_date=exp_date,
+                        Org_name=Org_name,
+                        Org_address=Org_address,
+                        Org_gst=Org_gst,
+                        Org_street=Org_street,
+                        Org_state=Org_state,
+                        Org_city=Org_city,
+                        typ=typ,
+                        Org_mail=Org_mail,
+                        Pur_no=Pur_no,
+                        source_supply=source_supply,
+                        ref=count+1,
+                        payment_terms=payment_terms,
+                        shipping_charge=shipping_charge,
+                        adjustment_charge=adjustment_charge,
+                        payed=payed,
+                        note=note,
+                        payment_type=payment_type,
+                        cheque_id=cheque_id,
+                        upi_id=upi_id,
+                        term=term,
+                        status=status,
+                        convert_status='0',
+                        complete_status=3
+                    )
+                    purchase_obj.save()
+                count_tax = 0
+                count_amt = 0
+                for index, row in df2.iterrows():
+                    purchase_no = row.get('Purchase Order No')
+                    if purchase_no == purchase_obj.Pur_no:
+                        user = request.user
+                        company = company_details.objects.get(user=request.user)
+                        PO = purchase_obj
+                        item = row.get('item')
+                        item_obj = AddItem.objects.get(user=user,Name=item)
+                        quantity = row.get('quantity')
+                        rate = float(item_obj.s_price)
+                        hsn = item_obj.hsn
+                        tax = row.get('tax')
+                        discount = row.get('discount') if row.get('discount') is not None else 0
+                        amount = (quantity*rate)-discount
+                        count_tax=count_tax+((tax/100)*amount)
+                        count_amt=count_amt+amount
+                        purchase_obj_items = Purchase_Order_items(
+                            user=user,
+                            hsn=hsn,
+                            company=company,
+                            PO=PO,
+                            item=item,
+                            quantity=quantity,
+                            rate=rate,
+                            tax=tax,
+                            discount=discount,
+                            amount=amount
+                        )
+                        purchase_obj_items.save()
+                purchase_obj.tax_amount=count_tax
+                if purchase_obj.source_supply == '[KL] Kerala':
+                    purchase_obj.cgst=count_tax/2
+                    purchase_obj.sgst=count_tax/2
+                    purchase_obj.igst=0
+                else:
+                    purchase_obj.igst=count_tax
+                    purchase_obj.cgst=0
+                    purchase_obj.sgst=0
+                purchase_obj.sub_total=count_amt
+                purchase_obj.grand_total=count_tax+count_amt+purchase_obj.shipping_charge+purchase_obj.adjustment_charge
+                purchase_obj.save()
+        return redirect('purchaseView')
+    except:
+        messages.error(request, 'Vendor, customer and items should be saved in database before importing.')
+        return redirect('purchaseView')
+
 
 @login_required(login_url='login')
 def purchase_vendor(request):
@@ -8889,8 +8891,9 @@ def customer_det(request):
     streat=vdr.Address1
     city=vdr.city
     state=vdr.state
+    ssupply=vdr.placeofsupply
     print(email)
-    return JsonResponse({'customer_email' :email, 'gst_treatment':gsttr, 'gstin': gstin,'adres':adres,'st':st,'streat':streat,'city':city,'state':state},safe=False)
+    return JsonResponse({'customer_email' :email, 'gst_treatment':gsttr, 'gstin': gstin,'adres':adres,'st':st,'streat':streat,'city':city,'state':state,'ssupply':ssupply},safe=False)
 
     
 @login_required(login_url='login')    
