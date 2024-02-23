@@ -16,6 +16,9 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
   .vendor-select {
     height: auto; /* Set the desired height */
 }
+.customer-select {
+    height: auto; /* Set the desired height */
+}
 .element-below-fixed {
         padding-top: 100px;
     }
@@ -175,6 +178,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
     <form action="{% url 'create_Purchase_order' %}" class="my-2" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="row">
+        <input type="hidden" id="company_state" value="{{company.state}}" readonly>
         <div class="col-md-3">
           <label>Vendor Name *</label>
         </div>
@@ -393,15 +397,15 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
             <label >Customer Name *</label><br>
           </div>
           <div class="col-md-6">
-            <select name="custom" id="custom" class="form-control bg-light text-dark" >
-              <option value=""></option>
+            <select name="custom" id="custom" class="form-control bg-light text-dark customer-select">
+              <option></option>
               {% for c in customer %}
               <option value="{{ c.customerName }} ">{{ c.customerName }}</option>
               {% endfor %}
             </select>
             <input type="hidden" id="cust_state" value="" readonly >
   
-            <input type="hidden" id="company_state" value="{{company.state}}" readonly>
+            
   
           </div>
           <div class="col-md-3">
@@ -669,7 +673,6 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                           class='form-control bg-transparent text-dark  text-right border-0 tax' onclick="toggleDateInput()">
                           <option value="0" selected>Select Tax</option>
                           <optgroup class="text-center" label="GST">
-                            <option value="0" ></option>
                             <option value="0">0% GST(0%)</option>
                             <option value="3">3.0% GST(3%)</option>
                             <option value="5">5.0% GST(5%)</option>
@@ -1544,12 +1547,12 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                   </div>       
                 </div>
 
-                <!-- <div class="row gstrow d-none">
+                <div class="row gstrow d-none">
                   <div class="col-md-3 mt-2">
                     <label id="glbl" style="color:rgb(190, 88, 88);">GSTIN/UIN *</label>
                   </div>
                   <div class="col-md-6 mt-2">
-                    <input type="text" class="form-control" id="v_gstin" name="v_gstin" placeholder="29APPCK7465F1Z1">
+                    <input type="text" class="form-control text-dark" id="c_gstin" name="c_gstin" placeholder="29APPCK7465F1Z1">
                     <label id="gst_label"></label>
                   </div>       
                 </div>
@@ -1559,10 +1562,10 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                     <label for="v_pan">PAN Number</label>
                   </div>
                   <div class="col-md-6 mt-2">
-                    <input type="text" class="form-control" id="v_pan" name="v_pan" placeholder="APPCK7465F">
+                    <input type="text" class="form-control text-dark" id="c_pan" name="c_pan" placeholder="APPCK7465F">
                     <label id="pan_label"></label>
                   </div>       
-                </div> -->
+                </div>
 
                 <div class="row mt-2">
                   <div class="col-md-3 mt-2">
@@ -2810,13 +2813,12 @@ $(document).on("click","#vendorSave",function(){
     
       success: function(response) {
         document.getElementById("modalVendor").reset();
-        reloadVendor();
-        location.reload();
+        reloadvendor();
       },
   });        
 });
 
-function reloadVendor() {
+function reloadvendor() {
   $.ajax({
     url: "{% url 'vendor_dropdown' %}",
     type: "GET",
@@ -2828,7 +2830,7 @@ function reloadVendor() {
       var dropdown = $('#vendor');
       dropdown.empty();
       $.each(data, function(key, value) {
-          dropdown.append($('<option></option>').attr('value', key).text(value[0]+" " +value[1] + ' ' + value[2]).val(value[1] + ' ' + value[2]+ ' ' +value[3]));
+          dropdown.append($('<option></option>').attr('value', key).text(value[0]).val(value[0]));
       });
     },
     error: function(xhr, status, error) {
@@ -3348,11 +3350,13 @@ $('#item_table').on('click', '.clone-row', function () {
   toggleDateInput();
 });
 });
+
 function calculateTaxAmount() {
         var checkbox = document.getElementById("srcofsupply");
-        var vale=checkbox.value;
+        var vale=checkbox.value.slice(5);
         var srcofsupply = vale; // Replace with the actual value of srcofsupply
-        var companyState = "[PB] Punjab"; // Replace with the actual value of company state
+        var comp_state1 = document.getElementById('company_state');
+        var companyState = comp_state1.value; // Replace with the actual value of company state
 
         var subtotal = parseFloat(document.getElementById("subtotal").value);
         var shipping = parseFloat(document.getElementById("shipping").value);
@@ -3413,12 +3417,14 @@ function calculateTaxAmount() {
 
 function toggleDateInput() {
       var checkbox = document.getElementById("srcofsupply");
-      var vale=checkbox.value;
+      var vale=checkbox.value.slice(5);
+      var comp_state1 = document.getElementById('company_state');
+      var companyState = comp_state1.value;
       
       for (var i = 1; i <= rowCount; i++) {
         var taxElement = $('#tax' + i);
 
-        if (vale === "[KL] Kerala") {
+        if (vale === companyState) {
             taxElement.find('optgroup[label="GST"]').show();
             taxElement.find('optgroup[label="IGST"]').hide();
         } else {
@@ -3433,13 +3439,15 @@ function toggleDateInput() {
         console.log(taxamount)
         d = 0;
         var checkbox = document.getElementById("srcofsupply");
-        var vale=checkbox.value;
+        var vale=checkbox.value.slice(5);
+        var comp_state1 = document.getElementById('company_state');
+        var companyState = comp_state1.value;
         console.log(pos)
         console.log('state')
         console.log(state)
         console.log('state')
         console.log('----------')
-        if ( vale === "[KL] Kerala") {
+        if (vale === companyState) {
             console.log(pos);
             console.log(state);
             console.log(taxamount);
@@ -3453,8 +3461,6 @@ function toggleDateInput() {
             
             // document.getElementById('tr_sgst').style= ('display: flex');
             // document.getElementById('tr_igst').style= ('display: none');
-
-           
         }
         else{
             gst = taxamount ;
@@ -3464,13 +3470,15 @@ function toggleDateInput() {
             $('#igst').val(parseFloat(gst.toFixed(2)));
         }
         var checkbox = document.getElementById("srcofsupply");
-        var vale=checkbox.value;
+        var vale=checkbox.value.slice(5);
+        var comp_state1 = document.getElementById('company_state');
+        var companyState = comp_state1.value;
         var pos= "[KL] Kerala"
         if (vale==pos){
 
         }
 
-        if (vale !=  "[KL] Kerala") {
+        if (vale != companyState) {
             console.log(pos);
             console.log(state);
             document.getElementById('tr_cgst').style=('display: none');
@@ -4310,6 +4318,16 @@ function toggleDateInput() {
   });
   $(document).ready(function () {
             $('#vendor').selectize({
+                sortField: 'value'
+            });
+        });
+        $(document).ready(function () {
+            $('#custom').selectize({
+                sortField: 'value'
+            });
+        });
+        $(document).ready(function () {
+            $('#custom').selectize({
                 sortField: 'value'
             });
         });
