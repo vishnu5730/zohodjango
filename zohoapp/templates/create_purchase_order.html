@@ -280,7 +280,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
             
         </div>
       </div>
-      <div class="row mt-2  " id="">
+      <div class="row mt-3" id="">
         <div class="col-md-3 ">
           <label for="">Deliver To</label>
         </div>
@@ -296,13 +296,13 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
             customerFields.style.display = customerSelected ? "block" : "none";
           }
         </script>
-
-        <div class="col-md-3">
-          <input type="radio"  name="option" value="Organization"  id="organization" onclick="showFields()"> Organization
-        </div>
         <div class="col-md-3">
           <input type="radio" name="option" value="Customer" id="customer" onclick="showFields()"> Customer
         </div>
+        <div class="col-md-3">
+          <input type="radio"  name="option" value="Organization"  id="organization" onclick="showFields()"> Organization
+        </div>
+        
       </div>
 
       <div id="organizationFields" class="fields">
@@ -671,7 +671,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                   </td>
                   <td style="width: 15%;" class='text-right '> <select name='tax[]' id='tax1'
                           class='form-control bg-transparent text-dark  text-right border-0 tax' onclick="toggleDateInput()">
-                          <option value="0" selected>Select Tax</option>
+                          <option selected>Select Tax</option>
                           <optgroup class="text-center" label="GST">
                             <option value="0">0% GST(0%)</option>
                             <option value="3">3.0% GST(3%)</option>
@@ -2043,7 +2043,23 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                     <label id="hsn_war" style="display: none;"></label>
                   </div>
                 </div>
-
+                <div class="row mt-2">
+                  <div class="col-md-3">
+                    <label for="c_tax" style="color: rgb(190, 88, 88);">Activation * </label>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="d-flex">
+                      <div class="radio_opt mx-5 mt-2">
+                        <input type="radio" name="activation" value="active">
+                        <label for="option1">Active</label>
+                      </div>
+                      <div class="radio_opt mx-4 mt-2">
+                        <input type="radio" name="activation" value="nonactive">
+                        <label for="option2">Non Active</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div class="row mt-2">
                   <div class="col-md-3">
                     <label for="c_tax" style="color: rgb(190, 88, 88);">Tax Preference * </label>
@@ -2070,12 +2086,12 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                     <select name="intra" class="form-control bg-light text-dark" id="intra">
                       <option value="" hidden>Select GST</option>
 
-                      <option value="GST0[0%]">GST0[0%]</option>
-                      <option value="GST3[3%]">GST3[3%]</option>
-                      <option value="GST5[5%]">GST5[5%]</option>
-                      <option value="GST12[12%]">GST12[12%]</option>
-                      <option value="GST18[18%]">GST18[18%]</option>
-                      <option value="GST28[28%]">GST28[28%]</option>
+                      <option value="0">GST0[0%]</option>
+                      <option value="3">GST3[3%]</option>
+                      <option value="5">GST5[5%]</option>
+                      <option value="12">GST12[12%]</option>
+                      <option value="18">GST18[18%]</option>
+                      <option value="28">GST28[28%]</option>
                     </select>
                   </div>
 
@@ -2085,14 +2101,14 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                   </div>
                   <div class="col-md-6">
                     <select name="inter" class="form-control bg-light text-dark" id="inter">
-                      <option value="" hidden>Select GST</option>
+                      <option value="" hidden>Select IGST</option>
 
-                      <option value="IGST0[0%]">IGST0[0%]</option>
-                      <option value="GST3[3%]">GST3[3%]</option>
-                      <option value="IGST5[5%]">IGST5[5%]</option>
-                      <option value="IGST12[12%]">IGST12[12%]</option>
-                      <option value="IGST18[18%]">IGST18[18%]]</option>
-                      <option value="IGST28[28%]">IGST28[28%]</option>
+                      <option value="0">IGST0[0%]</option>
+                      <option value="3">IGST3[3%]</option>
+                      <option value="5">IGST5[5%]</option>
+                      <option value="12">IGST12[12%]</option>
+                      <option value="18">IGST18[18%]]</option>
+                      <option value="28">IGST28[28%]</option>
                     </select>
                   </div>
                   <div class="col-md-1"></div>
@@ -2473,7 +2489,6 @@ $(document).ready(function() {
         $("#custstate").val(data.state);
         $("#custstate_row").removeClass('d-none');
         $("#custstate").show();
-        document.getElementById('company_state').value = data.state;
     } else {
         $("#custstate").hide(); // Hide the field if state doesn't exist
         $("#custstate_row").addClass('d-none');
@@ -2986,7 +3001,7 @@ else {
 
 if ($('input[name="activation"]:checked').val() == 'active') {
 
-  active_type = "active"
+  active_type = "Active"
 }
 else {
   active_type = "nonactive"
@@ -3474,10 +3489,6 @@ function toggleDateInput() {
         var comp_state1 = document.getElementById('company_state');
         var companyState = comp_state1.value;
         var pos= "[KL] Kerala"
-        if (vale==pos){
-
-        }
-
         if (vale != companyState) {
             console.log(pos);
             console.log(state);
@@ -3621,7 +3632,7 @@ function toggleDateInput() {
       var roinc = 0
       console.log("ajax");
       // var place = document.getElementById('pos').value;
-
+    
       $(document).on('click', '#item1', function () {
           select = $('#item1').val();
           customer = $('#customer_sel').val();
@@ -3642,15 +3653,18 @@ function toggleDateInput() {
                   data3 = response.pos
                   data4=response.place
                   data5=response.hsn
+                  var checkbox = document.getElementById("srcofsupply");
+                  var vale=checkbox.value.slice(5);
+                  var comp_state1 = document.getElementById('company_state');
+                  var companyState = comp_state1.value;
                   document.getElementById('rate1').value = data
                   document.getElementById('hsn1').value = data5
-                  if (data3 == '{{ company.state }}') {
-                      document.getElementById('tgst1').innerHTML = data1 + ' % GST';
-                      document.getElementById('tgst1').value = data1
+                  if (vale == companyState) {
+                    $("#tax1 option:selected").text(data1+' '+'GST').attr('value', data1);
                   }
-                  document.getElementById('tigst1').innerHTML = data2 + ' % IGST';
-                  document.getElementById('tigst1').value = data2
-
+                  else {
+                    $("#tax1 option:selected").text(data2+' '+'IGST').attr('value', data2);
+                  }
               }
           });
 
