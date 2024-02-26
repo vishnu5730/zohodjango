@@ -375,11 +375,11 @@
                 <td style="width: 15%;">
                   <input type="hidden" id="tax_total{{forloop.counter|add:'-1'}}" class="form-control mb-2 d-none">
                   <input type="hidden" placeholder="Select TAX" class="form-control selecttax text-dark bg-light" id="selecttax0">
-                  <select name="tax1[]" id="intra_tax{{forloop.counter|add:'-1'}}" class="form-control tax1 mb-2 text-dark bg-light">
-                    {% if po_item.source_supply == "[KL] Kerala" %}
-                    <option id="ta1" value="{{ ri.tax  }} " text="{{ cmp1.state }}" >{{ ri.tax }}% GST</option>
+                  <select name="tax1[]" id="intra_tax{{forloop.counter|add:'-1'}}" class="">
+                    {% if pos == company.state %}
+                    <option id="ta1" value="{{ri.tax}} " text="{{cmp1.state}}" selected>{{ri.tax}}% GST</option>
                     {% else %}
-                    <option id="ta1" value="{{ ri.tax  }} " text="{{ cmp1.state }}" >{{ ri.tax }}% IGST</option>
+                    <option id="ta1" value="{{ri.tax}} " text="{{cmp1.state}}" selected>{{ri.tax}}% IGST</option>
                     {% endif %}
                     <!-- <option value=28 text="{{ cmp1.state }}">28.0% GST(28%)</option>
                     <option value=18 text="{{ cmp1.state }}">18.0% GST(18%)</option>

@@ -3435,6 +3435,7 @@ def convert_to_recinvoice_frm_purchaseorder(request,pk):
     last_id = recurring_bills.objects.filter(user_id=request.user.id).order_by('-id').values('id').first()
     po_id=Purchase_Order.objects.get(id=pk)
     poitems = Purchase_Order_items.objects.filter(PO=po_id)
+    pos = po_id.source_supply[5:]
     for i in poitems:
         for j in item:
             if i.item == j.Name:
@@ -3460,6 +3461,7 @@ def convert_to_recinvoice_frm_purchaseorder(request,pk):
          next_no = 1
 
     context = {
+        'pos':pos,
         'company': company,
         'vendor': vendor,
         'account': acnt_name,
@@ -3545,10 +3547,7 @@ def create_recurring_bills_purchase(request):
         rate = request.POST.getlist("rate[]")
         
         # if (src_supply.split("-")[1]) == company.state:
-        if(isGST(src_supply)):
-            tax = request.POST.getlist("tax1[]")
-        else:
-            tax = request.POST.getlist("tax2[]")
+        tax = request.POST.getlist("tax1[]")
 
         discount = request.POST.getlist("discount[]") 
         amount = request.POST.getlist("amount[]")
@@ -8872,7 +8871,7 @@ def payment_dropdown(request):
     options = {}
     option_objects = payment_terms.objects.filter(user = user)
     for option in option_objects:
-        options[option.id] = option.Terms + str(option.Days)
+        options[option.id] = [option.Terms, option.id]
 
     return JsonResponse(options)
 
@@ -8887,6 +8886,7 @@ def customer_det(request):
     vdr = customer.objects.get(user=company.user_id,customerName=name)
     email = vdr.customerEmail
     gstin = 0
+    gstin2 = vdr.GSTIN
     gsttr = vdr.GSTTreatment
     adres=vdr.Address2
     streat=vdr.Address1
@@ -8894,7 +8894,7 @@ def customer_det(request):
     state=vdr.state
     ssupply=vdr.placeofsupply
     print(email)
-    return JsonResponse({'customer_email' :email, 'gst_treatment':gsttr, 'gstin': gstin,'adres':adres,'st':st,'streat':streat,'city':city,'state':state,'ssupply':ssupply},safe=False)
+    return JsonResponse({'customer_email' :email, 'gst_treatment':gsttr, 'gstin': gstin, 'gstin2':gstin2, 'adres':adres,'st':st,'streat':streat,'city':city,'state':state,'ssupply':ssupply},safe=False)
 
     
 @login_required(login_url='login')    
@@ -9059,6 +9059,8 @@ def create_Purchase_order(request):
         tax = request.POST['total_taxamount']
         shipping_charge= request.POST['shipping_charge']
         grand_total=request.POST['grandtotal']
+        adjustment_charge= request.POST['adjustment_charge']
+        advance= request.POST['advance']
         note=request.POST['customer_note']
         payment_type=request.POST['ptype']
         cheque_id=request.POST['cheque_id']
@@ -9110,6 +9112,8 @@ def create_Purchase_order(request):
                                     tax_amount=tax,
                                     shipping_charge = shipping_charge,
                                     grand_total=grand_total,
+                                    adjustment_charge = adjustment_charge,
+                                    payed = advance,
                                     note=note,
                                     payment_type = payment_type,
                                     term=terms_con,
@@ -9122,7 +9126,6 @@ def create_Purchase_order(request):
             if len(request.FILES) != 0:
                 p_bill.document=request.FILES['file'] 
                 p_bill.save()
-                print('save')
             item = request.POST.getlist("item[]")
             hsn = request.POST.getlist("hsn[]")
             quantity = request.POST.getlist("quantity[]")
@@ -9178,7 +9181,9 @@ def create_Purchase_order(request):
                                     igst=igst,
                                     tax_amount=tax,
                                     shipping_charge = shipping_charge,
+                                    adjustment_charge = adjustment_charge,
                                     grand_total=grand_total,
+                                    payed = advance,
                                     note=note,
                                     custo=cus,
                                     term=terms_con,
@@ -9192,7 +9197,6 @@ def create_Purchase_order(request):
             if len(request.FILES) != 0:
                 p_bill.document=request.FILES['file'] 
                 p_bill.save()
-                print('save')
             item = request.POST.getlist("item[]")
             hsn = request.POST.getlist("hsn[]")
             quantity = request.POST.getlist("quantity[]")
@@ -12492,6 +12496,7 @@ def new_bill(request):
 def convert_to_invoice_purchase(request,pk):
     user = request.user
     po_id=Purchase_Order.objects.get(id=pk)
+    pos = po_id.source_supply[5:]
     company = company_details.objects.get(user_id=user.id)
     items = AddItem.objects.filter(user_id=user.id)
     vendors = vendor_table.objects.filter(user_id=user.id)
@@ -12535,6 +12540,7 @@ def convert_to_invoice_purchase(request,pk):
                'bank':bank,
                'po_item':po_id,
                'poitems':poitems,
+               'pos':pos
                }
 
     return render(request, 'new_invoice_purchase.html',context)
