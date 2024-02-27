@@ -156,7 +156,7 @@ class doc_upload_table(models.Model):
     title=models.TextField(max_length=200)
     document=models.FileField(upload_to='doc/')
     
-    
+
     
 class customer(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,default='')
@@ -838,7 +838,12 @@ class Purchase_Order_items (models.Model):
     tax = models.CharField(max_length=100,blank=True,null=True)    ########## #replace the model 
     discount = models.FloatField(null=True,blank=True)
     amount = models.FloatField(null=True,blank=True)
-    
+
+class doc_upload_table_purchase(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE,null=True,default='')
+    purchase=models.ForeignKey(Purchase_Order,on_delete=models.CASCADE,null=True)
+    title=models.TextField(max_length=200)
+    document=models.FileField(upload_to='doc/') 
     
 class payment_made_item(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)

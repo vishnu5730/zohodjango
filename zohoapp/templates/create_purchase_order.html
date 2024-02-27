@@ -2071,12 +2071,12 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                     <select name="intra" class="form-control bg-light text-dark" id="intra">
                       <option value="" hidden>Select GST</option>
 
-                      <option value="0">GST0[0%]</option>
-                      <option value="3">GST3[3%]</option>
-                      <option value="5">GST5[5%]</option>
-                      <option value="12">GST12[12%]</option>
-                      <option value="18">GST18[18%]</option>
-                      <option value="28">GST28[28%]</option>
+                      <option value="GST0[0%]">GST0[0%]</option>
+                      <option value="GST3[3%]">GST3[3%]</option>
+                      <option value="GST5[5%]">GST5[5%]</option>
+                      <option value="GST12[12%]">GST12[12%]</option>
+                      <option value="GST18[18%]">GST18[18%]</option>
+                      <option value="GST28[28%]">GST28[28%]</option>
                     </select>
                   </div>
 
@@ -2087,13 +2087,12 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                   <div class="col-md-6">
                     <select name="inter" class="form-control bg-light text-dark" id="inter">
                       <option value="" hidden>Select IGST</option>
-
-                      <option value="0">IGST0[0%]</option>
-                      <option value="3">IGST3[3%]</option>
-                      <option value="5">IGST5[5%]</option>
-                      <option value="12">IGST12[12%]</option>
-                      <option value="18">IGST18[18%]</option>
-                      <option value="28">IGST28[28%]</option>
+                      <option value="IGST0[0%]">IGST0[0%]</option>
+                      <option value="IGST3[3%]">IGST3[3%]</option>
+                      <option value="IGST5[5%]">IGST5[5%]</option>
+                      <option value="IGST12[12%]">IGST12[12%]</option>
+                      <option value="IGST18[18%]">IGST18[18%]]</option>
+                      <option value="IGST28[28%]">IGST28[28%]</option>
                     </select>
                   </div>
                   <div class="col-md-1"></div>
@@ -3068,6 +3067,32 @@ $.ajax({
   },
 });
 });
+function reloadItems(rowNumber) {
+  var select = $('#item' + rowNumber); // Select the item select element in the specified row
+  $.ajax({
+    url: "{% url 'item_dropdown' %}",
+    type: "GET",
+    dataType: "json",
+    data: select.serialize(),
+    headers: {
+        "X-CSRFToken": "{{ csrf_token }}"
+    },
+    success: function(data) {
+      var selectize = select[0].selectize;
+      selectize.clearOptions();
+      $.each(data, function(key, value) {
+          var optionValue = value; // Concatenate first name, last name, and ID
+          var fullName = value; // Concatenate first name and last name for option text
+          selectize.addOption({value: optionValue, text: fullName});
+      });
+      selectize.refreshItems(); // This is optional, refreshes selected items
+      selectize.refreshOptions(false); // Pass false to disable dropdown closing after refresh
+    },
+    error: function(xhr, status, error) {
+      console.error(xhr.responseText);
+    }
+  });
+}
 
 function reloadItem() {
   $.ajax({
@@ -3094,6 +3119,7 @@ function reloadItem() {
     }
   });
 }
+
 // account modal
 
 $(document).on("click","#accountSave",function(){
@@ -3278,6 +3304,7 @@ function calculateGrandTotal() {
     `;
   $('#item_table tbody').append(newRow);
   initializeSelectize(rowCount);
+  reloadItems(rowCount);
   updateSerialNumbers();
     toggleDateInput();
     calculateSubtotal();
@@ -3684,8 +3711,8 @@ function toggleDateInput() {
               success: function (response) {
                   console.log(response)
                   data = response.rate
-                  data1 = response.gst
-                  data2 = response.igst
+                  data1 = response.gst1
+                  data2 = response.igst1
                   data3 = response.pos
                   data4=response.place
                   data5=response.hsn
@@ -3721,8 +3748,8 @@ function toggleDateInput() {
         success: function(response) {
             console.log(response);
             var data = response.rate;
-            var data1 = response.gst;
-            var data2 = response.igst;
+            var data1 = response.gst1;
+            var data2 = response.igst1;
             var data3 = response.pos;
             var data4 = response.place;
             var data5 = response.hsn;

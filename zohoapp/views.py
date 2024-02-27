@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.utils.text import capfirst
 from django.contrib.auth.models import User,auth
 import pandas as pd
+import re
 from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
@@ -1482,6 +1483,23 @@ def upload_document(request,pk):
         doc_data=doc_upload_table(user=udata,vendor=vdata,title=title,document=document)
         doc_data.save()
         return redirect("view_vendor_list")
+
+def upload_document_purchase(request,pk):
+    if request.method=='POST':
+        user_id=request.user.id
+        udata=User.objects.get(id=user_id)
+        pdata=Purchase_Order.objects.get(id=pk)
+        title=request.POST['title']
+        document=request.FILES.get('file')
+        doc_data=doc_upload_table_purchase(user=udata,purchase=pdata,title=title,document=document)
+        doc_data.save()
+        return redirect('purchase_bill_view',pk)
+
+def download_doc_purchase(request,pk):
+    document=get_object_or_404(doc_upload_table_purchase,id=pk)
+    response=HttpResponse(document.document,content_type='application/pdf')
+    response['Content-Disposition']=f'attachment; filename="{document.document.name}"'
+    return response
 
 def download_doc(request,pk):
     document=get_object_or_404(doc_upload_table,id=pk)
@@ -5799,6 +5817,7 @@ def filter_chellan_type(request):
         return render(request,'delivery_chellan.html',{'view':viewitem,"company":company})  
     return redirect("delivery_chellan_home") 
 
+
 def itemdata_challan(request):
     cur_user = request.user
     user = cur_user.id
@@ -5812,9 +5831,13 @@ def itemdata_challan(request):
             hsn = item.hsn
             igst = item.interstate
             gst = item.intrastate
+            match = re.search(r'\[(\d+)%\]', igst)
+            match2 = re.search(r'\[(\d+)%\]', gst)
+            igst1 = int(match.group(1))
+            gst1 = int(match2.group(1))
             # Assuming `company_name` is a field in the `company_details` model
             place = company_details.objects.get(user=cur_user).company_name
-            return JsonResponse({"status": "not", 'place': place, 'rate': rate, 'hsn': hsn,'igst':igst,'gst':gst})
+            return JsonResponse({"status": "not", 'place': place, 'rate': rate, 'hsn': hsn,'igst':igst,'gst':gst,'igst1':igst1,'gst1':gst1})
         except AddItem.DoesNotExist:
             return JsonResponse({"status": "error", 'message': "Item not found"})
     except Exception as e:
@@ -8527,7 +8550,7 @@ def downloadPurchaseSampleImportFile(request):
         'exp_date[yyyy-mm-dd]','payment_terms', 'shipping_charge', 'adjustment_charge',
         'advance', 'note', 'payment_type', 'cheque_id', 'upi_id', 'document', 'comments',
         'term']
-    sheet2_columns = ['item', 'quantity', 'tax', 'discount','Purchase Order No']
+    sheet2_columns = ['item', 'quantity', 'tax(%)', 'discount','Purchase Order No']
 
     # Create empty dataframes with only column titles
     df_sheet1 = pd.DataFrame(columns=sheet1_columns)
@@ -8693,7 +8716,7 @@ def import_purchase(request):
                         quantity = row.get('quantity')
                         rate = float(item_obj.s_price)
                         hsn = item_obj.hsn
-                        tax = row.get('tax')
+                        tax = row.get('tax(%)')
                         discount = row.get('discount') if row.get('discount') is not None else 0
                         amount = (quantity*rate)-discount
                         count_tax=count_tax+((tax/100)*amount)
@@ -8712,7 +8735,7 @@ def import_purchase(request):
                         )
                         purchase_obj_items.save()
                 purchase_obj.tax_amount=count_tax
-                if purchase_obj.source_supply == '[KL] Kerala':
+                if purchase_obj.source_supply[5:] == company.state:
                     purchase_obj.cgst=count_tax/2
                     purchase_obj.sgst=count_tax/2
                     purchase_obj.igst=0
@@ -9235,11 +9258,18 @@ def purchase_bill_view(request,id):
     po_table=Purchase_Order.objects.get(id=id)
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
-    name=po_item.vendor_name.split(' ')
+    ddata=doc_upload_table_purchase.objects.filter(user=request.user,purchase=po_item)
+    name = po_item.vendor_name.split(' ')
     if len(name) == 3:
         po_item.vendor_name = name[0]+' '+name[1]
     else:
         po_item.vendor_name = name[0]
+    for i in po:
+        name2 = i.vendor_name.split(' ')
+        if len(name2) == 3:
+            i.vendor_name = name2[0]+' '+name2[1]
+        else:
+            i.vendor_name = name2[0]
     cmt_data = purchase_order_comments.objects.filter(user=request.user,PO=po_item)
     bank=''
     if po_item.payment_type != 'cash':
@@ -9253,7 +9283,8 @@ def purchase_bill_view(request,id):
         'po_table':po_table,
         'po_item':po_item,
         'bank':bank,
-        'cmt_data':cmt_data
+        'cmt_data':cmt_data,
+        'ddata':ddata
     }
     return render(request, 'purchase_bill_view.html',context)
     
@@ -9264,6 +9295,18 @@ def purchase_bill_view_by_name(request,id):
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
     cmt_data = purchase_order_comments.objects.filter(user=request.user,PO=po_item)
+    ddata=doc_upload_table_purchase.objects.filter(user=request.user,purchase=po_item)
+    name = po_item.vendor_name.split(' ')
+    if len(name) == 3:
+        po_item.vendor_name = name[0]+' '+name[1]
+    else:
+        po_item.vendor_name = name[0]
+    for i in po:
+        name2 = i.vendor_name.split(' ')
+        if len(name2) == 3:
+            i.vendor_name = name2[0]+' '+name2[1]
+        else:
+            i.vendor_name = name2[0]
     bank=''
     if po_item.payment_type != 'cash':
         if po_item.payment_type != 'upi':
@@ -9276,17 +9319,33 @@ def purchase_bill_view_by_name(request,id):
         'po_table':po_table,
         'po_item':po_item,
         'bank':bank,
-        'cmt_data':cmt_data
+        'cmt_data':cmt_data,
+        'ddata':ddata
     }
     return render(request, 'purchase_bill_view.html',context)
 
+from django.db.models import IntegerField
+from django.db.models.functions import Cast
+
 def purchase_bill_view_by_ordno(request,id):
-    po=Purchase_Order.objects.filter(user=request.user).order_by('Pur_no')
+    po = Purchase_Order.objects.filter(user=request.user).annotate(pur_no_int=Cast('Pur_no', IntegerField())).order_by('pur_no_int')
     po_t=Purchase_Order_items.objects.filter(PO=id)
     po_table=Purchase_Order.objects.get(id=id)
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
     cmt_data = purchase_order_comments.objects.filter(user=request.user,PO=po_item)
+    ddata=doc_upload_table_purchase.objects.filter(user=request.user,purchase=po_item)
+    name = po_item.vendor_name.split(' ')
+    if len(name) == 3:
+        po_item.vendor_name = name[0]+' '+name[1]
+    else:
+        po_item.vendor_name = name[0]
+    for i in po:
+        name2 = i.vendor_name.split(' ')
+        if len(name2) == 3:
+            i.vendor_name = name2[0]+' '+name2[1]
+        else:
+            i.vendor_name = name2[0]
     bank=''
     if po_item.payment_type != 'cash':
         if po_item.payment_type != 'upi':
@@ -9299,7 +9358,8 @@ def purchase_bill_view_by_ordno(request,id):
         'po_table':po_table,
         'po_item':po_item,
         'bank':bank,
-        'cmt_data':cmt_data
+        'cmt_data':cmt_data,
+        'ddata':ddata
     }
     return render(request, 'purchase_bill_view.html',context)
 
@@ -18886,12 +18946,6 @@ def view_vendor_details_active(request,pk):
     name_and_id = fullname +' '+ str(vdata2.id) 
     id_and_name = str(vdata2.id) +' '+ fullname  
 
-    print(fname)
-    print(lname)
-    print(fullname)
-    print(v_email)
-    print(name_and_id)
-
     expence = ExpenseE.objects.filter(user = udata,vendor_id = pk)
     recurring_expense = Expense.objects.filter(vendor_id = pk)
     purchase_ordr = Purchase_Order.objects.filter(user = udata,vendor_name = name_and_id)
@@ -18935,12 +18989,6 @@ def view_vendor_details_inactive(request,pk):
     v_email = vdata2.vendor_email
     name_and_id = fullname +' '+ str(vdata2.id) 
     id_and_name = str(vdata2.id) +' '+ fullname  
-
-    print(fname)
-    print(lname)
-    print(fullname)
-    print(v_email)
-    print(name_and_id)
 
     expence = ExpenseE.objects.filter(user = udata,vendor_id = pk)
     recurring_expense = Expense.objects.filter(vendor_id = pk)

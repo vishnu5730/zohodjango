@@ -470,21 +470,21 @@
             </div>
           </div>
           
-          <div class="row container-fluid p-2 m-0 d-none" id="igst1">
+          <div class="row container-fluid p-2 m-0" id="igst1">
             <div class="col-sm-5 mt-2"><label for="a" class="text-center">IGST</label></div>
             <div class="col-sm-3 mt-2"></div>
             <div class="col-sm-4 mt-2"><input type="number" name='igst' step="0.00" min="0" value="{{po_item.igst|floatformat:2}}" id="igst" placeholder=0 
                 class="form-control text-dark bg-light" readonly style="background-color: #2A3038;border: 1px solid #2c2e33;"/>
             </div>
           </div>
-          <div class="row container-fluid p-2 m-0 d-none" id="cgst1">
+          <div class="row container-fluid p-2 m-0" id="cgst1">
             <div class="col-sm-5 mt-2"><label for="a" class="text-center">CGST</label></div>
             <div class="col-sm-3 mt-2"></div>
             <div class="col-sm-4 mt-2"><input type="number" name='cgst' step="0.00" value="{{po_item.cgst|floatformat:2}}" min="0" id="cgst" placeholder=0 
                 class="form-control text-dark bg-light" readonly style="background-color: #2A3038;border: 1px solid #2c2e33;"/>
             </div>
           </div>
-          <div class="row container-fluid p-2 m-0 d-none" id="sgst1">
+          <div class="row container-fluid p-2 m-0" id="sgst1">
             <div class="col-sm-5 mt-2"><label for="a" class="text-center">SGST</label></div>
             <div class="col-sm-3 mt-2"></div>
             <div class="col-sm-4 mt-2"><input type="number" name='sgst' value="{{po_item.sgst|floatformat:2}}" step="0.00" min="0" id="sgst" placeholder=0 
@@ -3552,43 +3552,43 @@ function reloadAccount() {
 
   }
 
-  function srcofsupply(){ 
-      $(".selecttax").removeClass('d-flex');
-      $(".selecttax").addClass('d-none');
+  // function srcofsupply(){ 
+  //     $(".selecttax").removeClass('d-flex');
+  //     $(".selecttax").addClass('d-none');
 
-      if(isGST())
-      {
-        $(".tax2").removeClass('d-flex');
-        $(".tax2").addClass('d-none');
-        $(".tax1").removeClass('d-none');
-        $(".tax1").addClass('d-flex'); 
+  //     if(isGST())
+  //     {
+  //       $(".tax2").removeClass('d-flex');
+  //       $(".tax2").addClass('d-none');
+  //       $(".tax1").removeClass('d-none');
+  //       $(".tax1").addClass('d-flex'); 
 
-        $("#cgst1").removeClass('d-none');
-        $("#cgst1").addClass('d-flex');
-        $("#sgst1").removeClass('d-none');
-        $("#sgst1").addClass('d-flex');
+  //       $("#cgst1").removeClass('d-none');
+  //       $("#cgst1").addClass('d-flex');
+  //       $("#sgst1").removeClass('d-none');
+  //       $("#sgst1").addClass('d-flex');
 
-        $("#igst1").removeClass('d-flex');
-        $("#igst1").addClass('d-none');
+  //       $("#igst1").removeClass('d-flex');
+  //       $("#igst1").addClass('d-none');
 
-      }
-      else{ 
+  //     }
+  //     else{ 
 
-        $(".tax2").removeClass('d-none');
-        $(".tax2").addClass('d-flex');
-        $(".tax1").removeClass('d-flex');
-        $(".tax1").addClass('d-none'); 
+  //       $(".tax2").removeClass('d-none');
+  //       $(".tax2").addClass('d-flex');
+  //       $(".tax1").removeClass('d-flex');
+  //       $(".tax1").addClass('d-none'); 
 
-        $("#igst1").removeClass('d-none');
-        $("#igst1").addClass('d-flex');
+  //       $("#igst1").removeClass('d-none');
+  //       $("#igst1").addClass('d-flex');
 
-        $("#cgst1").removeClass('d-flex');
-        $("#cgst1").addClass('d-none');
-        $("#sgst1").removeClass('d-flex');
-        $("#sgst1").addClass('d-none');
-      }
+  //       $("#cgst1").removeClass('d-flex');
+  //       $("#cgst1").addClass('d-none');
+  //       $("#sgst1").removeClass('d-flex');
+  //       $("#sgst1").addClass('d-none');
+  //     }
      
-  }
+  // }
  function itemchange(){
   
   var row_count = $("#items-table-body tr").length;
