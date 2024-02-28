@@ -931,7 +931,7 @@ def add_vendor(request):
             return redirect('vendor')
         else:
             vendor_data.save()
-    # .......................................................adding to remaks table.....................
+    
             vdata=vendor_table.objects.get(id=vendor_data.id)
             vendor=vdata
             rdata=remarks_table()
@@ -940,9 +940,6 @@ def add_vendor(request):
             rdata.vendor=vdata
             rdata.save()
 
-
-    #  ...........................adding multiple rows of table to model  ........................................................  
-        
             salutation =request.POST.getlist('salutation[]')
             first_name =request.POST.getlist('first_name[]')
             last_name =request.POST.getlist('last_name[]')
@@ -982,7 +979,7 @@ def downloadVendorSampleImportFile(request):
                       'opening_bal_type', 'payment_terms', 'battention', 'bstreet', 'bcountry', 
                       'baddress', 'bcity', 'bstate', 'bpin', 'bzip', 'bphone', 'bfax', 'sattention', 
                       'sstreet', 'scountry', 'saddress', 'scity', 'sstate', 'szip', 'spin', 'sphone', 
-                      'sfax', 'status', 'credit_limit']
+                      'sfax', 'credit_limit']
     
     # Create empty dataframes with only column titles
     df_sheet1 = pd.DataFrame(columns=sheet1_columns)
@@ -1043,7 +1040,7 @@ def import_vendor(request):
             spin = row.get('spin') if row.get('spin') is not None else ''
             sphone = row.get('sphone') if row.get('sphone') is not None else ''
             sfax = row.get('sfax') if row.get('sfax') is not None else ''
-            status = row.get('status') if row.get('status') is not None else ''
+            status = 'Active'
             credit_limit = row.get('Credit Limit') if row.get('Credit Limit') is not None else 0
             vendor_obj = vendor_table(
                 user=request.user,
@@ -5817,6 +5814,7 @@ def filter_chellan_type(request):
         return render(request,'delivery_chellan.html',{'view':viewitem,"company":company})  
     return redirect("delivery_chellan_home") 
 
+import re
 
 def itemdata_challan(request):
     cur_user = request.user
@@ -8541,7 +8539,26 @@ def purchaseView(request):
         'company':company,
         }
     return render(request,'purchase_order.html',context)
+#-----------------------------------------------VIEWS TO REPLACE---------------------------------------------
 
+def purchaseView(request):
+    purchase_table=Purchase_Order.objects.filter(user=request.user)
+    for i in purchase_table:
+        name=i.vendor_name.split(' ')
+        if len(name) == 3:
+            i.vendor_name = name[0]+' '+name[1]
+        else:
+            i.vendor_name = name[0]
+    purchase_order_table=Purchase_Order_items.objects.all()
+    company=company_details.objects.get(id=request.user.id)
+    context={
+        'pt':purchase_table,
+        'po_t':purchase_order_table,
+        'company':company,
+        }
+    return render(request,'purchase_order.html',context)
+
+#--------------------------------------------------------------------------------
 def downloadPurchaseSampleImportFile(request):
     sheet1_columns = [
         'vendor_name', 'vendor_mail', 'Type (Organisation/Customer)', 'Organisation',
@@ -8795,7 +8812,7 @@ def purchase_vendor(request):
 
         u = User.objects.get(id = request.user.id)
 
-        vndr = vendor_table(salutation=title, first_name=first_name, last_name=last_name,vendor_display_name = dispn, company_name= comp, gst_treatment=gsttype, gst_number=gstin, 
+        vndr = vendor_table(salutation=title, first_name=first_name, last_name=last_name,vendor_display_name = dispn, status='Active', company_name= comp, gst_treatment=gsttype, gst_number=gstin, 
                     pan_number=panno,vendor_wphone = w_mobile,vendor_mphone = p_mobile, vendor_email=email,skype_number = skype,
                     source_supply=supply,currency=currency, website=website, designation = desg, department = dpt,
                     opening_bal=balance,baddress=street, bcity=city, bstate=state, payment_terms=payment,bzip=pincode, 
@@ -8888,6 +8905,18 @@ def purchase_pay(request):
         
 @login_required(login_url='login')
 def payment_dropdown(request):
+
+    user = User.objects.get(id=request.user.id)
+
+    options = {}
+    option_objects = payment_terms.objects.filter(user = user)
+    for option in option_objects:
+        options[option.id] = [option.Terms, option.id]
+
+    return JsonResponse(options)
+
+@login_required(login_url='login')
+def payment_dropdown_purchase(request):
 
     user = User.objects.get(id=request.user.id)
 
@@ -18925,7 +18954,7 @@ def sort_vendor_by_amount(request):
     company=company_details.objects.get(user=request.user)
     user_id=request.user.id
     udata=User.objects.get(id=user_id)
-    data=vendor_table.objects.filter(user=udata).order_by('opening_bal')
+    data=vendor_table.objects.filter(user=udata).annotate(opening_bal_int=Cast('opening_bal', IntegerField())).order_by('opening_bal_int')
     return render(request,'vendor_list.html',{'data':data,'company':company})
 
 def view_vendor_details_active(request,pk):
@@ -19070,7 +19099,7 @@ def sort_vendor_by_amount_det(request,pk):
     company=company_details.objects.get(user=request.user)
     user_id=request.user.id
     udata=User.objects.get(id=user_id)
-    vdata1=vendor_table.objects.filter(user=udata).order_by('opening_bal')
+    vdata1=vendor_table.objects.filter(user=udata).annotate(opening_bal_int=Cast('opening_bal', IntegerField())).order_by('opening_bal_int')
     vdata2=vendor_table.objects.get(id=pk)
     mdata=mail_table.objects.filter(vendor=vdata2)
     ddata=doc_upload_table.objects.filter(user=udata,vendor=vdata2)

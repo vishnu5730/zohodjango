@@ -547,7 +547,7 @@
                 </div>
                 {% endif %}
                 <div class="row mt-3">
-                  <div class="col-5"><label class="text-dark" for="">Source of Supply :</label></div>
+                  <div class="col-5"><label class="text-dark" for="">Place of Supply :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.source_supply}}</p>
                   </div>
@@ -2218,12 +2218,15 @@
 
 
   function shareOnWhatsApp() {
-    var url = window.location.href;
-    var text = url;
-    text = encodeURIComponent(text);
-    var whatsappUrl = "whatsapp://send?text=" + text;
-    window.location.href = whatsappUrl;
-  }
+    var pageUrl = window.location.href;
+    
+      // Create the WhatsApp share link
+      var whatsappLink = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(pageUrl);
+    
+      // Open the WhatsApp share link in a new window or tab
+      window.open(whatsappLink, '_blank');
+    }
+  
 
   function exportToPDF() {
     var content = document.getElementById('selected-area');

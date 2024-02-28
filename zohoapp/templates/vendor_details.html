@@ -249,6 +249,9 @@
                                     margin-right: 4px;"><i class="fa fa-file-pdf-o"></i>PDF</button>
                                 <button class="btn btn-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                                     margin-right: 4px;" data-target="#shareTransationEmail" data-toggle="modal"><i class="fa fa-envelope"></i>Email</button>
+                                    <button onclick="shareViaWhatsApp()" class="btn btn-warning " style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                                    margin-right: 4px;"><i class="fa fa-whatsapp"></i>Whatsapp</button>
+                            
                         </div> 
                     </div>
                 </fieldset9>
@@ -697,7 +700,7 @@
                                         <div class="col-md-6 " style="text-align: right;"><i class="fas fa-filter filter-button"></i>
                                             <div class="filter-dropdown">
                                                 <select class="filter-option">
-                                                    <option value="contains">Contains</option>
+                                                    <!-- <option value="contains">Contains</option> -->
                                                     <option value="exact-match">Exact Match</option>
                                                 </select><br><br>
                                                 <input type="text" class="filter-value" ><br><br>
@@ -714,7 +717,7 @@
                                         <div class="col-md-6 " style="text-align: right;"><i class="fas fa-filter filter-button "></i>
                                             <div class="filter-dropdown">
                                                 <select class="filter-option">
-                                                    <option value="contains">Contains</option>
+                                                    <!-- <option value="contains">Contains</option> -->
                                                     <option value="exact-match">Exact Match</option>
                                                 </select><br><br>
                                                 <input type="text" class="filter-value" ><br><br>
@@ -730,7 +733,7 @@
                                         <div class="col-md-6 " style="text-align: right;"><i class="fas fa-filter filter-button"></i>
                                             <div class="filter-dropdown">
                                                 <select class="filter-option">
-                                                    <option value="contains">Contains</option>
+                                                    <!-- <option value="contains">Contains</option> -->
                                                     <option value="exact-match">Exact Match</option>
                                                 </select><br><br>
                                                 <input type="text" class="filter-value" ><br><br>
@@ -785,7 +788,7 @@
                         <tbody>
                             {% for vc in vendor_credits %}
                             <tr>
-                                <td><span class="dot vc-dot"></span></td>
+                                <td>{{ forloop.counter }}</td>
                                 <td>Vendor Credits</td>
                                 <td>{{ vc.credit_note }}</td>
                                 <td>{{ vc.vendor_date }}</td>
@@ -795,7 +798,7 @@
                             {% endfor %}
                             {% for exp in expence %}
                             <tr>
-                                <td><span class="dot exp-dot"></span></td>
+                                <td>{{ forloop.counter }}</td>
                                 <td>Expense</td>
                                 <td>{{ exp.invoice }}</td>
                                 <td>{{ exp.date }}</td>
@@ -805,7 +808,7 @@
                             {% endfor %}
                             {% for r_exp in recurring_expense %}
                             <tr>
-                                <td><span class="dot re-dot"></span></td>
+                                <td>{{ forloop.counter }}</td>
                                 <td>Recurring Expense</td>
                                 <td>{{ r_exp.profile_name }}</td>
                                 <td>{{ r_exp.start_date }}</td>
@@ -815,7 +818,7 @@
                             {% endfor %}
                             {% for po in purchase_ordr %}
                             <tr>
-                                <td><span class="dot po-dot"></span></td>
+                                <td>{{ forloop.counter }}</td>
                                 <td>Purchase Order</td>
                                 <td>{{ po.Pur_no }}</td>
                                 <td>{{ po.Ord_date }}</td>
@@ -825,7 +828,7 @@
                             {% endfor %}
                             {% for pm in paymnt_made %}
                             <tr>
-                                <td><span class="dot pm-dot"></span></td>
+                                <td>{{ forloop.counter }}</td>
                                 <td>Payment Made</td>
                                 <td>{{ pm.Pur_no }}</td>
                                 <td>{{ pm.date }}</td>
@@ -835,7 +838,7 @@
                             {% endfor %}
                             {% for pb in purchase_bill %}
                             <tr>
-                                <td><span class="dot pb-dot"></span></td>
+                                <td>{{ forloop.counter }}</td>
                                 <td>Purchase Bills</td>
                                 <td>{{ pb.bill_no }}</td>
                                 <td>{{ pb.bill_date }}</td>
@@ -845,7 +848,7 @@
                             {% endfor %}
                             {% for rb in recurring_bill %}
                             <tr>
-                                <td><span class="dot rb-dot"></span></td>
+                                <td>{{ forloop.counter }}</td>
                                 <td>Recurring Bills</td>
                                 <td>{{ rb.bill_no }}</td>
                                 <td>{{ rb.start_date }}</td>
@@ -1570,6 +1573,18 @@ $(document).ready(function () {
 }
 
   </script>
+  <script>
+    function shareViaWhatsApp() {
+      // Get the current page URL
+      var pageUrl = window.location.href;
+    
+      // Create the WhatsApp share link
+      var whatsappLink = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(pageUrl);
+    
+      // Open the WhatsApp share link in a new window or tab
+      window.open(whatsappLink, '_blank');
+    }
+    </script>
 
   <div class="modal fade" id="shareTransationEmail">
     <div class="modal-dialog">

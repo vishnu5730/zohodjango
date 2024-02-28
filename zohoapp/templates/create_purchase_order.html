@@ -1020,10 +1020,10 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                     <div class="d-flex">
                       <select class="form-control bg-light text-dark" id="v_terms" name="v_terms" required>
                         {% for p in payment %}
-                        <option value="{{p.id}}">{{p.Terms}}</option>
+                        <option value="{{p.Terms}}">{{p.Terms}}</option>
                         {% endfor %}
                       </select>                
-                      <a href="#" class="btn btn-outline-secondary py-2 my-1" data-target="#newpayment" data-toggle="modal">+</a>   
+                      <!-- <a href="#" class="btn btn-outline-secondary py-2 my-1" data-target="#newpayment" data-toggle="modal">+</a>    -->
                     </div>
                   </div>       
                 </div>
@@ -2907,7 +2907,7 @@ $(document).on("click","#paySave",function(){
 function reloadPayment() {
 
   $.ajax({
-    url: "{% url 'payment_dropdown' %}",
+    url: "{% url 'payment_dropdown_purchase' %}",
     type: "GET",
     dataType: "json",
     data: $(this).serialize(),
