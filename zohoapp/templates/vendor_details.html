@@ -182,7 +182,7 @@
             <div class="col-sm-12 col-md-8 col-lg-8 mt-2">
                 
                 <a class="text-white" style="font-size: 2rem;"><i class="fas fa-user"
-                    style="font-size: 1.5rem;"></i> {{vdata2.first_name}} {{vdata2.last_name}}</a>
+                    style="font-size: 1.5rem;"></i> {{vdata2.vendor_display_name}}</a>
                 <div class="row mt-2">
                     <div class="col-sm-12 col-md-4 col-lg-4 ">
                         <button onclick="fieldset1_function()"   class="btn btn-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;"><i class="fas fa-eye"></i> Overview</button> 
@@ -275,7 +275,7 @@
                                 <div class="gen-info col-6 text-dark" style="padding-left: 3rem;">
             
                                     <div class="row text-center">
-                                        <h5 class="h4 text-dark">{{vdata2.salutation}} {{vdata2.first_name}} {{vdata2.last_name}}
+                                        <h5 class="h4 text-dark">{{vdata2.vendor_display_name}}
                                         </h5>
                                     </div>
             
@@ -661,7 +661,7 @@
                     <div class="row text-dark " >
                       <div class="col-md-8">
                         <br>
-                        <h6 class="text-uppercase py-2">{{vdata2.first_name}} {{vdata2.last_name}}
+                        <h6 class="text-uppercase py-2">{{vdata2.vendor_display_name}}
                         </h6>
                         {% if vdata2.vendor_mphone %}
                         <p >Phone : {{vdata2.vendor_mphone}}</p>
@@ -793,7 +793,7 @@
                                 <td>{{ vc.credit_note }}</td>
                                 <td>{{ vc.vendor_date }}</td>
                                 <td><i class="fa fa-inr"></i> {{ vc.grand_total }}</td>
-                                <td><i class="fa fa-inr"></i> {{ vc.grand_total }}</td>
+                                <td><i class="fa fa-inr"></i> {{vdata2.opening_bal}}</td>
                             </tr>
                             {% endfor %}
                             {% for exp in expence %}
@@ -803,7 +803,7 @@
                                 <td>{{ exp.invoice }}</td>
                                 <td>{{ exp.date }}</td>
                                 <td><i class="fa fa-inr"></i> {{ exp.amount }}</td>
-                                <td><i class="fa fa-inr"></i> {{ exp.amount }}</td>
+                                <td><i class="fa fa-inr"></i> {{vdata2.opening_bal}}</td>
                             </tr>
                             {% endfor %}
                             {% for r_exp in recurring_expense %}
@@ -813,7 +813,7 @@
                                 <td>{{ r_exp.profile_name }}</td>
                                 <td>{{ r_exp.start_date }}</td>
                                 <td><i class="fa fa-inr"></i> {{ r_exp.amount }}</td>
-                                <td><i class="fa fa-inr"></i> {{ r_exp.amount }}</td>
+                                <td><i class="fa fa-inr"></i> {{vdata2.opening_bal}}</td>
                             </tr>
                             {% endfor %}
                             {% for po in purchase_ordr %}
@@ -823,7 +823,7 @@
                                 <td>{{ po.Pur_no }}</td>
                                 <td>{{ po.Ord_date }}</td>
                                 <td><i class="fa fa-inr"></i> {{ po.grand_total }}</td>
-                                <td><i class="fa fa-inr"></i> {{ po.grand_total }}</td>
+                                <td><i class="fa fa-inr"></i> {{vdata2.opening_bal}}</td>
                             </tr>
                             {% endfor %}
                             {% for pm in paymnt_made %}
@@ -833,7 +833,7 @@
                                 <td>{{ pm.Pur_no }}</td>
                                 <td>{{ pm.date }}</td>
                                 <td><i class="fa fa-inr"></i> {{ pm.amount }}</td>
-                                <td><i class="fa fa-inr"></i> {{ pm.amount }}</td>
+                                <td><i class="fa fa-inr"></i> {{vdata2.opening_bal}}</td>
                             </tr>
                             {% endfor %}
                             {% for pb in purchase_bill %}
@@ -843,7 +843,7 @@
                                 <td>{{ pb.bill_no }}</td>
                                 <td>{{ pb.bill_date }}</td>
                                 <td><i class="fa fa-inr"></i> {{ pb.total }}</td>
-                                <td><i class="fa fa-inr"></i> {{ pb.total }}</td>
+                                <td><i class="fa fa-inr"></i> {{vdata2.opening_bal}}</td>
                             </tr>
                             {% endfor %}
                             {% for rb in recurring_bill %}
@@ -853,7 +853,7 @@
                                 <td>{{ rb.bill_no }}</td>
                                 <td>{{ rb.start_date }}</td>
                                 <td><i class="fa fa-inr"></i> {{ rb.grand_total }}</td>
-                                <td><i class="fa fa-inr"></i> {{ rb.grand_total }}</td>
+                                <td><i class="fa fa-inr"></i> {{vdata2.opening_bal}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -1533,44 +1533,11 @@ $(document).ready(function () {
   document.getElementById('todate').addEventListener('change', ApplyDateFilter);
 
   function exportAsPDF() {
-    const container = document.getElementById('transactions');
-
-    // Store the original background color
-    const originalBackgroundColor = container.style.backgroundColor;
-
-    // Change styles for PDF export
-    container.style.backgroundColor = 'white';
-
-    const pdfOptions = {
-    margin: 0,
-    filename: 'transactions.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' },
-    };
-
-
-    // Generate PDF from the container
+    var content = document.getElementById('transactions');
     html2pdf()
-        .from(container)
-        .set(pdfOptions)
-        .save()
-        .then(() => {
-            // Restore original styles and show hidden elements
-            container.style.backgroundColor = originalBackgroundColor;
-            elementsToHide.forEach(element => {
-                element.style.display = '';
-            });
-        })
-        .catch(error => {
-            console.error('Error exporting PDF:', error);
-            // Ensure that original styles and visibility are still restored in case of an error
-            container.style.backgroundColor = originalBackgroundColor;
-            elementsToHide.forEach(element => {
-                element.style.display = '';
-            });
-        });
-}
+      .from(content)
+      .save('transactions' + '.pdf')
+  }
 
   </script>
   <script>

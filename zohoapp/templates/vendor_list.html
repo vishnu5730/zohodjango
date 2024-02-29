@@ -13,7 +13,14 @@
       overflow: scroll;
     }
 </style>
-
+{% if messages %}
+        <div class="alert bg-danger alert-dismissible fade show" role="alert" style="z-index: 9999;">
+            {% for message in messages %}
+            {{ message }}
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
   <div  style="top: 7rem; " >
     <div class="pb-4"><a class="text-white" style="font-size: 2rem;">All Vendors</a></div>
     <div class="row mb-4">
@@ -92,17 +99,9 @@
                         <td>{{v.vendor_email}}</td>
                         <td ><textarea class="bg-transparent text-white border-0" name="" id="" cols="45" rows="2">{{v.gst_treatment}}</textarea></td>
                         <td>{{v.gst_number}}</td>
-                        {% if v.opening_bal_type == 'credit' %}
-                        <td>-{{v.opening_bal}}</td>
-                        {% else %}
                         <td>{{v.opening_bal}}</td>
-                        {% endif %}
                         <td>{{v.status}}</td>
-                        {% if v.opening_bal_type == 'credit' %}
-                        <td>-{{v.opening_bal}}</td>
-                        {% else %}
                         <td>{{v.opening_bal}}</td>
-                        {% endif %}
                         <td><a href="{% url 'delete_vendor' v.id %}" onclick="alert('Do You Want to Delete?')"><i class="fas fa-trash text-danger text-center"></i></a></td>
                       </tr>
                       {% endfor %}
@@ -176,7 +175,9 @@
                       [WB]-West Bengal<br>
                       [OT]-Other Territory<br>
                   </div>
-              </div>
+              </div><br>
+              <p class="text-danger">MANDATORY FIELDS: Salutation, First Name, Last Name, Email, GST Treatment, PAN No, Opening Balance, Opening Balance Type.<br>
+            </p>
             </div>
           </div>
         </div>

@@ -37,6 +37,7 @@
           <p ><b>Vendor Name: </b>{{po_item.vendor_name}}</p>
             <p><b>Order Date: </b>{{po_item.Ord_date}}</p>
            <p><b>Expected Delivery: </b>{{po_item.exp_date}}</p>
+           <p><b>Place of Supply: </b>{{po_item.source_supply}}</p>
         </div>
       </div> 
       <div style="text-align: center;">
@@ -89,10 +90,10 @@
                   <td>{{i.quantity}}</td>
                   <td>{{i.rate}}</td>
                   <td>{{i.discount}}</td>
-                  {% if i.PO.source_supply == "[KL] Kerala" %}
-                  <td>{{i.tax}} GST</td>
+                  {% if pcom_state == company.state %}
+                  <td>{{i.tax}}% GST</td>
                   {% else %}
-                  <td>{{i.tax}} IGST</td>
+                  <td>{{i.tax}}% IGST</td>
                   {% endif %}
                   <td>{{i.amount}}</td>
               </tr>

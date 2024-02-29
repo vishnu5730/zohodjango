@@ -972,14 +972,13 @@ def sample(request):
     return redirect('base')
 
 def downloadVendorSampleImportFile(request):
-    sheet1_columns = ['user', 'salutation', 'first_name', 'last_name', 'company_name', 
-                      'vendor_display_name', 'vendor_email', 'vendor_wphone', 'vendor_mphone', 
+    sheet1_columns = ['salutation', 'first_name', 'last_name', 'company_name', 'email', 'work phone', 'mobile phone', 
                       'skype_number', 'designation', 'department', 'website', 'gst_treatment', 
-                      'gst_number', 'pan_number', 'source_supply', 'currency', 'opening_bal', 
-                      'opening_bal_type', 'payment_terms', 'battention', 'bstreet', 'bcountry', 
-                      'baddress', 'bcity', 'bstate', 'bpin', 'bzip', 'bphone', 'bfax', 'sattention', 
-                      'sstreet', 'scountry', 'saddress', 'scity', 'sstate', 'szip', 'spin', 'sphone', 
-                      'sfax', 'credit_limit']
+                      'gst_number', 'pan_number', 'place_of_supply', 'currency', 'opening_balance', 
+                      'opening_bal_type (credit/debit)', 'payment_terms', 'billing_attention', 'billing_street', 'billing_country', 
+                      'billing_address', 'billing_city', 'billing_state', 'billing_pin', 'billing_zip', 'billing_phone', 'billing_fax', 'shipping_attention', 
+                      'shipping_street', 'shipping_country', 'shipping_address', 'shipping_city', 'shipping_state', 'shipping_zip', 'shipping_pin', 'shipping_phone', 
+                      'shipping_fax', 'credit_limit']
     
     # Create empty dataframes with only column titles
     df_sheet1 = pd.DataFrame(columns=sheet1_columns)
@@ -996,99 +995,109 @@ def downloadVendorSampleImportFile(request):
     return response
 
 def import_vendor(request):
-    if request.method == 'POST':
-        file = request.FILES['excel_file']
-        df = pd.read_excel(file)
-        for index, row in df.iterrows():
-            salutation = row.get('Salutation').capitalize()
-            first_name = row.get('First Name').capitalize()
-            last_name = row.get('Last Name').capitalize()
-            vendor_mail = row.get('Email')
-            gst_treatment = row.get('GST Treatment')
-            gst_number = row.get('GST Number')
-            opening_bal = row.get('Opening Balance')
-            vendor_display_name = salutation + ' ' + first_name + ' ' + last_name
-            company_name = row.get('Company Name') if row.get('Company Name') is not None else ''
-            vendor_wphone = row.get('vendor_wphone') if row.get('vendor_wphone') is not None else ''
-            vendor_mphone = row.get('vendor_mphone') if row.get('vendor_mphone') is not None else ''
-            skype_number = row.get('skype_number') if row.get('skype_number') is not None else ''
-            designation = row.get('designation') if row.get('designation') is not None else ''
-            department = row.get('department') if row.get('department') is not None else ''
-            website = row.get('website') if row.get('website') is not None else ''
-            pan_number = row.get('pan_number') if row.get('pan_number') is not None else ''
-            source_supply = row.get('source_supply') if row.get('source_supply') is not None else ''
-            currency = row.get('currency') if row.get('currency') is not None else ''
-            opening_bal_type = row.get('opening_bal_type') if row.get('opening_bal_type') is not None else ''
-            payment_terms = row.get('payment_terms') if row.get('payment_terms') is not None else ''
-            battention = row.get('battention') if row.get('battention') is not None else ''
-            bstreet = row.get('bstreet') if row.get('bstreet') is not None else ''
-            bcountry = row.get('bcountry') if row.get('bcountry') is not None else ''
-            baddress = row.get('baddress') if row.get('baddress') is not None else ''
-            bcity = row.get('bcity') if row.get('bcity') is not None else ''
-            bstate = row.get('bstate') if row.get('bstate') is not None else ''
-            bpin = row.get('bpin') if row.get('bpin') is not None else ''
-            bzip = row.get('bzip') if row.get('bzip') is not None else ''
-            bphone = row.get('bphone') if row.get('bphone') is not None else ''
-            bfax = row.get('bfax') if row.get('bfax') is not None else ''
-            sattention = row.get('sattention') if row.get('sattention') is not None else ''
-            sstreet = row.get('sstreet') if row.get('sstreet') is not None else ''
-            scountry = row.get('scountry') if row.get('scountry') is not None else ''
-            saddress = row.get('saddress') if row.get('saddress') is not None else ''
-            scity = row.get('scity') if row.get('scity') is not None else ''
-            sstate = row.get('sstate') if row.get('sstate') is not None else ''
-            szip = row.get('szip') if row.get('szip') is not None else ''
-            spin = row.get('spin') if row.get('spin') is not None else ''
-            sphone = row.get('sphone') if row.get('sphone') is not None else ''
-            sfax = row.get('sfax') if row.get('sfax') is not None else ''
-            status = 'Active'
-            credit_limit = row.get('Credit Limit') if row.get('Credit Limit') is not None else 0
-            vendor_obj = vendor_table(
-                user=request.user,
-                salutation=salutation,
-                first_name=first_name,
-                last_name=last_name,
-                company_name=company_name,
-                vendor_display_name=vendor_display_name,
-                vendor_email=vendor_mail,
-                vendor_wphone=vendor_wphone,
-                vendor_mphone=vendor_mphone,
-                skype_number=skype_number,
-                designation=designation,
-                department=department,
-                website=website,
-                gst_treatment=gst_treatment,
-                gst_number=gst_number,
-                pan_number=pan_number,
-                source_supply=source_supply,
-                currency=currency,
-                opening_bal=opening_bal,
-                opening_bal_type=opening_bal_type,
-                payment_terms=payment_terms,
-                battention=battention,
-                bstreet=bstreet,
-                bcountry=bcountry,
-                baddress=baddress,
-                bcity=bcity,
-                bstate=bstate,
-                bpin=bpin,
-                bzip=bzip,
-                bphone=bphone,
-                bfax=bfax,
-                sattention=sattention,
-                sstreet=sstreet,
-                scountry=scountry,
-                saddress=saddress,
-                scity=scity,
-                sstate=sstate,
-                szip=szip,
-                spin=spin,
-                sphone=sphone,
-                sfax=sfax,
-                status=status,
-                credit_limit=credit_limit
-            )
-            vendor_obj.save()
-    return redirect('view_vendor_list')
+    try:
+        if request.method == 'POST':
+            file = request.FILES['excel_file']
+            df = pd.read_excel(file)
+            for index, row in df.iterrows():
+                salutation = row.get('salutation')
+                first_name = row.get('first_name')
+                last_name = row.get('last_name')
+                vendor_mail = row.get('email')
+                gst_treatment = row.get('gst_treatment')
+                gst_number = row.get('gst_number') if row.get('gst_number') is not None else ''
+                opening_bal = row.get('opening_balance')
+                vendor_display_name = salutation + ' ' + first_name + ' ' + last_name
+                company_name = row.get('company_name') if row.get('company_name') is not None else ''
+                vendor_wphone = row.get('work phone') if row.get('work phone') is not None else ''
+                vendor_mphone = row.get('mobile phone') if row.get('mobile phone') is not None else ''
+                skype_number = row.get('skype_number') if row.get('skype_number') is not None else ''
+                designation = row.get('designation') if row.get('designation') is not None else ''
+                department = row.get('department') if row.get('department') is not None else ''
+                website = row.get('website') if row.get('website') is not None else ''
+                pan_number = row.get('pan_number')
+                source_supply = row.get('place_of_supply') if row.get('place_of_supply') is not None else ''
+                
+                opening_bal_type = row.get('opening_bal_type (credit/debit)')
+                if opening_bal_type == 'credit':
+                    opening_bal = -(int(opening_bal))
+                payment_terms = row.get('payment_terms') if row.get('payment_terms') is not None else ''
+                battention = row.get('billing_attention') if row.get('billing_attention') is not None else ''
+                bstreet = row.get('billing_street') if row.get('billing_street') is not None else ''
+                bcountry = row.get('billing_country') if row.get('billing_country') is not None else ''
+                baddress = row.get('billing_address') if row.get('billing_address') is not None else ''
+                bcity = row.get('billing_city') if row.get('billing_city') is not None else ''
+                bstate = row.get('billing_state') if row.get('billing_state') is not None else ''
+                bpin = row.get('billing_pin') if row.get('billing_pin') is not None else ''
+                bzip = row.get('billing_zip') if row.get('billing_zip') is not None else ''
+                bphone = row.get('billing_phone') if row.get('billing_phone') is not None else ''
+                bfax = row.get('billing_fax') if row.get('billing_fax') is not None else ''
+                sattention = row.get('shipping_attention') if row.get('shipping_attention') is not None else ''
+                sstreet = row.get('shipping_street') if row.get('shipping_street') is not None else ''
+                scountry = row.get('shipping_country') if row.get('shipping_country') is not None else ''
+                saddress = row.get('shipping_address') if row.get('shipping_address') is not None else ''
+                scity = row.get('shipping_city') if row.get('shipping_city') is not None else ''
+                sstate = row.get('shipping_state') if row.get('shipping_state') is not None else ''
+                szip = row.get('shipping_zip') if row.get('shipping_zip') is not None else ''
+                spin = row.get('shipping_pin') if row.get('shipping_pin') is not None else ''
+                sphone = row.get('shipping_phone') if row.get('shipping_phone') is not None else ''
+                sfax = row.get('shipping_fax') if row.get('shipping_fax') is not None else ''
+                status = 'Active'
+                credit_limit = row.get('credit_limit') if row.get('credit_limit') is not None else 0
+                vendor_obj = vendor_table(
+                    user=request.user,
+                    salutation=salutation,
+                    first_name=first_name,
+                    last_name=last_name,
+                    company_name=company_name,
+                    vendor_display_name=vendor_display_name,
+                    vendor_email=vendor_mail,
+                    vendor_wphone=vendor_wphone,
+                    vendor_mphone=vendor_mphone,
+                    skype_number=skype_number,
+                    designation=designation,
+                    department=department,
+                    website=website,
+                    gst_treatment=gst_treatment,
+                    gst_number=gst_number,
+                    pan_number=pan_number,
+                    source_supply=source_supply,
+                    currency='INR',
+                    opening_bal=opening_bal,
+                    opening_bal_type=opening_bal_type,
+                    payment_terms=payment_terms,
+                    battention=battention,
+                    bstreet=bstreet,
+                    bcountry=bcountry,
+                    baddress=baddress,
+                    bcity=bcity,
+                    bstate=bstate,
+                    bpin=bpin,
+                    bzip=bzip,
+                    bphone=bphone,
+                    bfax=bfax,
+                    sattention=sattention,
+                    sstreet=sstreet,
+                    scountry=scountry,
+                    saddress=saddress,
+                    scity=scity,
+                    sstate=sstate,
+                    szip=szip,
+                    spin=spin,
+                    sphone=sphone,
+                    sfax=sfax,
+                    status=status,
+                    credit_limit=credit_limit
+                )
+                if vendor_table.objects.filter(pan_number=pan_number, first_name=first_name, last_name=last_name).exists():
+                    messages.error(request, f'Vendor: {vendor_display_name} with PAN: {pan_number} already exists!')
+                    return redirect('view_vendor_list')
+                else:
+                    vendor_obj.save()
+        return redirect('view_vendor_list')
+    except:
+        messages.error(request, 'Data incomplete!')
+        return redirect('view_vendor_list')
 
 
 def view_vendor_list(request):
@@ -1233,12 +1242,23 @@ def sharePurchaseBillToEmail(request,id):
                 po_table=Purchase_Order.objects.get(id=id)
                 company=company_details.objects.get(user_id=request.user.id)
                 po_item=Purchase_Order.objects.get(id=id)
+                pcom_state=po_item.source_supply
+                pattern = r'\[(.*?)\] (\w+)'
+                pcom_match = re.search(pattern, pcom_state)
+                if pcom_match:
+                    pcom_state = pcom_match.group(2)
+                name = po_item.vendor_name.split(' ')
+                if len(name) == 3:
+                    po_item.vendor_name = name[0]+' '+name[1]
+                else:
+                    po_item.vendor_name = name[0]
                 context={
                     'po':po,
                     'pot':po_t,
                     'company':company,
                     'po_table':po_table,
-                    'po_item':po_item
+                    'po_item':po_item,
+                    'pcom_state':pcom_state
                 }
                 template_path = 'purchase_bill_view_pdf.html'
                 template = get_template(template_path)
@@ -1275,15 +1295,9 @@ def view_vendor_details(request,pk):
     name_and_id = fullname +' '+ str(vdata2.id) 
     id_and_name = str(vdata2.id) +' '+ fullname  
 
-    print(fname)
-    print(lname)
-    print(fullname)
-    print(v_email)
-    print(name_and_id)
-
     vendor_credits = Vendor_Credits_Bills.objects.filter(user = udata,vendor_name = name_and_id)
     expence = ExpenseE.objects.filter(user = udata,vendor_id = pk)
-    recurring_expense = Expense.objects.filter(vendor_id = pk)
+    recurring_expense = Expense.objects.filter(user = udata,vendor_id = pk)
     purchase_ordr = Purchase_Order.objects.filter(user = udata,vendor_name = name_and_id)
     paymnt_made = payment_made.objects.filter(user = udata,vendor_id = pk)
     purchase_bill = PurchaseBills.objects.filter(user = udata,vendor_name = fullname,vendor_email = v_email)
@@ -6196,6 +6210,7 @@ def recurring_bill(request):
         cn = r['customer_name'].split()[2:]
         r['cust_name'] = " ".join(cn)
         record = {"start_date":str(r['start_date']),"bill_no":str(r['bill_no']),"profile_name":r['profile_name'],"vend_name":str(r['vend_name']),"cust_name":r['cust_name'],"grand_total":r['grand_total'],"balance":str(r['balance']),"id":r['id']}
+        print(record)
         pickup_records.append(record)
 
 
@@ -8596,10 +8611,12 @@ def import_purchase(request):
             for index, row in df.iterrows():
                 user = request.user
                 company = company_details.objects.get(user=request.user)
-
-                vendor_mail = row.get('vendor_mail')
-                vendor_obj = vendor_table.objects.get(user=request.user,vendor_email=vendor_mail)
+                p_reference = purchaseOrderReference(reference=count+1,user=request.user)
+                p_reference.save()
                 vendor_name = row.get('vendor_name')
+                vendor_mail = row.get('vendor_mail')
+                vendor_obj = vendor_table.objects.get(user=request.user,vendor_display_name=vendor_name,vendor_email=vendor_mail)
+                
                 new_name=''
                 a = vendor_name.split(' ')
                 if len(a) == 3:
@@ -9098,6 +9115,9 @@ def create_Purchase_order(request):
        
         src_supply = request.POST.get('srcofsupply')
         po = request.POST['pur_ord']
+        if Purchase_Order.objects.filter(Pur_no=po).exists():
+            messages.error(request, 'Purchase order no already exists!')
+            return redirect('purchase_order')
         ref = request.POST['ref']
         terms1 = request.POST['terms']
         pay=payment_terms.objects.get(id=terms1)
@@ -9287,6 +9307,11 @@ def purchase_bill_view(request,id):
     po_table=Purchase_Order.objects.get(id=id)
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
+    pcom_state=po_item.source_supply
+    pattern = r'\[(.*?)\] (\w+)'
+    pcom_match = re.search(pattern, pcom_state)
+    if pcom_match:
+        pcom_state = pcom_match.group(2)
     ddata=doc_upload_table_purchase.objects.filter(user=request.user,purchase=po_item)
     name = po_item.vendor_name.split(' ')
     if len(name) == 3:
@@ -9313,7 +9338,8 @@ def purchase_bill_view(request,id):
         'po_item':po_item,
         'bank':bank,
         'cmt_data':cmt_data,
-        'ddata':ddata
+        'ddata':ddata,
+        'pcom_state':pcom_state
     }
     return render(request, 'purchase_bill_view.html',context)
     
@@ -9323,6 +9349,11 @@ def purchase_bill_view_by_name(request,id):
     po_table=Purchase_Order.objects.get(id=id)
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
+    pcom_state=po_item.source_supply
+    pattern = r'\[(.*?)\] (\w+)'
+    pcom_match = re.search(pattern, pcom_state)
+    if pcom_match:
+        pcom_state = pcom_match.group(2)
     cmt_data = purchase_order_comments.objects.filter(user=request.user,PO=po_item)
     ddata=doc_upload_table_purchase.objects.filter(user=request.user,purchase=po_item)
     name = po_item.vendor_name.split(' ')
@@ -9349,7 +9380,8 @@ def purchase_bill_view_by_name(request,id):
         'po_item':po_item,
         'bank':bank,
         'cmt_data':cmt_data,
-        'ddata':ddata
+        'ddata':ddata,
+        'pcom_state':pcom_state
     }
     return render(request, 'purchase_bill_view.html',context)
 
@@ -9362,6 +9394,11 @@ def purchase_bill_view_by_ordno(request,id):
     po_table=Purchase_Order.objects.get(id=id)
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
+    pcom_state=po_item.source_supply
+    pattern = r'\[(.*?)\] (\w+)'
+    pcom_match = re.search(pattern, pcom_state)
+    if pcom_match:
+        pcom_state = pcom_match.group(2)
     cmt_data = purchase_order_comments.objects.filter(user=request.user,PO=po_item)
     ddata=doc_upload_table_purchase.objects.filter(user=request.user,purchase=po_item)
     name = po_item.vendor_name.split(' ')
@@ -9388,7 +9425,8 @@ def purchase_bill_view_by_ordno(request,id):
         'po_item':po_item,
         'bank':bank,
         'cmt_data':cmt_data,
-        'ddata':ddata
+        'ddata':ddata,
+        'pcom_state':pcom_state
     }
     return render(request, 'purchase_bill_view.html',context)
 
@@ -9643,6 +9681,7 @@ def draft(request,id):
     po=Purchase_Order.objects.filter(status='Draft')
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
+    
     context={
         'po':po,
         'company':company,
@@ -18976,7 +19015,7 @@ def view_vendor_details_active(request,pk):
     id_and_name = str(vdata2.id) +' '+ fullname  
 
     expence = ExpenseE.objects.filter(user = udata,vendor_id = pk)
-    recurring_expense = Expense.objects.filter(vendor_id = pk)
+    recurring_expense = Expense.objects.filter(user = udata,vendor_id = pk)
     purchase_ordr = Purchase_Order.objects.filter(user = udata,vendor_name = name_and_id)
     paymnt_made = payment_made.objects.filter(user = udata,vendor_id = pk)
     purchase_bill = PurchaseBills.objects.filter(user = udata,vendor_name = fullname,vendor_email = v_email)
@@ -19020,7 +19059,7 @@ def view_vendor_details_inactive(request,pk):
     id_and_name = str(vdata2.id) +' '+ fullname  
 
     expence = ExpenseE.objects.filter(user = udata,vendor_id = pk)
-    recurring_expense = Expense.objects.filter(vendor_id = pk)
+    recurring_expense = Expense.objects.filter(user = udata,vendor_id = pk)
     purchase_ordr = Purchase_Order.objects.filter(user = udata,vendor_name = name_and_id)
     paymnt_made = payment_made.objects.filter(user = udata,vendor_id = pk)
     purchase_bill = PurchaseBills.objects.filter(user = udata,vendor_name = fullname,vendor_email = v_email)

@@ -1373,7 +1373,7 @@
                         <td style="text-align: center;">{{i.quantity}}</td>
                         <td style="text-align: center;">{{i.rate}}</td>
                         <td style="text-align: center;">{{i.discount}}</td>
-                        {% if i.PO.source_supply == "[KL] Kerala" %}
+                        {% if pcom_state == company.state %}
                                <td>{{i.tax}} GST</td>
                                {% else %}
                                <td>{{i.tax}} IGST</td>
@@ -1634,7 +1634,7 @@
                           <td class="text-center" style="color:#000">{{i.quantity}}</td>
                           <td class="text-center" style="color:#000">{{i.rate}}</td>
                           <td class="text-center" style="color:#000">{{ i.discount }}</td>
-                          {% if i.PO.source_supply == "[KL] Kerala" %}
+                          {% if pcom_state == company.state %}
                           <td class="text-center" style="color:#000">{{i.tax}} GST</td>
                           {% else %}
                           <td class="text-center" style="color:#000">{{i.tax}} IGST</td>
@@ -1769,7 +1769,7 @@
             <div class="row">
               <div class="col-md-7">
                 <a class="text-white" style="font-size: 1.5rem;">
-                  <h2>{{sale.sales_no}}</h2>
+                  <h2>{{po_item.Pur_no}}</h2>
                 </a>
               </div>
             </div>
@@ -1936,7 +1936,7 @@
                           <td style="color:black">{{j.quantity}}</td>
                           <td style="color:black">{{j.rate}} </td>
                           <td style="color:black">{{j.discount}} </td>
-                          {% if i.PO.source_supply == "[KL] Kerala" %}
+                          {% if pcom_state == company.state %}
                           <td style="color:black">{{j.tax}} GST</td>
                           {% else %}
                           <td style="color:black">{{j.tax}} IGST</td>
