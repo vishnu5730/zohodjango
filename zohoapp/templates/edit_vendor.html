@@ -27,11 +27,11 @@
                  </select> 
           </div>
           <div class="col-sm-12 col-md-3 col-lg-3">
-              <input  type="text" class="form-control bg-light text-dark" id="fname" name="first_name" value="{{ vdata.first_name }}" placeholder="first name">
+              <input  type="text" class="form-control bg-light text-dark" id="fname" name="first_name" value="{{ vdata.first_name }}" placeholder="first name" required>
 
           </div>
           <div class="col-sm-12 col-md-3 col-lg-3">
-              <input type="text" class="form-control bg-light text-dark" id="lname" name="last_name" value="{{ vdata.last_name }}" placeholder="last name">
+              <input type="text" class="form-control bg-light text-dark" id="lname" name="last_name" value="{{ vdata.last_name }}" placeholder="last name" required>
 
           </div>
       </div>
@@ -48,9 +48,9 @@
               <div class="col-sm-12 col-md-3 col-lg-3 col-form-label"><label>Vendor Display Name</label></div>
                <div class="col-sm-12 col-md-6 col-lg-6">
                   
-                      <select  name="v_display_name" class="form-control bg-light text-dark" onclick="vendor_display()">
+                      <select  name="v_display_name" class="form-control bg-light text-dark">
                       <!-- <option id="select2"></option> -->
-                      <option id="select2" selected>{{ vdata.salutation }} {{ vdata.first_name }} {{ vdata.last_name }}</option>
+                      <option id="select2" selected>{{ vdata.vendor_display_name }}</option>
 
                           
                       </select> 
@@ -77,7 +77,7 @@
            <div class="form-group row mt-4">
               <div class="col-sm-12 col-md-3 col-lg-3 col-form-label"><label>Vendor Email</label></div>
               <div class="col-sm-12 col-md-6 col-lg-6">
-                   <input  type="email" class="form-control bg-light text-dark" name="vendor_email" value="{{ vdata.vendor_email }}">      
+                   <input  type="email" class="form-control bg-light text-dark" name="vendor_email" value="{{ vdata.vendor_email }}" required>      
                </div>
 
 
@@ -86,12 +86,12 @@
            <div class="form-group row mt-4">
               <label class="col-sm-12 col-md-3 col-lg-3 col-form-label">Vendor phone</label>
                <div class="col-sm-12 col-md-3 col-lg-3">
-                   <input id="workphone"  type="tel" pattern="[0-9]{7}" class="form-control bg-light text-dark" name="w_phone" value="{{ vdata.vendor_wphone }}">  
+                   <input id="workphone"  type="tel" pattern="[0-9]{7}" class="form-control bg-light text-dark" oninput="work_phone()" name="w_phone" value="{{ vdata.vendor_wphone }}" required>  
                    <label for="" id="workphone_label"></label>
     
                </div>
                <div class=" col-sm-12 col-md-3 col-lg-3">
-                  <input id="mphone" type="tel" pattern="[0-9]{10}" class="form-control bg-light text-dark" onclick="work_phone()" name="m_phone" value="{{ vdata.vendor_mphone }}">   
+                  <input id="mphone" type="tel" pattern="[0-9]{10}" class="form-control bg-light text-dark" oninput="mobile_phone()" name="m_phone" value="{{ vdata.vendor_mphone }}" required>   
                   <label for="" id="mphone_label"></label>
 
               </div>
@@ -138,7 +138,7 @@
           <div class="form-group row mt-4">
               <div class="col-sm-12 col-md-3 col-lg-3 col-form-label"><label>Website</label></div>
               <div class="col-sm-12 col-md-6 col-lg-6">
-                   <input type="text" class="form-control bg-light text-dark" onclick="mobile_phone()" name="website" value="{{ vdata.website }}">      
+                   <input type="text" class="form-control bg-light text-dark" name="website" value="{{ vdata.website }}">      
               </div>
           </div>
 
@@ -160,7 +160,7 @@
 
             <div class="toggle4"
               style="color: rgb(230, 171, 45);;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-size:22px;">
-              <a href="" style="color: rgb(230, 171, 45);">Contact Persons </a></div>
+              <a href="" style="color: rgb(230, 171, 45);">Contact Persons</a></div>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
             <!-- <div class="toggle6"
@@ -220,7 +220,7 @@
                       <label class="col-sm-12 col-md-3 col-lg-3 col-form-label"  style="color:rgb(214, 75, 75) ;"> GSTIN/UIN*</label>
                        
                       <div class=" col-sm-12 col-md-3 col-lg-3">
-                          <input type="text" class="form-control bg-light text-dark" name="gst_number" id="gst_input"  value="{{ vdata.gst_number }}" onmouseout="gst_check()"> 
+                          <input type="text" class="form-control bg-light text-dark" name="gst_number" id="gst_input"  value="{{ vdata.gst_number }}" oninput="gst_check()"> 
                           <label id="gst_label"></label>     
   
                       </div>
@@ -235,7 +235,7 @@
                       <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > PAN</label>
                        
                       <div class=" col-sm-12 col-md-3 col-lg-3">
-                          <input type="text" class="form-control bg-light text-dark" id="pan_input" name="pan_number" onmouseout="pan_check()" value="{{ vdata.pan_number }}">      
+                          <input type="text" class="form-control bg-light text-dark" id="pan_input" name="pan_number" oninput="pan_check()" value="{{ vdata.pan_number }}">      
                           <label id="pan_label"></label>     
 
                       </div>
@@ -314,11 +314,10 @@
                
               <div class=" col-sm-12 col-md-3 col-lg-3">
                   <select name="payment_terms" id="PLACE" class="form-control bg-light text-dark">
-                      <option value="{{ vdata.payment_terms }}" selected>{{ vdata.payment_terms }}</option>                    
-                      <option value="NET 60" >NET 60</option>
-                      <option value="NET 45" >NET 45</option>                          
-                      <option value="NET 30">NET 30</option>
-                      <option value="Due on Receipt" selected>Due on Receipt</option>
+                      <option value="{{ vdata.payment_terms }}">{{ vdata.payment_terms }}</option>                    
+                      {% for p in sb %}
+                            <option value="{{ p.term }}">{{ p.Terms}}</option>
+                            {% endfor %}
                      
                   </select>
 
@@ -473,7 +472,7 @@
         <div class="row">
             <div class="col-sm-12 col-md-11 col-lg-11">
                 <div style="overflow-x: scroll;">
-                    <table id="tbl" style="border:1px solid;border-color:white;width:75%;">
+                    <table id="tbl"  class="table text-white" style="background-color: rgba(250, 227, 198, 0.5);">
                         <tr>
                           <th>Salutation</th>
                           <th>First Name</th>
@@ -487,7 +486,7 @@
                         </tr>
                         {% for p in pdata %}
                         <tr>
-                          <td><select name="salutation[]" id="PLACE" class="bg-light" style="width:8rem;height: 2.4rem;border: none;color: black">
+                          <td><select name="salutation[]" id="PLACE" class="bg-transparent border-0 text-white" >
                              <option value="{{ p.salutation }}" selected>{{ p.salutation }}</option>
                               <option value="Mr" >Mr.</option>
                               <option value="Mrs">Mrs.</option>
@@ -495,22 +494,20 @@
                               <option value="Miss">Miss.</option>
                               <option value="Dr">Dr.</option>  
                             </select></td>
-                          <td><input type="text" class="bg-light" style="width:8rem;border: none;color: black" value="{{ p.first_name }}"   name="first_name[]" /></td>
-                          <td><input type="text" class="bg-light" style="width:8rem;border: none;color: black" value="{{ p.last_name }}" name="last_name[]" /></td>
-                          <td><input type="text" class="bg-light" style="width:8rem;border: none;color: black" value="{{ p.email }}" name="email[]" /></td>
-                          <td><input type="tel" pattern="[0-9]{7}" class="bg-light" style="width:8rem;border: none;color: black" id="twphone" value="{{ p.work_phone }}" name="wphone[]" /></td>
-                          <td><input type="tel" pattern="[0-9]{10}" class="bg-light" style="width:8rem;border: none;color: black" id="tmobile" onclick="sample1()" value="{{ p.mobile }}" name="mobile[]"/></td>
-                          <td><input type="text" class="bg-light" style="width:8rem;border: none;color: black" onclick="sample()" value="{{ p.skype_number }}" name="skype[]" /></td>
-                          <td><input type="text" class="bg-light" style="width:8rem;border: none;color: black" value="{{ p.designation }}" name="designation[]" /></td>
-                          <td><input type="text" class="bg-light" style="width:8rem;border: none;color: black" value="{{ p.department }}" name="department[]" /></td>
+                          <td><input type="text" class="form-control border-1 bg-transparent text-white" value="{{ p.first_name }}"   name="first_name[]" /></td>
+                          <td><input type="text" class="form-control border-1 bg-transparent text-white" value="{{ p.last_name }}" name="last_name[]" /></td>
+                          <td><input type="text" class="form-control border-1 bg-transparent text-white" value="{{ p.email }}" name="email[]" /></td>
+                          <td><input type="tel" pattern="[0-9]{7}" class="form-control border-1 bg-transparent text-white" id="twphone" value="{{ p.work_phone }}" name="wphone[]" /></td>
+                          <td><input type="tel" pattern="[0-9]{10}" class="form-control border-1 bg-transparent text-white" id="tmobile" value="{{ p.mobile }}" name="mobile[]"/></td>
+                          <td><input type="text" class="form-control border-1 bg-transparent text-white" value="{{ p.skype_number }}" name="skype[]" /></td>
+                          <td><input type="text" class="form-control border-1 bg-transparent text-white" value="{{ p.designation }}" name="designation[]" /></td>
+                          <td><input type="text" class="form-control border-1 bg-transparent text-white" value="{{ p.department }}" name="department[]" /></td>
                         </tr>
                         {% endfor %}
                       </table>
                       
                 </div>
-                <div class="button add_another mt-3"
-                    style="color: rgb(230, 171, 45);;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-size:22px;">
-                    + Add Contact Person</div>
+                <button type="button" class="btn btn-sm text-white add_another" style="background-color: rgb(210, 132, 30);">Add another line</button>
                   
             </div>
             
@@ -628,11 +625,12 @@
 
       $('document').ready(function () {
         $('.add_another').click(function () {
-          $("#tbl").append('<tr><td><select name="salutation[]" id="PLACE" class="bg-light" style="width:8rem;height: 2.4rem;border:none;color:black;"><option value="Mr" selected>Mr.</option><option value=""Mrs">Mrs.</option><option value="Ms">Ms.</option><option value="Miss">Miss.</option><option value="Dr">Dr.</option></select>  </td><td><input type="text" name="first_name[]" class="bg-light" style="width:8rem;border: none;color: black" class="txtbox" value="" /></td><td><input type="text" name="last_name[]" class="bg-light" style="width:8rem;border: none;color: black" class="txtbox" value="" /></td><td><input type="text" name="email[]" class="bg-light" style="width:8rem;border: none;color: black" class="txtbox" value="" /></td><td><input type="tel" pattern="[0-9]{7}" id="twphone" name="wphone[]"class="bg-light" style="width:8rem;border: none;color: black" class="txtbox" value="" /></td><td><input type="tel" pattern="[0-9]{10}" id="tmobile" onclick="sample1()" name="mobile[]" class="bg-light" style="width:8rem;border: none;color: black" class="txtbox" value="" /></td><td><input type="text" onclick="sample()" name="skype[]" class="bg-light" style="width:8rem;border: none;color: black" class="txtbox" value="" /></td><td><input type="text" name="designation[]" class="bg-light" style="width:8rem;border: none;color: black" class="txtbox" value="" /></td><td><input type="text" name="department[]" class="bg-light" style="width:8rem;border: none;color: black" class="txtbox" value="" /></td></tr>');
+          $("#tbl").append('<tr><td><select name="salutation[]" id="PLACE"  class=" form-control border-1 bg-transparent text-light"><option  style="color: black;" value="Mr" selected>Mr.</option><option style="color: black;" value=""Mrs">Mrs.</option><option style="color: black;" value="Ms">Ms.</option><option style="color: black;" value="Miss">Miss.</option><option style="color: black;" value="Dr">Dr.</option></select>  </td><td><input type="text" name="first_name[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="text" name="last_name[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="email" name="email[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="tel" pattern="[0-9]{7}" id="twphone" name="wphone[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="tel" pattern="[0-9]{10}" id="tmobile" onclick="sample1()" name="mobile[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="number" onclick="sample()" name="skype[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="text" name="designation[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="text" name="department[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td class="btn bg-danger mt-4 p-1 delete-row">X</td><td></td></tr>');
         });
       })
-
-
+      $('#tbl').on('click', '.delete-row', function () {
+    $(this).closest('tr').remove();
+  });
 
     function gstPan_function(){
         var x=document.getElementById('GSTT').value
@@ -685,7 +683,7 @@
         else{
             gst_label.style.color="green";
 
-            gst_label.innerHTML = "valid GST Number.";
+            gst_label.innerHTML = "Valid GST Number.";
 
         }
     }
@@ -701,7 +699,7 @@
         else{
             pan_label.style.color="green";
 
-            pan_label.innerHTML = "valid PAN Number.";
+            pan_label.innerHTML = "Valid PAN Number.";
 
         }
     }
@@ -718,7 +716,7 @@
         else{
             y.style.color="green";
 
-            y.innerHTML = "valid Phone Number.";
+            y.innerHTML = "Valid Phone Number.";
 
         }
 
@@ -738,7 +736,7 @@
         else{
             b.style.color="green";
 
-            b.innerHTML = "valid Phone Number.";
+            b.innerHTML = "Valid Phone Number.";
 
         }
       }
@@ -755,7 +753,7 @@
         else{
             b1.style.color="green";
 
-            b1.innerHTML = "valid Phone Number.";
+            b1.innerHTML = "Valid Phone Number.";
 
         }
       }
@@ -772,7 +770,7 @@
         else{
             b1.style.color="green";
 
-            b1.innerHTML = "valid Phone Number.";
+            b1.innerHTML = "Valid Phone Number.";
 
         }
       }
@@ -784,12 +782,12 @@
         var expr=/^[0-9]{7}$/;
         if (!expr.test(a1)) {
             b1.style.color="red";
-            b1.innerHTML = "Invalid Phone Number.";
+            b1.innerHTML = "Invalid Fax Number.";
         }
         else{
             b1.style.color="green";
 
-            b1.innerHTML = "valid Phone Number.";
+            b1.innerHTML = "Valid Fax Number.";
 
         }
       }
@@ -801,12 +799,12 @@
         var expr=/^[0-9]{7}$/;
         if (!expr.test(a1)) {
             b1.style.color="red";
-            b1.innerHTML = "Invalid Phone Number.";
+            b1.innerHTML = "Invalid Fax Number.";
         }
         else{
             b1.style.color="green";
 
-            b1.innerHTML = "valid Phone Number.";
+            b1.innerHTML = "Valid Fax Number.";
 
         }
       }

@@ -69,34 +69,86 @@
         </div>
       </div>
     </div>  
+  </div>
+  
+  <div class="modal fade" id="paymentExistsModal">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content" style="background: rgb(32, 35, 37);border-radius: 20px;">
+        <div class="modal-body" style="background: rgb(32, 35, 37);">
+          <div class="card p-3 m-3">
+            <form action="" method="post" class="needs-validation" novalidate autocomplete="off" id="modalPayment">
+              <div class="row mt-2">
+                <div class="col-md-4 mt-2">
+                  <center><label for="termname" style="color: rgb(255, 255, 255);">Payment already exist!</label></center>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>  
   </div> 
   
 <script>
-$(document).on("click","#paySave",function(){
-console.log($("#tname").val())
-console.log($("#tdays").val())
+$(document).on("click", "#paySave", function() {
+    console.log($("#tname").val());
+    console.log($("#tdays").val());
 
-$.ajax({
-type : 'POST',
-url:"{% url 'payment_terms_vend' %}",
-
-data:{
-name : $("#tname").val(),
-days : $("#tdays").val(),
-
-csrfmiddlewaretoken: '{{ csrf_token }}'
-
-},
-
-success: function(response) {
-console.log('welcome')
-term_name=response.terms
-document.getElementById("crt_term").innerHTML=term_name
-document.getElementById("modalPayment").reset();
-// reloadPayment();
-},
-});        
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'payment_terms_vend' %}",
+        data: {
+            name: $("#tname").val(),
+            days: $("#tdays").val(),
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function(response) {
+            if (response.message === "success") {
+                console.log('welcome');
+                term_name = response.terms;
+                document.getElementById("modalPayment").reset();
+                reloadPayment();
+            }
+        },
+        error: function(xhr, status, error) {
+            var errorMessage = xhr.responseJSON.error;
+            if (errorMessage) {
+                // Handle modal showing payment term already exists
+                $('#paymentExistsModal').modal('show');
+                document.getElementById("modalPayment").reset();
+            }
+        }
+    });
 });
+
+function reloadPayment() {
+  $.ajax({
+    url: "{% url 'payment_dropdown_purchase' %}",
+    type: "GET",
+    dataType: "json",
+    data: $(this).serialize(),
+    csrfmiddlewaretoken: '{{ csrf_token }}',
+    success: function(data) {
+      var dropdown = $('#pterm');
+      var selectedValue = ''; // Variable to store the selected value
+      
+      // Save the currently selected value before clearing the dropdown
+      selectedValue = dropdown.val();
+      
+      dropdown.empty();
+      
+      $.each(data, function(key, value) {
+        dropdown.append($('<option></option>').attr('value', key).text(value[0]).val(value[0]));
+      });
+      
+      // Set the selected option to the newly added payment
+      dropdown.val(selectedValue);
+    },
+    error: function(xhr, status, error) {
+      console.error(xhr.responseText);
+    }
+  });
+}
 
 
   </script>
@@ -373,7 +425,7 @@ document.getElementById("modalPayment").reset();
                     
 
                 <div class="form-group row mt-4">
-                    <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > Source Of Supply*</label>
+                    <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > Source of Supply*</label>
                      
                     <div class=" col-sm-12 col-md-3 col-lg-3">
                         <select name="source_supply" id="PLACE" class="form-control bg-light text-dark">
@@ -436,13 +488,8 @@ document.getElementById("modalPayment").reset();
                     <label class="col-sm-12 col-md-3 col-lg-3 col-form-label">Payment Terms</label>
                      
                     <div class=" col-sm-12 col-md-3 col-lg-3">
-                        <select name="payment_terms" class="form-control bg-light text-dark" onclick="updatePaymentTerms()">
-                            <option id="crt_term" selected></option>
-                            <option value="NET 60" >NET 60</option>
-                            <option value="NET 45" >NET 45</option>                          
-                            <option value="NET 30">NET 30</option>
-                            <option value="Due on Receipt">Due on Receipt</option>
-                            {% for p in sb %} 
+                        <select name="payment_terms" id="pterm" class="form-control bg-light text-dark" onclick="updatePaymentTerms()">
+                            {% for p in sb %}
                             <option value="{{ p.term }}">{{ p.Terms}}</option>
                             {% endfor %}
                         </select>
@@ -530,14 +577,14 @@ document.getElementById("modalPayment").reset();
                             <div class="form-group row mt-4">
                                 <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > Phone </label>                    
                                 <div class=" col-sm-12 col-md-6 col-lg-6">
-                                    <input id="bphone_num"  type="tel" pattern="[0-9]{10}" class="form-control bg-light text-dark" name="bphone" >
+                                    <input id="bphone_num"  type="tel" pattern="[0-9]{10}" class="form-control bg-light text-dark" name="bphone" oninput="bphone_number()">
                                     <label for="" id="bphone_label"></label>      
                                 </div>
                             </div>
                             <div class="form-group row mt-4">
                                 <label class="col-sm-12 col-md-3 col-lg-3 col-form-label">Fax</label>                    
                                 <div class=" col-sm-12 col-md-6 col-lg-6">
-                                    <input  type="tel" class="form-control bg-light text-dark" pattern="[0-9]{7}" onmouseout="fax_number()"  onclick="bphone_number()" name="bfax" id="bfx">  
+                                    <input  type="tel" class="form-control bg-light text-dark" pattern="[0-9]{7}" oninput="fax_number()" name="bfax" id="bfx">  
                                    
                                     <label for="" id="fax_label"></label> 
                                 </div>
@@ -608,14 +655,14 @@ document.getElementById("modalPayment").reset();
                             <div class="form-group row mt-4">
                                 <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > Phone </label>                    
                                 <div class=" col-sm-12 col-md-6 col-lg-6">
-                                    <input  type="tel" class="form-control bg-light text-dark" pattern="[0-9]{10}" style="color: white;" name="sphone" id="sphone_num">  
+                                    <input  type="tel" class="form-control bg-light text-dark" pattern="[0-9]{10}" style="color: white;" name="sphone" id="sphone_num" oninput="sphone_number()" >  
                                     <label for="" id="sphone_label"></label>    
                                 </div>
                             </div>
                             <div class="form-group row mt-4">
                                 <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > Fax </label>                    
                                 <div class=" col-sm-12 col-md-6 col-lg-6">
-                                    <input  type="tel" class="form-control bg-light text-dark" pattern="[0-9]{7}" style="color: white;" name="sfax" onclick="sphone_number()" onmouseout="sfax_number()" id="sfx"> 
+                                    <input  type="tel" class="form-control bg-light text-dark" pattern="[0-9]{7}" style="color: white;" name="sfax" oninput="sfax_number()" id="sfx"> 
                                     <label for="" id="sfax_label"></label>     
                                 </div>
                             </div>
@@ -657,20 +704,17 @@ document.getElementById("modalPayment").reset();
                                   <td><input type="text" style="width:8rem;" name="mobile[]" /></td>
                                   <td><input type="text" style="width:8rem;" name="skype[]" /></td> -->
                                   <td><input type="tel" pattern="[0-9]{7}" class="form-control border-1 bg-transparent text-white"  id="twphone" name="wphone[]"/></td>
-                                  <td><input type="tel" pattern="[0-9]{10}"  class="form-control border-1 bg-transparent text-white"  id="tmobile" onclick="sample1()"   name="mobile[]" /></td>
-                                  <td><input type="number" class="form-control border-1 bg-transparent text-white"  onclick="sample()" name="skype[]" /></td>
+                                  <td><input type="tel" pattern="[0-9]{10}"  class="form-control border-1 bg-transparent text-white"  id="tmobile"  name="mobile[]" /></td>
+                                  <td><input type="number" class="form-control border-1 bg-transparent text-white" name="skype[]" /></td>
                                   <td><input type="text" class="form-control border-1 bg-transparent text-white"  name="designation[]" /></td>
                                   <td><input type="text" class="form-control border-1 bg-transparent text-white"  name="department[]" /></td>
                                 </tr>
                               </table>
                              
                         
-                        <div class="button add_another mt-3"
-                        style="color: rgb(230, 171, 45);;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-size:22px;">
-                        + Add Contact Person</div>
+                              <button type="button" class="btn btn-sm text-white add_another" style="background-color: rgb(210, 132, 30);">Add another line</button>
                           
                     </div>
-                    
                 </div>
 
             </fieldset6>
@@ -853,10 +897,12 @@ document.getElementById("modalPayment").reset();
 
     $('document').ready(function () {
         $('.add_another').click(function () {
-          $("#tbl").append('<tr><td><select name="salutation[]" id="PLACE"  class=" form-control border-1 bg-light" style="color: black;"><option  style="color: black;" value="Mr" selected>Mr.</option><option style="color: black;" value=""Mrs">Mrs.</option><option value="Ms">Ms.</option><option value="Miss">Miss.</option><option value="Dr">Dr.</option></select>  </td><td><input type="text" name="first_name[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="text" name="last_name[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="email" name="email[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="tel" pattern="[0-9]{7}" id="twphone" name="wphone[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="tel" pattern="[0-9]{10}" id="tmobile" onclick="sample1()" name="mobile[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="number" onclick="sample()" name="skype[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="text" name="designation[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="text" name="department[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td></tr>');
+          $("#tbl").append('<tr><td><select name="salutation[]" id="PLACE"  class=" form-control border-1 bg-transparent text-light"><option  style="color: black;" value="Mr" selected>Mr.</option><option style="color: black;" value=""Mrs">Mrs.</option><option style="color: black;" value="Ms">Ms.</option><option style="color: black;" value="Miss">Miss.</option><option style="color: black;" value="Dr">Dr.</option></select>  </td><td><input type="text" name="first_name[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="text" name="last_name[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="email" name="email[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="tel" pattern="[0-9]{7}" id="twphone" name="wphone[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="tel" pattern="[0-9]{10}" id="tmobile" onclick="sample1()" name="mobile[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="number" onclick="sample()" name="skype[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="text" name="designation[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td><input type="text" name="department[]" class=" form-control border-1 bg-transparent text-white" style="color: black;" class="txtbox" value="" /></td><td class="btn bg-danger mt-4 p-1 delete-row">X</td><td></td></tr>');
         });
       })
-
+      $('#tbl').on('click', '.delete-row', function () {
+    $(this).closest('tr').remove();
+  });
       function fieldset5_function()
       {
         document.getElementById("address").style.display="block";
@@ -968,7 +1014,7 @@ document.getElementById("modalPayment").reset();
         else{
             b1.style.color="green";
 
-            b1.innerHTML = "valid Phone Number.";
+            b1.innerHTML = "Valid Phone Number.";
 
         }
       }
@@ -985,7 +1031,7 @@ document.getElementById("modalPayment").reset();
         else{
             b1.style.color="green";
 
-            b1.innerHTML = "valid Phone Number.";
+            b1.innerHTML = "Valid Phone Number.";
 
         }
       }
@@ -997,12 +1043,12 @@ document.getElementById("modalPayment").reset();
         var expr=/^[0-9]{7}$/;
         if (!expr.test(a1)) {
             b1.style.color="red";
-            b1.innerHTML = "Invalid Phone Number.";
+            b1.innerHTML = "Invalid Fax Number.";
         }
         else{
             b1.style.color="green";
 
-            b1.innerHTML = "valid Phone Number.";
+            b1.innerHTML = "Valid Fax Number.";
 
         }
       }
@@ -1014,12 +1060,12 @@ document.getElementById("modalPayment").reset();
         var expr=/^[0-9]{7}$/;
         if (!expr.test(a1)) {
             b1.style.color="red";
-            b1.innerHTML = "Invalid Phone Number.";
+            b1.innerHTML = "Invalid Fax Number.";
         }
         else{
             b1.style.color="green";
 
-            b1.innerHTML = "valid Phone Number.";
+            b1.innerHTML = "Valid Fax Number.";
 
         }
       }

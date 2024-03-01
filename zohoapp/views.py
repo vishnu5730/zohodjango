@@ -891,7 +891,6 @@ def add_vendor(request):
         x=request.POST['gst']
         if x=="Unregistered Business-not Registered under GST":
             vendor_data.pan_number=request.POST['pan_number']
-            vendor_data.gst_number="null"
         else:
             vendor_data.gst_number=request.POST['gst_number']
             vendor_data.pan_number=request.POST['pan_number']
@@ -926,9 +925,22 @@ def add_vendor(request):
         vendor_data.szip=request.POST['szip']
         vendor_data.sphone=request.POST['sphone']
         vendor_data.sfax=request.POST['sfax']
-        if vendor_table.objects.filter(pan_number=vendor_data.pan_number, vendor_display_name=vendor_data.vendor_display_name).exists():
-            messages.info(request,'Vendor already exist!!!')
+        if vendor_table.objects.filter(pan_number=vendor_data.pan_number).exists():
+            messages.info(request,'PAN no already exist!!!')
             return redirect('vendor')
+        elif vendor_table.objects.filter(vendor_email=vendor_data.vendor_email).exists():
+            messages.info(request,'Email already exist!!!')
+            return redirect('vendor')
+        elif vendor_table.objects.filter(vendor_wphone=vendor_data.vendor_wphone).exists():
+            messages.info(request,'Work number already exist!!!')
+            return redirect('vendor')
+        elif vendor_table.objects.filter(vendor_mphone=vendor_data.vendor_mphone).exists():
+            messages.info(request,'Mobile number already exist!!!')
+            return redirect('vendor')
+        elif vendor_data.gst_number:
+            if vendor_table.objects.filter(gst_number=vendor_data.gst_number).exists():
+                messages.info(request,'GST number already exist!!!')
+                return redirect('vendor')
         else:
             vendor_data.save()
     
@@ -1372,21 +1384,22 @@ def sendmail(request):
 def edit_vendor(request,pk):
     company=company_details.objects.get(user=request.user)
     vdata=vendor_table.objects.get(id=pk)
+    sb = payment_terms.objects.filter(user=request.user)
     if remarks_table.objects.filter(vendor=vdata).exists() or contact_person_table.objects.filter(vendor=vdata).exists():
         if remarks_table.objects.filter(vendor=vdata).exists() and contact_person_table.objects.filter(vendor=vdata).exists():
             rdata=remarks_table.objects.get(vendor=vdata)
             pdata=contact_person_table.objects.filter(vendor=vdata)
-            return render(request,'edit_vendor.html',{'vdata':vdata,'rdata':rdata,'pdata':pdata})
+            return render(request,'edit_vendor.html',{'vdata':vdata,'rdata':rdata,'pdata':pdata,'sb':sb})
         else:
             if remarks_table.objects.filter(vendor=vdata).exists():
                 rdata=remarks_table.objects.get(vendor=vdata)
-                return render(request,'edit_vendor.html',{'vdata':vdata,'rdata':rdata})
+                return render(request,'edit_vendor.html',{'vdata':vdata,'rdata':rdata,'sb':sb})
             if contact_person_table.objects.filter(vendor=vdata).exists():
                 pdata=contact_person_table.objects.filter(vendor=vdata)
-                return render(request,'edit_vendor.html',{'vdata':vdata,'pdata':pdata})      
+                return render(request,'edit_vendor.html',{'vdata':vdata,'pdata':pdata,'sb':sb})      
         
     else:
-        return render(request,'edit_vendor.html',{'vdata':vdata,"company":company})
+        return render(request,'edit_vendor.html',{'vdata':vdata,"company":company,'sb':sb})
 
 
 def edit_vendor_details(request,pk):
@@ -8522,7 +8535,7 @@ def purchaseView_by_name(request):
     return render(request,'purchase_order.html',context)
 
 def purchaseView_by_ord_no(request):
-    purchase_table=Purchase_Order.objects.filter(user=request.user).order_by('Pur_no')
+    purchase_table = Purchase_Order.objects.filter(user=request.user).annotate(pur_no_int=Cast('Pur_no', IntegerField())).order_by('pur_no_int')
     for i in purchase_table:
         name=i.vendor_name.split(' ')
         if len(name) == 3:
@@ -8611,30 +8624,29 @@ def import_purchase(request):
             for index, row in df.iterrows():
                 user = request.user
                 company = company_details.objects.get(user=request.user)
-                p_reference = purchaseOrderReference(reference=count+1,user=request.user)
-                p_reference.save()
                 vendor_name = row.get('vendor_name')
                 vendor_mail = row.get('vendor_mail')
-                vendor_obj = vendor_table.objects.get(user=request.user,vendor_display_name=vendor_name,vendor_email=vendor_mail)
-                
+                v_name = ''
                 new_name=''
                 a = vendor_name.split(' ')
                 if len(a) == 3:
                     new_name = a[1]+' '+a[2]
+                    v_name = f'Mr {a[1]} {a[2]}'
                 else:
                     new_name = a[1]
+                    v_name = f'Mr {a[1]}'
+                vendor_obj = vendor_table.objects.get(user=request.user,vendor_display_name=v_name,vendor_email=vendor_mail)
+                
                 vendor_name = new_name+' '+str(vendor_obj.id)
                 vendor_gst_traet = vendor_obj.gst_treatment
                 vendor_gst_no = vendor_obj.gst_number
                 typ = row.get('Type (Organisation/Customer)')
-
                 Org_name = row.get('Organisation') if row.get('Organisation') is not None else ''
                 Org_address = row.get('Org_address') if row.get('Org_address') is not None else ''
                 Org_gst = row.get('Org_gst') if row.get('Org_gst') is not None else ''
                 Org_street = row.get('Org_street') if row.get('Org_street') is not None else ''
                 Org_state = row.get('Org_state') if row.get('Org_state') is not None else ''
                 Org_city = row.get('Org_city') if row.get('Org_city') is not None else ''
-                
                 Org_mail = row.get('Org_mail') if row.get('Org_mail') is not None else ''
                 if typ == 'Customer':
                     customer_name = row.get('customer_name') 
@@ -8646,7 +8658,11 @@ def import_purchase(request):
                     custo = customer_obj
 
                 Pur_no = row.get('Purchase Order No')
-
+                if Purchase_Order.objects.filter(Pur_no=Pur_no).exists():
+                    messages.error(request, f'Purchase order No: {Pur_no} already exist!')
+                    return redirect('purchaseView')
+                p_reference = purchaseOrderReference(reference=count+1,user=request.user)
+                p_reference.save()
                 source_supply = row.get('Place of Supply')
 
                 Ord_date = row.get('ord_date[yyyy-mm-dd]')
@@ -9492,16 +9508,23 @@ def export_purchase_pdf(request,id):
 
 
 def edit(request,pk):
-    company = company_details.objects.get(user = request.user)
-    vendor=vendor_table.objects.all()
+    company=company_details.objects.get(user=request.user)
+    vendor=vendor_table.objects.filter(user=request.user)
     cust=customer.objects.filter(user = request.user)
-    payment=payment_terms.objects.all()
-    item=AddItem.objects.all()
+    payment=payment_terms.objects.filter(user=request.user)
+    item = AddItem.objects.filter(user=request.user)
     account=Account.objects.all()
     unit=Unit.objects.all()
     sales=Sales.objects.all()
     purchase=Purchase.objects.all()
+    bank = Bankcreation.objects.filter(user=request.user)
     po=Purchase_Order.objects.get(id=pk)
+    vname=po.vendor_name.split()
+    vname2=''
+    if len(vname) == 3:
+        vname2=vname[0]+' '+vname[1]
+    else:
+        vname2=vname[0]
     po_tabl=Purchase_Order_items.objects.filter(PO=pk)
     context={
         'vendor':vendor,
@@ -9512,9 +9535,11 @@ def edit(request,pk):
         'units':unit,
         'sales':sales,
         'purchase':purchase,
+        'company':company,
+        'bank':bank,
         'po':po,        
         'po_table':po_tabl,
-        'company':company
+        'vname2':vname2
     }
     return render(request,'edit_purchase_order.html',context)
     
@@ -18186,8 +18211,19 @@ def payment_terms_vend(request):
     if request.method == 'POST':
         terms = request.POST.get('name')
         day = request.POST.get('days')
-        ptr = payment_terms(user=request.user,Terms=terms, Days=day)
+        
+        # Check if the payment term already exists
+        if payment_terms.objects.filter(user=request.user, Terms=terms).exists():
+            response_data = {
+                "message": "exists",
+                "error": "Payment term already exists.",
+            }
+            return JsonResponse(response_data, status=400)  # Return 400 for client-side handling
+        
+        # If payment term does not exist, create it
+        ptr = payment_terms(user=request.user, Terms=terms, Days=day)
         ptr.save()
+        
         response_data = {
             "message": "success",
             "terms": terms,
