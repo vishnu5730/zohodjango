@@ -800,7 +800,7 @@ class Purchase_Order(models.Model):
     Pur_no = models.CharField(max_length=100,null=True,blank=True)
 
     source_supply = models.CharField(max_length=100,null=True,blank=True)
-
+    customer_source_supply = models.CharField(max_length=100,null=True,blank=True)
     ref = models.CharField(max_length=100,null=True,blank=True)
     Ord_date=models.DateField(null=True,blank=True)
     exp_date=models.DateField(null=True,blank=True)

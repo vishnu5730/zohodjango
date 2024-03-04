@@ -154,6 +154,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
       {% csrf_token %}
       <div class="row">
         <input type="hidden" id="company_state" value="{{company.state}}" readonly>
+        <input type="hidden" id="item_count" value="{{count1}}" readonly>
         <div class="col-md-3">
           <label>Vendor Name *</label>
         </div>
@@ -257,10 +258,10 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
         </div>
         
         <div class="col-md-3 mt-3">
-          <input type="radio" name="typ" value="Customer" id="customer" onclick="showFields()"> Customer
+          <input type="radio" name="typ" value="Customer" id="customer"> Customer
         </div>
         <div class="col-md-3 mt-3">
-          <input type="radio"  name="typ" value="Organization"  id="organization" onclick="showFields()"> Organization
+          <input type="radio"  name="typ" value="Organization"  id="organization"> Organization
         </div>
         
       </div>
@@ -364,13 +365,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
               {% endfor %}
             </select>
             <input type="hidden" id="cust_state" value="" readonly >
-  
-            
-  
           </div>
-          <div class="col-md-3">
-            <a href="#" class="btn btn-outline-secondary py-2 my-1 mt-3" data-target="#newcustomer" data-toggle="modal" style="color: white; background-color: rgb(210, 132, 30);" >+</a>
-        </div>
         </div>
 
         <div class="row mt-2 d-none" id="cemail_row">
@@ -379,7 +374,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
 
           </div>
           <div class="col-md-6">
-            <input type="text" id="cemail_inp" class="form-control bg-light text-dark" name="custMail">
+            <input type="text" id="cemail_inp" class="form-control bg-light text-dark" name="custMail" readonly>
           </div>
         </div>
         <div class="row mt-2 d-none" id="custAddress_row">
@@ -388,7 +383,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
 
           </div>
           <div class="col-md-6">
-            <input class="form-control bg-light text-dark" type="text" id="custAddress" name="custAddress">
+            <input class="form-control bg-light text-dark" type="text" id="custAddress" name="custAddress" readonly>
 
           </div>
 
@@ -400,7 +395,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
 
           </div>
           <div class="col-md-6">
-            <input class="form-control bg-light text-dark" type="text" id="custstreet" name="custStreet">
+            <input class="form-control bg-light text-dark" type="text" id="custstreet" name="custStreet" readonly>
   
           </div>
 
@@ -412,7 +407,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
 
           </div>
           <div class="col-md-6">
-            <input class="form-control bg-light text-dark" type="text" id="custcity" name="custcity">
+            <input class="form-control bg-light text-dark" type="text" id="custcity" name="custcity" readonly>
   
           </div>
 
@@ -424,7 +419,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
 
           </div>
           <div class="col-md-6">
-            <input class="form-control bg-light text-dark" type="text" id="custstate" name="custstate">
+            <input class="form-control bg-light text-dark" type="text" id="custstate" name="custstate" readonly>
   
           </div>
 
@@ -434,7 +429,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
             <label for="gst_trt_inp">GST Treatment</label>
           </div>
           <div class="col-md-6">
-            <input type="text" class="form-control bg-light text-dark" id="cust_gst_trt_inp">
+            <input type="text" class="form-control bg-light text-dark" id="cust_gst_trt_inp" readonly>
           </div>
         </div>
   
@@ -443,7 +438,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
             <label for="gstin_inp">GST Number</label>
           </div>
           <div class="col-md-6">
-            <input type="text" class="form-control bg-light text-dark"  id="cust_gstin_inp">
+            <input type="text" class="form-control bg-light text-dark"  id="cust_gstin_inp" readonly>
           </div>
         </div>
         <div class="row mt-2 mb-4 d-none" id="custsrcofsupply_row">
@@ -452,7 +447,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
           </div>
   
           <div class="col-md-6">
-              <select id="custsrcofsupply" class="form-control bg-light text-dark">
+              <select id="custsrcofsupply" name="cust_source_supply" class="form-control bg-light text-dark">
                   <option selected="selected"></option>
                   <option value="[AN] Andaman and Nicobar Islads">[AN] Andaman and Nicobar Islads</option>
                   <option value="[AD] Andhra Predhesh">[AD] Andhra Predhesh</option>
@@ -503,7 +498,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
           <label for="prof_name" >Purchase Order</label>
         </div>
         <div class="col-md-6">
-          <input type="text" class="form-control bg-light text-dark" value="{{remaining_characters}}"  id="prof_name" name="pur_ord">
+          <input type="text" class="form-control bg-light text-dark" value="{{po.Pur_no}}"  id="prof_name" name="pur_ord">
           <label id="order_label" style="display: none;"></label>
         </div>
       </div>
@@ -513,7 +508,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
         </div>
 
         <div class="col-md-6">
-          <input type="text" class="form-control bg-light text-dark" id="ref" name="ref" value="{{reford}}" readonly>
+          <input type="text" class="form-control bg-light text-dark" id="ref" name="ref" value="{{po.ref}}" readonly>
         </div>
       </div>
       <br>
@@ -522,7 +517,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
             <label for="date1">Order Date</label>
           </div>
           <div class="col-md-3">
-            <input type="date" class="form-control bg-light text-dark" id="date1" name="start_date">
+            <input type="date" class="form-control bg-light text-dark" value="{{po.Ord_date|date:'Y-m-d' }}" id="date1" name="start_date">
           </div>
       </div>
       <div class="row mt-2">
@@ -530,7 +525,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
           <label for="date2">Expected Delivery On</label>
         </div>
         <div class="col-md-3">
-          <input type="date" class="form-control bg-light text-dark" id="date2" name="end_date" readonly required>
+          <input type="date" class="form-control bg-light text-dark" value="{{po.exp_date|date:'Y-m-d' }}" id="date2" name="end_date" readonly required>
         </div>
         
       </div>
@@ -542,16 +537,13 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
         <div class="col-md-6">
           <div class="d-flex">
             <select class="form-control bg-light text-dark" id="terms" name="terms">
+              <option value="{{po.payment_terms}}">{{po.payment_terms}}</option>
               {% for p in payment %}
-                <option selected value="{{p.id}}">{{p.Terms}}</option>
+                <option value="{{p.id}}">{{p.Terms}}</option>
               {% endfor %}
-              <option value="" selected></option>
             </select>
           </div> 
-      </div>  
-      <div class="col-md-3">
-        <a href="#" class="btn btn-outline-secondary py-2 my-1" data-target="#newpayment" data-toggle="modal" style="color: white; background-color: rgb(210, 132, 30);" >+</a>
-    </div>
+      </div>
     </div>
       <div class="row mt-2">
         <div class="col-md-3">
@@ -561,7 +553,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
         <div class="col-md-6">
           <div class="d-flex">
             <select class="form-control bg-light text-dark my-select" id="pay_method" name="ptype" required>
-              <option value="" hidden>Select Payment Method</option>
+              <option value="{{po.payment_type}}" selected>{{po.payment_type}}</option>
               <option value="cash">Cash</option>
               <option value="cheque">Cheque</option>
               <option value="upi">UPI</option>
@@ -619,36 +611,41 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
               </tr>
             </thead>
             <tbody>
-              <tr id="row1">
+              {% for i in po_table %}
+              <tr id="row{{forloop.counter}}">
                 <td class='text-center text-dark serial-number'></td>
                   <td style="width: 10%;">
                       <div><select class='form-control text-dark item_select itm'
                               name='item[]' id='item1'>
-                              <option value=" " selected disabled>Select Item</option>
+                              <option value="{{i.item}}" selected disabled>{{i.item}}</option>
                               {% for i in item %}
-                                <option value="{{i.Name}}">{{ i.Name  }} </option>
+                                <option value="{{i.Name}}">{{i.Name}} </option>
                               {% endfor %}
                           </select></div>
                   </td>
                   <td style="width: 15%;" class='text-right'>
-                    <input type='number' id='hsn1'
-                      class=' text-right hsn border-0 form-control bg-transparent text-white' name='hsn[]' readonly>
+                    <input type='number' id='hsn{{forloop.counter}}'
+                      class=' text-right hsn border-0 form-control bg-transparent text-white' name='hsn[]' value='{{i.hsn}}' readonly>
                   </td>
-                  <td style="width: 13%;" class='text-right'><input type='number' id='qty1'
+                  <td style="width: 13%;" class='text-right'><input type='number' id='qty{{forloop.counter}}'
                           class=' text-right qty form-control bg-transparent text-dark' name='quantity[]'
-                          value='0'>
+                          value='{{i.quantity}}'>
                   </td>
-                  <td style="width: 15%;" class='text-right'><input type='number' id='rate1'
+                  <td style="width: 15%;" class='text-right'><input type='number' id='rate{{forloop.counter}}'
                           class=' text-right rate form-control bg-transparent text-dark' name='rate[]'
-                          value='0' readonly>
+                          value='{{i.rate}}' readonly>
                   </td>
                   <td style="width: 12%;" class='text-right text-dark'><input type='number' id='discount1'
                           class=' text-right discount bg-transparent text-dark form-control' name='discount[]'
-                          value='0'>
+                          value='{{i.discount}}'>
                   </td>
-                  <td style="width: 15%;" class='text-right '> <select name='tax[]' id='tax1'
+                  <td style="width: 15%;" class='text-right '> <select name='tax[]' id='tax{{forloop.counter}}'
                           class='form-control bg-transparent text-dark  text-right border-0 tax' onclick="toggleDateInput()">
-                          <option selected>Select Tax</option>
+                          {% if pofsupply == company.state %}
+                          <option value="{{i.tax}}">{{i.tax}}.0% GST({{i.tax}}%)</option>
+                            {% else %}
+                            <option value="{{i.tax}}">{{i.tax}}.0% IGST({{i.tax}}%)</option>
+                            {% endif %}
                           <optgroup class="text-center" label="GST">
                             <option value="0">0% GST(0%)</option>
                             <option value="3">3.0% GST(3%)</option>
@@ -667,20 +664,21 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                             </optgroup>
                       </select></td>
                   <td style="display: none;">
-                      <input type="text" name='taxamount' id="taxamount1"
+                      <input type="text" name='taxamount' id="taxamount{{forloop.counter}}"
                           class=" taxamount text-dark" />
                   </td>
-                  <td style="width: 15%;" class='text-right'><input type='number' id='amount1'
+                  <td style="width: 15%;" class='text-right'><input type='number' id='amount{{forloop.counter}}'
                           class=' text-right form-control amount bg-transparent text-dark' name='amount[]'
-                          value='0.00'></td>
+                          value='{{i.amount}}'></td>
                   <td class='text-center'><button type='button' id='del_btn1'
                           class='btn btn-transparent text-danger btn-sm btn-outline-danger rounded-circle delete-row'
                           style='width:30px'>X</button></td>
                           <td class='text-center'>
-                            <button type='button' class='btn btn-transparent text-warning btn-sm btn-outline-warning rounded-circle clone-row' data-row=1 style='width:30px'><i class="fa fa-clone"></i>
+                            <button type='button' class='btn btn-transparent text-warning btn-sm btn-outline-warning rounded-circle clone-row' data-row={{forloop.counter}} style='width:30px'><i class="fa fa-clone"></i>
                             </button>
                           </td>
  </tr>
+ {% endfor %}
       </tbody>
     </table>
     <button type="button" class="btn btn-sm text-white clone-row" style="background-color: rgb(210, 132, 30);" id="add-row">Add another line</button>
@@ -694,7 +692,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
 
             <label for="">Customer Notes</label>
             <textarea name="customer_note" id="" cols="8" rows="8"
-                placeholder=" Will be Displayed on the Purchase Order"></textarea>
+                placeholder=" Will be Displayed on the Purchase Order">{{po.note}}</textarea>
             
         </div>
         <div class="col-sm-6 " >
@@ -702,55 +700,55 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                 <tr>
                     <td>Sub Total</td>
                     <td></td>
-                    <td><input style="text-align: right;" type="number" id="subtotal" name="subtotal" step="any" value="0.00"
+                    <td><input style="text-align: right;" type="number" id="subtotal" name="subtotal" step="any" value="{{po.sub_total}}"
                             class="form-control bg-transparent border-0 text-right subtotal text-white"></td>
                 </tr>
                 <tr style="display: none;" id="tr_igst">
                     <td>IGST</td>
                     <td></td>
-                    <td><input style="text-align: right;" type="number" id='igst' name="igst" step="any" value="0.00"
+                    <td><input style="text-align: right;" type="number" id='igst' name="igst" step="any"  value="{{po.igst}}"
                             class="form-control bg-transparent border-0 text-right igst  text-white" ></td>
                 </tr>
                 <tr style="display: none;" id="tr_cgst">
                     <td>CGST</td>
                     <td></td>
-                    <td><input style="text-align: right;" type="number" id='cgst' name="cgst" step="any" value="0.00"
+                    <td><input style="text-align: right;" type="number" id='cgst' name="cgst" step="any" value="{{po.cgst}}"
                             class="form-control bg-transparent border-0 text-right cgst text-white" ></td>
                 </tr>
                 <tr style="display: none;" id="tr_sgst">
                     <td>SGST</td>
                     <td></td>
-                    <td><input style="text-align: right;" type="number" id='sgst' name="sgst" step="any" value="0.00"
+                    <td><input style="text-align: right;" type="number" id='sgst' name="sgst" step="any" value="{{po.sgst}}"
                             class="form-control bg-transparent border-0 text-right sgst  text-white" ></td>
                 </tr>
                 <tr>
                     <td>Tax Amount</td>
                     <td></td>
-                    <td><input style="text-align: right;" type="number" id="total_taxamount" name="total_taxamount" step="any" value="0.00" 
+                    <td><input style="text-align: right;" type="number" id="total_taxamount" name="total_taxamount" step="any"  value="{{po.tax_amount}}" 
                         class="total_taxamount form-control bg-transparent border-0 text-right  text-white"></td>
                 </tr>
                 <tr>
                     <td>Shipping Charges</td>
                     
-                    <td><input style="text-align: right;" type="hidden" id="shipping_charge" name="shipping_charge" step="any" value="0.00" 
+                    <td><input style="text-align: right;" type="hidden" id="shipping_charge" name="shipping_charge" step="any" value="{{po.shipping_charge}}" 
                         class="form-control bg-transparent border-0 text-right shipping_charge "></td>
-                        <td><input style="text-align: right;" type="number" class="form-control  bg-transparent border-0  text-light" id="shipping" value="0"> </td>
+                        <td><input style="text-align: right;" type="number" class="form-control  bg-transparent border-0  text-light" id="shipping" value="{{po.shipping_charge}}"> </td>
                 </tr>
                 <tr>
                     <td>Adjustments</td>
                     <td></td>
-                    <td><input style="text-align: right;" type="number"  name="adjustment_charge" class="form-control  bg-transparent border-0  text-light" id="adjustment" value="0" > </td>
+                    <td><input style="text-align: right;" type="number"  name="adjustment_charge" class="form-control  bg-transparent border-0  text-light" id="adjustment" value="{{po.adjustment_charge}}"></td>
                   </tr>
                 <tr>
                     <th>Total( &#x20B9; )</th>
                     <th></th>
-                    <th><input style="text-align: right;" type="number" id="grandtotal" name="grandtotal" step="any" value="0.00" 
+                    <th><input style="text-align: right;" type="number" id="grandtotal" name="grandtotal" step="any" value="{{po.grand_total}}"
                             class="form-control bg-transparent border-0 text-right grandtotal  text-white"></th>
                 </tr>
                 <tr>
                   <td>Advance/Paid</td>
                   <td></td>
-                  <td><input style="text-align: right;" name="advance" type="number" class="form-control  bg-transparent border-0  text-light" id="advance" value="0" > </td>
+                  <td><input style="text-align: right;" name="advance" type="number" class="form-control  bg-transparent border-0  text-light" id="advance" value="{{po.payed}}"> </td>
                 </tr>
               <tr>
                 <th>Balance( &#x20B9; )</th>
@@ -766,13 +764,13 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
         <div class="col-md-8 d-flex flex-column w-60 text-white">
             <label for="">Terms & Conditions</label>
             <textarea name="tearms_conditions" id="" cols="20" rows="5"
-                placeholder=" Enter the terms & conditions of your business to be displayed in your transaction."></textarea>
+                placeholder=" Enter the terms & conditions of your business to be displayed in your transaction.">{{po.term}}</textarea>
         </div>
         <div class="col-md-4 py-5 text-center rounded" style="background-color:  #6f6f6f;">
             <label class="text-white" for="">Attach File(s) to Purchase</label><br>
 
             
-            <input id="file-upload" class="form-control bg-light text-dark" type="file" name="file">
+            <input id="file-upload" class="form-control bg-light text-dark" type="file" value="{{po.document}}" name="file">
 
 
 
@@ -3173,7 +3171,7 @@ function reloadAccount() {
 </script>
 
 <script>
-var rowCount = 1;
+var rowCount = parseInt(document.getElementById('item_count'));
 $(document).ready(function () {
 
   function calculateRowAmount(row) {
@@ -3392,7 +3390,11 @@ $('#item_table').on('click', '.item_select, .acnt, .rate, .qty, .tax, .discount'
   var comp_state1 = document.getElementById('company_state');
   var comp_state = comp_state1.value;
   var checkbox = document.getElementById("srcofsupply");
-  var vale = checkbox.value.slice(5);
+  if (checkbox.value === "[DNH] Dadra and Nagar Haveli") {
+    var vale = "Dadra and Nagar Haveli";
+  } else {
+    var vale = checkbox.value.slice(5);
+  }
 
   if (vale === comp_state) {
     taxElement.find('optgroup[label="GST"]').show();
@@ -3406,15 +3408,11 @@ $('#item_table').on('click', '.item_select, .acnt, .rate, .qty, .tax, .discount'
 // Event handler for clone button
 $('#item_table').on('click', '.clone-row', function () {
     var row = $(this).closest('tr');
+    updateSerialNumbers();
     var clonedRow = row.clone(); // Clone the current row
     var newRowId = 'row' + rowCount; // Generate a new ID for the cloned row
     clonedRow.attr('id', newRowId); // Set the new ID for the cloned row
-
-
-
-    // ... (other elements that need updating) ...
-
-    rowCount++; // Increment row counter
+    rowCount++;
 
   $('#item_table tbody').append(clonedRow);
   var row = $(this).closest('tr');
@@ -3429,7 +3427,11 @@ $('#item_table').on('click', '.clone-row', function () {
 
 function calculateTaxAmount() {
         var checkbox = document.getElementById("srcofsupply");
-        var vale=checkbox.value.slice(5);
+        if (checkbox.value === "[DNH] Dadra and Nagar Haveli") {
+          var vale = "Dadra and Nagar Haveli";
+        } else {
+          var vale = checkbox.value.slice(5);
+        }
         var srcofsupply = vale; // Replace with the actual value of srcofsupply
         var comp_state1 = document.getElementById('company_state');
         var companyState = comp_state1.value; // Replace with the actual value of company state
@@ -3497,7 +3499,11 @@ function calculateTaxAmount() {
 
 function toggleDateInput() {
       var checkbox = document.getElementById("srcofsupply");
-      var vale=checkbox.value.slice(5);
+      if (checkbox.value === "[DNH] Dadra and Nagar Haveli") {
+        var vale = "Dadra and Nagar Haveli";
+      } else {
+        var vale = checkbox.value.slice(5);
+      }
       var comp_state1 = document.getElementById('company_state');
       var companyState = comp_state1.value;
       
@@ -3519,7 +3525,11 @@ function toggleDateInput() {
         console.log(taxamount)
         d = 0;
         var checkbox = document.getElementById("srcofsupply");
-        var vale=checkbox.value.slice(5);
+        if (checkbox.value === "[DNH] Dadra and Nagar Haveli") {
+          var vale = "Dadra and Nagar Haveli";
+        } else {
+          var vale = checkbox.value.slice(5);
+        }
         var comp_state1 = document.getElementById('company_state');
         var companyState = comp_state1.value;
         console.log(pos)
@@ -3550,7 +3560,11 @@ function toggleDateInput() {
             $('#igst').val(parseFloat(gst.toFixed(2)));
         }
         var checkbox = document.getElementById("srcofsupply");
-        var vale=checkbox.value.slice(5);
+        if (checkbox.value === "[DNH] Dadra and Nagar Haveli") {
+          var vale = "Dadra and Nagar Haveli";
+        } else {
+          var vale = checkbox.value.slice(5);
+        }
         var comp_state1 = document.getElementById('company_state');
         var companyState = comp_state1.value;
         var pos= "[KL] Kerala"
@@ -3689,6 +3703,47 @@ function toggleDateInput() {
     });
   });
   
+  $(document).ready(function () {
+    
+      var x = $('#pay_method').val();
+      if (x === 'cash') {
+        $('#chequediv').hide()
+        $('#bnkdiv').hide()
+        $('#upidiv').hide()
+        document.getElementById('cheque_id').value = null
+        document.getElementById('upi_id').value = null
+      } else if (x === 'cheque') {
+        $('#chequediv').show()
+        $('#bnkdiv').hide()
+        $('#upidiv').hide()
+        document.getElementById('upi_id').value = null
+      } else if (x === 'upi') {
+        $('#upidiv').show()
+        $('#bnkdiv').hide()
+        $('#chequediv').hide()
+        document.getElementById('cheque_id').value = null
+      } else {
+        $('#bnkdiv').show()
+        $('#chequediv').hide()
+        $('#upidiv').hide()
+        document.getElementById('cheque_id').value = null
+        document.getElementById('upi_id').value = null
+
+        $.ajax({
+          type: "GET",
+          url: "{% url 'bankdata' %}",
+          data: {
+            id: x,
+          },
+          success: function (response) {
+            data = response.bank
+            document.getElementById('cheque_id').value = null
+            document.getElementById('upi_id').value = null
+            document.getElementById("bnk_id").value = data
+          }
+        });
+      }
+  });
 </script>
 <script>
 
@@ -3720,7 +3775,11 @@ function toggleDateInput() {
                   data4=response.place
                   data5=response.hsn
                   var checkbox = document.getElementById("srcofsupply");
-                  var vale=checkbox.value.slice(5);
+                  if (checkbox.value === "[DNH] Dadra and Nagar Haveli") {
+                    var vale = "Dadra and Nagar Haveli";
+                  } else {
+                    var vale = checkbox.value.slice(5);
+                  }
                   var comp_state1 = document.getElementById('company_state');
                   var companyState = comp_state1.value;
                   document.getElementById('rate1').value = data
@@ -3758,7 +3817,11 @@ function toggleDateInput() {
             var data5 = response.hsn;
 
             var checkbox = document.getElementById("srcofsupply");
-            var vale = checkbox.value.slice(5);
+            if (checkbox.value === "[DNH] Dadra and Nagar Haveli") {
+              var vale = "Dadra and Nagar Haveli";
+            } else {
+              var vale = checkbox.value.slice(5);
+            }
             var comp_state1 = document.getElementById('company_state');
             var companyState = comp_state1.value;
 
@@ -3866,5 +3929,114 @@ $(document).ready(function() {
     
     });
 
+    $(document).ready(function() {
+    var name = $("#custom").val();
+    var na = name.split(' ');
+    console.log(name)
+    $.ajax({
+      url: "{% url 'customer_det' %}",
+      data: {
+        name:name,
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+      },
+      type: 'POST',
+      success: function(data) {
+      if (data.customer_email) {
+          console.log(data.customer_email);
+          $("#cemail_row").removeClass('d-none');
+          $("#cemail_inp").show();
+          $("#cemail_inp").val(data.customer_email);
+      } else {
+          $("#cemail_inp").hide(); // Hide the field if customer_email doesn't exist
+          $("#cemail_row").addClass('d-none');
+      }
+
+    if (data.adres==',,,'||data.adres=='') {
+        $("#custAddress").hide(); // Hide the field if adres doesn't exist
+        $("#custAddress_row").addClass('d-none');
+    } else {
+      console.log(data.adres);
+        $("#custAddress_row").removeClass('d-none');
+        $("#custAddress").show();
+        $("#custAddress").val(data.adres);
+      }
+
+    if (data.streat==',,,'||data.streat=='') {
+        $("#custstreet").hide(); // Hide the field if streat doesn't exist
+        $("#custstreet_row").addClass('d-none');
+    } else {
+        console.log(data.streat);
+        $("#custstreet_row").removeClass('d-none');
+        $("#custstreet").show();
+        $("#custstreet").val(data.streat);
+      }
+
+    if (data.city) {
+        console.log(data.city);
+        $("#custcity_row").removeClass('d-none');
+        $("#custcity").show();
+        $("#custcity").val(data.city);
+    } else {
+        $("#custcity").hide(); // Hide the field if city doesn't exist
+        $("#custcity_row").addClass('d-none');
+      }
+
+    if (data.state) {
+        console.log(data.state);
+        $("#custstate").val(data.state);
+        $("#custstate_row").removeClass('d-none');
+        $("#custstate").show();
+    } else {
+        $("#custstate").hide(); // Hide the field if state doesn't exist
+        $("#custstate_row").addClass('d-none');
+      }
+      if (data.gstin2 != 'null') {
+        $("#cust_gstin_row").removeClass('d-none');
+        $("#cust_gstin_row").addClass('d-flex');
+        $("#cust_gstin_inp").show();
+        $('#cust_gstin_inp').val(" " + data.gstin2);
+    } else {
+        $("#cust_gstin_inp").hide();
+        $("#cust_gstin_row").addClass('d-none');
+        $("#cust_gstin_row").removeClass('d-flex');
+    }
+
+    // Display GST treatment if it exists
+    if (data.gst_treatment) {
+        $("#cust_gst_trt_row").removeClass('d-none');
+        $("#cust_gst_trt_row").addClass('d-flex');
+        $('#cust_gst_trt_inp').val(" " + data.gst_treatment);
+    } else {
+        $("#cust_gst_trt_row").addClass('d-none');
+        $("#cust_gst_trt_row").removeClass('d-flex');
+    }
+      if (data.ssupply) {
+        console.log(data.ssupply);
+        $("#custsrcofsupply_row").removeClass('d-none');
+        $("#custsrcofsupply").show();
+        $("#custsrcofsupply option:selected").text(data.ssupply).attr('value', data.ssupply);
+    } else {
+        $("#custsrcofsupply").hide(); // Hide the field if state doesn't exist
+        $("#custsrcofsupply_row").addClass('d-none');
+      }
+      }
+    });
+});
+
+</script>
+<script>
+  // Assuming po.typ is set before this script is executed
+  var poTyp = "{{ po.typ }}"; // Assuming po.typ holds either "Customer" or "Organization"
+  var customerRadio = document.getElementById("customer");
+  var organizationRadio = document.getElementById("organization");
+
+  if (poTyp === "Customer") {
+      customerRadio.checked = true;
+      organizationRadio.disabled = true;
+  } else {
+      organizationRadio.checked = true;
+      customerRadio.disabled = true;
+  }
+  showFields()
 </script>
 {% endblock %}

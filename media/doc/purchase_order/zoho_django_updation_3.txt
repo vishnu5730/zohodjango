@@ -1,0 +1,14 @@
+Corrections: Zoho_Django
+
+___________views________________
+def import_purchase (replace)
+def purchase_bill_view (replace)
+def purchase_bill_view_by_name (replace)
+def purchase_bill_view_by_ordno (replace)
+def sharePurchaseBillToEmail (replace)
+
+___________templates_____________
+vendor_details.html (replace)
+purchase_bill_view.html (replace)
+purchase_bill_view_pdf.html (replace)
+

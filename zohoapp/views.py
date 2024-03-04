@@ -4629,12 +4629,7 @@ def add_customer_for_sorder(request):
             posply=request.POST.get('placesupply')
             crncy=request.POST.get('currency')
             obal=request.POST.get('openingbalance')
-
-           
             pterms=request.POST.get('paymentterms')
-
-           
-          
             fbk=request.POST.get('facebook')
             twtr=request.POST.get('twitter')
           
@@ -4662,10 +4657,43 @@ def add_customer_for_sorder(request):
                                   city=shipcity,state=shipstate,zipcode=bzip,phone1=wphone,
                                    fax=shipfax,
                                   user=u ,GSTIN=gstin,pan_no=panno)
-            ctmr.save()
- 
-            
-            return HttpResponse({"message": "success"})
+            if customer.objects.filter(pan_no=panno).exists():
+                response_data = {
+                    "message": "panexists",
+                    "error": "PAN No already exists.",
+                    }
+                return JsonResponse(response_data, status=400)
+            elif customer.objects.filter(customerEmail=email).exists():
+                response_data = {
+                    "message": "emailexists",
+                    "error": "Email already exists.",
+                    }
+                return JsonResponse(response_data, status=400)
+            elif customer.objects.filter(customerWorkPhone=wphone).exists():
+                response_data = {
+                    "message": "wmobileexists",
+                    "error": "Work phone already exists.",
+                    }
+                return JsonResponse(response_data, status=400)
+            elif customer.objects.filter(customerMobile=mobile).exists():
+                response_data = {
+                    "message": "pmobileexists",
+                    "error": "Mobile number already exists.",
+                    }
+                return JsonResponse(response_data, status=400)
+            elif gstin:
+                if customer.objects.filter(GSTIN=gstin).exists():
+                    response_data = {
+                    "message": "gstexists",
+                    "error": "GST No already exists.",
+                    }
+                    return JsonResponse(response_data, status=400)
+            else:
+                ctmr.save()
+                response_data = {
+                "message": "success"
+                }
+            return JsonResponse(response_data)
 
     
 @login_required(login_url='login')        
@@ -8808,7 +8836,6 @@ def purchase_vendor(request):
     company = company_details.objects.get(user = request.user)
 
     if request.method=='POST':
-
         title=request.POST.get('title')
         first_name=request.POST.get('firstname')
         last_name=request.POST.get('lastname')
@@ -8842,18 +8869,50 @@ def purchase_vendor(request):
         shipcountry=request.POST.get('shipcountry')
         shipfax=request.POST.get('shipfax')
         shipphone=request.POST.get('shipphone')
-
         u = User.objects.get(id = request.user.id)
-
         vndr = vendor_table(salutation=title, first_name=first_name, last_name=last_name,vendor_display_name = dispn, status='Active', company_name= comp, gst_treatment=gsttype, gst_number=gstin, 
                     pan_number=panno,vendor_wphone = w_mobile,vendor_mphone = p_mobile, vendor_email=email,skype_number = skype,
                     source_supply=supply,currency=currency, website=website, designation = desg, department = dpt,
                     opening_bal=balance,baddress=street, bcity=city, bstate=state, payment_terms=payment,bzip=pincode, 
                     bcountry=country, saddress=shipstreet, scity=shipcity, sstate=shipstate,szip=shippincode, scountry=shipcountry,
                     bfax = fax, sfax = shipfax, bphone = phone, sphone = shipphone,user = u)
-        vndr.save()
-
-        return HttpResponse({"message": "success"})
+        if vendor_table.objects.filter(pan_number=panno).exists():
+            response_data = {
+                "message": "panexists",
+                "error": "PAN No already exists.",
+                }
+            return JsonResponse(response_data, status=400)
+        elif vendor_table.objects.filter(vendor_email=email).exists():
+            response_data = {
+                "message": "emailexists",
+                "error": "Email already exists.",
+                }
+            return JsonResponse(response_data, status=400)
+        elif vendor_table.objects.filter(vendor_wphone=w_mobile).exists():
+            response_data = {
+                "message": "wmobileexists",
+                "error": "Work phone already exists.",
+                }
+            return JsonResponse(response_data, status=400)
+        elif vendor_table.objects.filter(vendor_mphone=p_mobile).exists():
+            response_data = {
+                "message": "pmobileexists",
+                "error": "Personal number already exists.",
+                }
+            return JsonResponse(response_data, status=400)
+        elif gstin:
+            if vendor_table.objects.filter(gst_number=gstin).exists():
+                response_data = {
+                "message": "gstexists",
+                "error": "GST No already exists.",
+                }
+                return JsonResponse(response_data, status=400)
+        else:
+            vndr.save()
+            response_data = {
+            "message": "success"
+            }
+            return JsonResponse(response_data)
         
 @login_required(login_url='login')
 def purchase_customer(request):
@@ -8921,20 +8980,26 @@ def purchase_customer(request):
 
 @login_required(login_url='login')
 def purchase_pay(request):
-    
     company = company_details.objects.get(user = request.user)
-
     if request.method=='POST':
-
         name=request.POST.get('name')
         days=request.POST.get('days')
-        
         u = User.objects.get(id = request.user.id)
-
         pay = payment_terms(Terms=name, Days=days, user = u)
-        pay.save()
-
-        return HttpResponse({"message": "success"})
+        if payment_terms.objects.filter(user = u,Terms=name).exists():
+            response_data = {
+                "message": "paymentexists",
+                "error": "Payment term already exists.",
+                }
+            return JsonResponse(response_data, status=400)
+        else:
+            pay.save()
+            response_data = {
+            "message": "success"
+            }
+            return JsonResponse(response_data)
+        
+        
         
 @login_required(login_url='login')
 def payment_dropdown(request):
@@ -9056,9 +9121,24 @@ def purchase_item(request):
         item=AddItem(type=type,hsn=hsn,unit=units,sales=sel,purchase=cost,Name=name,p_desc=cost_desc,s_desc=sell_desc,s_price=sell_price,
                     p_price=cost_price,user=user,creat=history,interstate=inter,intrastate=intra,invacc=invasset,stock=opening_stock,
                     rate=opening_stock_unit,satus=active_type,status_stock=active_type)
-
-        item.save()
-        return HttpResponse({"message": "success"})
+        if AddItem.objects.filter(user=user,Name=name).exists():
+            response_data = {
+                "message": "itemexists",
+                "error": "Item already exists.",
+                }
+            return JsonResponse(response_data, status=400)
+        elif AddItem.objects.filter(user=user,hsn=hsn).exists():
+            response_data = {
+                "message": "hsnexists",
+                "error": "HSN no already exists.",
+                }
+            return JsonResponse(response_data, status=400)
+        else:
+            item.save()
+            response_data = {
+            "message": "success"
+            }
+            return JsonResponse(response_data)
         
 @login_required(login_url='login')        
 def purchase_item_dropdown(request):
@@ -9128,7 +9208,7 @@ def create_Purchase_order(request):
         cstreet = request.POST.get('custStreet')
         ccity = request.POST.get('custcity')
         cstate = request.POST.get('custstate')
-       
+        csrc_supply = request.POST.get('cust_srcofsupply')
         src_supply = request.POST.get('srcofsupply')
         po = request.POST['pur_ord']
         if Purchase_Order.objects.filter(Pur_no=po).exists():
@@ -9163,11 +9243,7 @@ def create_Purchase_order(request):
         else:
             last_reference.reference = int(ref)
             last_reference.save()
-        print('yes')
-        print(typ)
         if typ=='Organization':
-           
-
             purchase = Purchase_Order(vendor_name=vname,
                                     vendor_mail=vmail,
                                     vendor_gst_traet=vgst_t,
@@ -9256,6 +9332,7 @@ def create_Purchase_order(request):
                                     Org_state='',
                                     Org_mail='',
                                     customer_address=caddress,
+                                    customer_source_supply = csrc_supply,
                                     source_supply=src_supply,
                                     payment_terms = terms,
                                     Ord_date = start,
@@ -9520,12 +9597,20 @@ def edit(request,pk):
     bank = Bankcreation.objects.filter(user=request.user)
     po=Purchase_Order.objects.get(id=pk)
     vname=po.vendor_name.split()
+    pofsupply = po.source_supply
+    pattern = r"\[.*?\]\s*(\w+)"
+    match = re.search(pattern, pofsupply)
+    if match:
+        pofsupply = match.group(1)
     vname2=''
     if len(vname) == 3:
         vname2=vname[0]+' '+vname[1]
     else:
         vname2=vname[0]
-    po_tabl=Purchase_Order_items.objects.filter(PO=pk)
+    po_tabl=Purchase_Order_items.objects.filter(PO=po)
+    count1 = 0
+    for i in po_tabl:
+        count1+=1
     context={
         'vendor':vendor,
         'customer':cust,
@@ -9539,20 +9624,24 @@ def edit(request,pk):
         'bank':bank,
         'po':po,        
         'po_table':po_tabl,
-        'vname2':vname2
+        'vname2':vname2,
+        'pofsupply':pofsupply,
+        'count1':count1
     }
     return render(request,'edit_purchase_order.html',context)
     
     
 def edit_Purchase_order(request,id):
-
     company = company_details.objects.get(user = request.user)
     po_id=Purchase_Order.objects.get(id=id)
     if request.method == 'POST':
         typ=request.POST['typ']
-        print('yes')
-        print(typ)
-        if typ=='Organization':
+        po = request.POST['pur_ord']
+        if po_id.Pur_no != po:
+            if Purchase_Order.objects.filter(Pur_no=po).exists():
+                messages.error(request, 'Purchase order no already exists!')
+                return redirect('edit',id)
+        elif typ=='Organization':
             po_id.vendor_name = request.POST.get('vendor')
             po_id.vendor_mail = request.POST.get('email_inp')
             po_id.vendor_gst_traet = request.POST.get('gst_trt_inp')
@@ -9573,10 +9662,8 @@ def edit_Purchase_order(request,id):
             po_id.customer_street = ''
             po_id.customer_city = ''
             po_id.customer_state = ''
-            
-
             po_id.source_supply = request.POST.get('srcofsupply')
-            po_id.Pur_no = request.POST['pur_ord']
+            po_id.Pur_no = po
             po_id.ref = request.POST['ref']
             po_id.payment_terms = request.POST['terms']
             po_id.Ord_date = request.POST.get('start_date')
@@ -9587,27 +9674,23 @@ def edit_Purchase_order(request,id):
             po_id.igst=request.POST['igst']
             po_id.tax_amount = request.POST['total_taxamount']
             po_id.shipping_charge= request.POST['shipping_charge']
+            po_id.adjustment_charge= request.POST['adjustment_charge']
             po_id.grand_total=request.POST['grandtotal']
             po_id.note=request.POST['customer_note']
             po_id.term = request.POST['tearms_conditions']
+            po_id.payed = request.POST['advance']
             u = User.objects.get(id = request.user.id)
-
-            
+            if len(request.FILES)!=0:
+                if po_id.document:
+                    os.remove(po_id.document.path)
+                po_id.document=request.FILES.get('file')
             po_id.save()
-
-            p_bill = Purchase_Order.objects.get(id=po_id.id)
-
-            if len(request.FILES) != 0:
-                p_bill.document=request.FILES['file'] 
-                p_bill.save()
-                print('save')
         else:
             po_id.vendor_name = request.POST.get('vendor')
             po_id.vendor_mail = request.POST.get('email_inp')
             po_id.vendor_gst_traet = request.POST.get('gst_trt_inp')
             po_id.vendor_gst_no = request.POST.get('gstin_inp')
             po_id.typ=typ
-            
             po_id.Org_name = ''
             po_id.Org_address = ''
             po_id.Org_gst = ''
@@ -9617,11 +9700,13 @@ def edit_Purchase_order(request,id):
             po_id.Org_mail=''
             po_id.customer_name = request.POST.get('custom')
             po_id.customer_mail = request.POST.get('custMail')
+            po_id.custo = customer.objects.get(customerName=po_id.customer_name,customerEmail=po_id.customer_mail)
             po_id.customer_address = request.POST.get('custAddress')
             po_id.customer_street = request.POST.get('custstreet')
             po_id.customer_city = request.POST.get('custcity')
             po_id.customer_state = request.POST.get('custstate')
-
+            po_id.payed = request.POST['advance']
+            po_id.customer_source_supply = request.POST.get('cust_source_supply')
             po_id.source_supply = request.POST.get('srcofsupply')
             po_id.Pur_no = request.POST['pur_ord']
             po_id.ref = request.POST['ref']
@@ -9634,49 +9719,40 @@ def edit_Purchase_order(request,id):
             po_id.igst=request.POST['igst']
             po_id.tax_amount = request.POST['total_taxamount']
             po_id.shipping_charge= request.POST['shipping_charge']
+            po_id.adjustment_charge= request.POST['adjustment_charge']
             po_id.grand_total=request.POST['grandtotal']
             po_id.note=request.POST['customer_note']
             po_id.term = request.POST['tearms_conditions']
-            
+            if len(request.FILES)!=0:
+                if po_id.document:
+                    os.remove(po_id.document.path)
+                po_id.document=request.FILES.get('file')
             u = User.objects.get(id = request.user.id)
-
-            
             po_id.save()
-
-            p_bill = Purchase_Order.objects.get(id=po_id.id)
-
-        if request.FILES.get('file') is not None:
-            po_id.file = request.FILES['file']
-        else:
-            po_id.file = "/static/images/default.jpg"
-        po_id.save()
         item = request.POST.getlist("item[]")
-        accounts = request.POST.getlist("account[]")
+        hsn = request.POST.getlist("hsn[]")        
         quantity = request.POST.getlist("quantity[]")
         rate = request.POST.getlist("rate[]")
         tax = request.POST.getlist("tax[]")
         discount = request.POST.getlist("discount[]")
         amount = request.POST.getlist("amount[]")
-
-        obj_dele = Purchase_Order_items.objects.filter(PO=p_bill.id)
+        obj_dele = Purchase_Order_items.objects.filter(PO=po_id)
         obj_dele.delete()
 
-        if len(item) == len(accounts) == len(quantity) == len(rate) == len(discount) == len(tax) == len(amount):
+        if len(item) == len(quantity) == len(rate) == len(discount) == len(tax) == len(amount):
             for i in range(len(item)):
                 created = Purchase_Order_items.objects.create(
                     item=item[i],
-                    account=accounts[i],
                     quantity=quantity[i],
+                    hsn=hsn[i],
                     rate=rate[i],
                     tax=tax[i],
                     discount=discount[i],
                     amount=amount[i],
                     user=u,
                     company=company,
-                    PO=p_bill
+                    PO=po_id
                 )
-
-                print('Done')
 
             return redirect('purchase_bill_view',id)
     return redirect('purchaseView')
