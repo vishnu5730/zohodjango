@@ -1545,7 +1545,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                   </div>
                   <div class="col-md-6 mt-2">
                     <input type="text" class="form-control text-dark" id="c_gstin" name="c_gstin" placeholder="29APPCK7465F1Z1">
-                    <label id="gst_label"></label>
+                    <label id="gst_label2"></label>
                   </div>       
                 </div>
 
@@ -1555,7 +1555,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                   </div>
                   <div class="col-md-6 mt-2">
                     <input type="text" class="form-control text-dark" id="c_pan" name="c_pan" placeholder="APPCK7465F">
-                    <label id="pan_label"></label>
+                    <label id="pan_label2"></label>
                   </div>       
                 </div>
 
@@ -2346,7 +2346,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
           <form action="" method="post" class="needs-validation" novalidate autocomplete="off" >
             <div class="row mt-2">
               <div class="col-md-4 mt-2">
-                <center><label for="termname" id="verror_message" style="color: rgb(255, 255, 255);"></label></center>
+                <center><label for="termname" class="mb-3" id="verror_message" style="color: rgb(255, 255, 255);"></label></center>
               </div>
             </div>
           </form>
@@ -2538,8 +2538,8 @@ $(document).ready(function() {
         $("#custsrcofsupply").show();
         $("#custsrcofsupply option:selected").text(data.ssupply).attr('value', data.ssupply);
     } else {
-        $("#custsrcofsupply").hide(); // Hide the field if state doesn't exist
-        $("#custsrcofsupply_row").addClass('d-none');
+        $("#custsrcofsupply_row").removeClass('d-none');
+        $("#custsrcofsupply").show();
       }
       }
     });
@@ -2577,18 +2577,16 @@ $(document).ready(function() {
 
     $(document).ready(function() {
     $("#v_gstin").change(function() {
-
-        var x=$("v_gstin").val();
+        var x= $("v_gstin").val();
         var gst_label=document.getElementById("gst_label")
-        var expr=/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+        var expr= /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/
         if (!expr.test(x)) {
             gst_label.style.color="red";
             gst_label.innerHTML = "Invalid GST Number.";
         }
         else{
             gst_label.style.color="green";
-            gst_label.innerHTML = "valid GST Number.";
-
+            gst_label.innerHTML = "Valid GST Number.";
         }
       });
     });
@@ -2597,14 +2595,14 @@ $(document).ready(function() {
       $("#v_pan").change(function() {
         var x= $("#v_pan").val();
         var pan_label=document.getElementById("pan_label")
-        var expr=    /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/
+        var expr= /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/
         if (!expr.test(x)) {
             pan_label.style.color="red";
             pan_label.innerHTML = "Invalid PAN Number.";
         }
         else{
             pan_label.style.color="green";
-            pan_label.innerHTML = "valid PAN Number.";
+            pan_label.innerHTML = "Valid PAN Number.";
 
         }
       });
@@ -2642,16 +2640,16 @@ $(document).ready(function() {
     $(document).ready(function() {
     $("#c_gstin").change(function() {
 
-        var x=$("c_gstin").val();
-        var gst_label=document.getElementById("gst_label")
-        var expr=/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+        var x = $("c_gstin").val();
+        var gst_label = document.getElementById("gst_label2")
+        var expr = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
         if (!expr.test(x)) {
             gst_label.style.color="red";
             gst_label.innerHTML = "Invalid GST Number.";
         }
         else{
             gst_label.style.color="green";
-            gst_label.innerHTML = "valid GST Number.";
+            gst_label.innerHTML = "Valid GST Number.";
 
         }
       });
@@ -2660,15 +2658,15 @@ $(document).ready(function() {
     $(document).ready(function() {
       $("#c_pan").change(function() {
         var x= $("#c_pan").val();
-        var pan_label=document.getElementById("pan_label")
-        var expr=    /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/
+        var pan_label=document.getElementById("pan_label2")
+        var expr= /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/
         if (!expr.test(x)) {
             pan_label.style.color="red";
             pan_label.innerHTML = "Invalid PAN Number.";
         }
         else{
             pan_label.style.color="green";
-            pan_label.innerHTML = "valid PAN Number.";
+            pan_label.innerHTML = "Valid PAN Number.";
 
         }
       });
@@ -2743,7 +2741,7 @@ $(document).on("click","#customersave",function(){
   $.ajax({
     
     type : 'POST',
-    url:"{% url 'add_customer_for_sorder' %}",
+    url:"{% url 'add_customer_for_sorder_purchase' %}",
 
     data:{
         tax:inte,
@@ -2840,7 +2838,7 @@ $(document).on("click","#vendorSave",function(){
   $.ajax({
     
     type : 'POST',
-    url:"{% url 'purchase_vendor' %}",
+    url:"{% url 'purchase_vendor_purchase' %}",
 
     data:{
        title : $("#title").val(),
@@ -2882,7 +2880,7 @@ $(document).on("click","#vendorSave",function(){
     
       success: function(response) {
         if (response.message === "success") {
-          document.getElementById("verror_message").innerHTML = "Vendor added successfully."
+          document.getElementById("verror_message").innerHTML = "Vendor added successfully.";
           document.getElementById("modalVendor").reset();
           reloadvendor();
           $('#vendorExistsModal').modal('show');
@@ -2892,7 +2890,7 @@ $(document).on("click","#vendorSave",function(){
             var errorMessage = xhr.responseJSON.error;
             if (errorMessage) {
                 // Handle modal showing payment term already exists
-                document.getElementById("verror_message").innerHTML = errorMessage
+                document.getElementById("verror_message").innerHTML = errorMessage;
                 document.getElementById("modalVendor").reset();
                 $('#vendorExistsModal').modal('show');
             }
@@ -2935,7 +2933,7 @@ $(document).on("click","#paySave",function(){
   $.ajax({
     
     type : 'POST',
-    url:"{% url 'purchase_pay' %}",
+    url:"{% url 'purchase_pay_purchase' %}",
 
     data:{
         name : $("#term_name").val(),
@@ -3098,7 +3096,7 @@ else {
 $.ajax({
 
   type: 'POST',
-  url: "{% url 'purchase_item' %}",
+  url: "{% url 'purchase_item_purchase' %}",
 
   data: {
     type: itemtype,
@@ -3122,11 +3120,24 @@ $.ajax({
 
   },
 
-  success: function (response) {
-    document.getElementById("modalItem").reset();
-    reloadItem();
-  },
-});
+  success: function(response) {
+        if (response.message === "success") {
+          document.getElementById("verror_message").innerHTML = "Item added successfully.";
+          document.getElementById("modalItem").reset();
+          reloadItems();
+          $('#vendorExistsModal').modal('show');
+      }
+    },
+    error: function(xhr, status, error) {
+            var errorMessage = xhr.responseJSON.error;
+            if (errorMessage) {
+                // Handle modal showing payment term already exists
+                document.getElementById("verror_message").innerHTML = errorMessage;
+                document.getElementById("modalItem").reset();
+                $('#vendorExistsModal').modal('show');
+            }
+        }
+  });        
 });
 function reloadItems(rowNumber) {
   var select = $('#item' + rowNumber); // Select the item select element in the specified row

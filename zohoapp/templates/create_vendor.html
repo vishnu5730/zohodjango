@@ -77,9 +77,9 @@
         <div class="modal-body" style="background: rgb(32, 35, 37);">
           <div class="card p-3 m-3">
             <form action="" method="post" class="needs-validation" novalidate autocomplete="off" id="modalPayment">
-              <div class="row mt-2">
+              <div class="row mt-2" style="text-align: center;">
                 <div class="col-md-4 mt-2">
-                  <center><label for="termname" style="color: rgb(255, 255, 255);">Payment already exist!</label></center>
+                  <label for="termname" class="mb-3" id="veerror_message" style="color: rgb(255, 255, 255);text-align: center;"></label>
                 </div>
               </div>
             </form>
@@ -104,18 +104,18 @@ $(document).on("click", "#paySave", function() {
         },
         success: function(response) {
             if (response.message === "success") {
-                console.log('welcome');
-                term_name = response.terms;
+                document.getElementById("veerror_message").innerHTML = "Payment term added successfully."
                 document.getElementById("modalPayment").reset();
                 reloadPayment();
+                $('#paymentExistsModal').modal('show');
             }
         },
         error: function(xhr, status, error) {
             var errorMessage = xhr.responseJSON.error;
             if (errorMessage) {
-                // Handle modal showing payment term already exists
-                $('#paymentExistsModal').modal('show');
+                document.getElementById("veerror_message").innerHTML = errorMessage
                 document.getElementById("modalPayment").reset();
+                $('#paymentExistsModal').modal('show');
             }
         }
     });
@@ -173,8 +173,6 @@ function reloadPayment() {
       
              <form  method="post" action="{% url 'add_vendor' %}"  enctype="multipart/form-data" class="">
               {% csrf_token %}
-              
-              
               <div class=" form-group row">
                 <div class="col-sm-12 col-md-3 col-lg-3 col-form-label">
                     <label >Primary Contact</label>
@@ -190,11 +188,11 @@ function reloadPayment() {
                        </select> 
                 </div>
                 <div class="col-sm-12 col-md-2 col-lg-3" style="width:17rem;">
-                    <input  type="text" class="form-control bg-light text-dark  " id="fname" name="first_name" placeholder="first name" required >
+                    <input  type="text" class="form-control bg-light text-dark  " id="fname" name="first_name" placeholder="First Name" required >
 
                 </div>
                 <div class="col-sm-12 col-md-2 col-lg-3" style="width:17rem;">
-                    <input type="text" class="form-control bg-light text-dark " id="lname" name="last_name" placeholder="last name" required >
+                    <input type="text" class="form-control bg-light text-dark " id="lname" name="last_name" placeholder="Last Name" required >
 
                 </div>
             </div>
@@ -281,8 +279,8 @@ function reloadPayment() {
                         <div class="invalid-feedback">Please fill out this field.</div>   
       
                     </div>
-                    <div class="toggle1" style="color: rgb(230, 171, 45);font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-size:22px;">
-                        <a href="">More Details</a>
+                    <div class="mt-4 toggle1" style="color: rgb(230, 171, 45);font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-size:22px;">
+                        <a href="">More Details (Click Here)</a>
 
                      </div>
  
@@ -428,25 +426,46 @@ function reloadPayment() {
                     <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > Source of Supply*</label>
                      
                     <div class=" col-sm-12 col-md-3 col-lg-3">
-                        <select name="source_supply" id="PLACE" class="form-control bg-light text-dark">
-                        <option value="value" selected></option>
-                      <option value="[AN]-Andaman And Nicobar Islands">[AN]-Andaman And Nicobar Islands</option> <option value="[AD]-Andhra Pradesh">[AD]-Andhra Pradesh</option>
-                      <option value="[AR]-Arunachal Pradesh">[AR]-Arunachal Pradesh	</option> <option value="volvo">[AS]-Assam</option>
-                      <option value="[BR]-Bihar">[BR]-Bihar</option> <option value="volvo">[CH]-	Chandhigarh</option><option value="[CG]-Chattisgarh">[CG]-Chattisgarh</option>
-                      <option value="[DD]-Daman Diu">[DD]-Daman Diu</option><option value="volvo">[DL]-	Delhi</option><option value="[GA]-Goa">[GA]-Goa</option> <option value="[GJ]-Gujarat">[GJ]-Gujarat</option>
-                      <option value="[HR]-Haryana">[HR]-Haryana</option> <option value="[HP]-Himachal Pradesh">[HP]-Himachal Pradesh</option>
-                      <option value="[JK]-Jammu And Kashmir">[JK]-Jammu And Kashmir</option><option value="[JH]-Jharkand">[JH]-Jharkand</option>
-                      <option value="[KA]-Karnataka">[KA]-Karnataka</option><option value="[KL]-Kerala">[KL]-Kerala</option>
-                      <option value="[LA]-Ladakh">[LA]-Ladakh</option><option value="[LD]-Lakshadweep">[LD]-Lakshadweep</option>
-                      <option value="[MP]-Madhyapradesh">[MP]-Madhyapradesh</option><option value="[MH]-Maharashtra">[MH]-Maharashtra</option>
-                      <option value="[MN]-Manipur">[MN]-Manipur</option>  <option value="[ML]-Meghalaya">[ML]-Meghalaya</option>
-                    <option value="[MZ]-Mizoram">[MZ]-Mizoram</option> <option value="[NL]-Nagaland">[NL]-Nagaland</option> <option value="[NL]-Nagaland">[NL]-Nagaland</option>
-                     <option value="[OD]-Odisha">[OD]-Odisha</option><option value="[PY]-Puducherry">[PY]-Puducherry</option>
-                      <option value="[PB]-Punjab">[PB]-Punjab.</option><option value="[RL]-Rajasthan">[RL]-Rajasthan</option>
-                      <option value="[SK]-Sikkim">[SK]-Sikkim</option><option value="[TN]-Tamilnadu">[TN]-Tamilnadu</option>
-                      <option value="[TS]-Telenghana">[TS]-Telenghana</option><option value="[TR]-Tripura">[TR]-Tripura</option><option value="[UP]-Uttar Pradesh">[UP]-Uttar Pradesh</option>
-                      <option value="[UK]-Utharakhand">[UK]-Utharakhand</option><option value="[WB]-West Bengal">[WB]-West Bengal</option>
-                      <option value="[OT]-Other Territory">[OT]-Other Territory</option>
+                        <select name="source_supply" id="PLACE" class="form-control bg-light text-dark" required>
+                        <option value="" selected></option>
+                        <option value="[AN] Andaman and Nicobar Islads">[AN] Andaman and Nicobar Islads</option>
+                        <option value="[AD] Andhra Predhesh">[AD] Andhra Predhesh</option>
+                        <option value="[AR] Arunachal Predesh">[AR] Arunachal Predesh</option>
+                        <option value="[AS] Assam">[AS] Assam</option>
+                        <option value="[BR] Bihar">[BR] Bihar</option>
+                        <option value="[CH] Chandigarh">[CH] Chandigarh</option>
+                        <option value="[CG] Chhattisgarh">[CG] Chhattisgarh</option>
+                        <option value="[DNH] Dadra and Nagar Haveli">[DNH] Dadra and Nagar Haveli</option>
+                        <option value="[DD] Damn anad Diu">[DD] Damn anad Diu</option>
+                        <option value="[DL] Delhi">[DL] Delhi</option>
+                        <option value="[GA] Goa">[GA] Goa</option>
+                        <option value="[GJ] Gujarat">[GJ] Gujarat</option>
+                        <option value="[HR] Haryana">[HR] Haryana</option>
+                        <option value="[HP] Himachal Predesh">[HP] Himachal Predesh</option>
+                        <option value="[JK] Jammu and Kashmir">[JK] Jammu and Kashmir</option>
+                        <option value="[JH] Jharkhand">[JH] Jharkhand</option>
+                        <option value="[KA] Karnataka">[KA] Karnataka</option>
+                        <option value="[KL] Kerala">[KL] Kerala</option>
+                        <option value="[LA] Ladakh">[LA] Ladakh</option>
+                        <option value="[LD] Lakshadweep">[LD] Lakshadweep</option>
+                        <option value="[MP] Madhya Predesh">[MP] Madhya Predesh</option>
+                        <option value="[MH] Maharashtra">[MH] Maharashtra</option>
+                        <option value="[MN] Manipur">[MN] Manipur</option>
+                        <option value="[ML] Meghalaya">[ML] Meghalaya</option>
+                        <option value="[MZ] Mizoram">[MZ] Mizoram</option>
+                        <option value="[NL] Nagaland">[NL] Nagaland</option>
+                        <option value="[OD] Odisha">[OD] Odisha</option>
+                        <option value="[PY] Puducherry">[PY] Puducherry</option>
+                        <option value="[PB] Punjab">[PB] Punjab</option>
+                        <option value="[RJ] Rajasthan">[RJ] Rajasthan</option>
+                        <option value="[SK] Sikkim">[SK] Sikkim</option>
+                        <option value="[TN] Tamil Nadu">[TN] Tamil Nadu</option>
+                        <option value="[TS] Telangana">[TS] Telangana</option>
+                        <option value="[TR] Tripura">[TR] Tripura</option>
+                        <option value="[UP] Uttar Predesh">[UP] Uttar Predesh</option>
+                        <option value="[UK] Uttarakhand">[UK] Uttarakhand</option>
+                        <option value="[WB] West Bengal">[WB] West Bengal</option>
+                        <option value="[OT] Other Territory">[OT] Other Territory</option>
                           </select>
                     </div>
  
@@ -488,9 +507,10 @@ function reloadPayment() {
                     <label class="col-sm-12 col-md-3 col-lg-3 col-form-label">Payment Terms</label>
                      
                     <div class=" col-sm-12 col-md-3 col-lg-3">
-                        <select name="payment_terms" id="pterm" class="form-control bg-light text-dark" onclick="updatePaymentTerms()">
+                        <select name="payment_terms" id="pterm" class="form-control bg-light text-dark">
+                          <option value=""></option>
                             {% for p in sb %}
-                            <option value="{{ p.term }}">{{ p.Terms}}</option>
+                            <option value="{{p.Terms}}">{{ p.Terms}}</option>
                             {% endfor %}
                         </select>
 
@@ -533,7 +553,7 @@ function reloadPayment() {
                             <div class="form-group row mt-4">
                                 <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > Country</label>                    
                                 <div class=" col-sm-12 col-md-6 col-lg-6">
-                                    <select name="bcountry" id="btry" class="form-control bg-light text-dark">
+                                    <select name="bcountry" id="bctry" class="form-control bg-light text-dark">
                                         <option value="India" selected>India</option>
                                     </select>      
                                 </div>
@@ -584,7 +604,7 @@ function reloadPayment() {
                             <div class="form-group row mt-4">
                                 <label class="col-sm-12 col-md-3 col-lg-3 col-form-label">Fax</label>                    
                                 <div class=" col-sm-12 col-md-6 col-lg-6">
-                                    <input  type="tel" class="form-control bg-light text-dark" pattern="[0-9]{7}" oninput="fax_number()" name="bfax" id="bfx">  
+                                    <input  type="tel" class="form-control bg-light text-dark" pattern="[0-9]{10}" oninput="fax_number()" name="bfax" id="bfx">  
                                    
                                     <label for="" id="fax_label"></label> 
                                 </div>
@@ -662,7 +682,7 @@ function reloadPayment() {
                             <div class="form-group row mt-4">
                                 <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > Fax </label>                    
                                 <div class=" col-sm-12 col-md-6 col-lg-6">
-                                    <input  type="tel" class="form-control bg-light text-dark" pattern="[0-9]{7}" style="color: white;" name="sfax" oninput="sfax_number()" id="sfx"> 
+                                    <input  type="tel" class="form-control bg-light text-dark" pattern="[0-9]{10}" style="color: white;" name="sfax" oninput="sfax_number()" id="sfx"> 
                                     <label for="" id="sfax_label"></label>     
                                 </div>
                             </div>
@@ -705,7 +725,7 @@ function reloadPayment() {
                                   <td><input type="text" style="width:8rem;" name="skype[]" /></td> -->
                                   <td><input type="tel" pattern="[0-9]{7}" class="form-control border-1 bg-transparent text-white"  id="twphone" name="wphone[]"/></td>
                                   <td><input type="tel" pattern="[0-9]{10}"  class="form-control border-1 bg-transparent text-white"  id="tmobile"  name="mobile[]" /></td>
-                                  <td><input type="number" class="form-control border-1 bg-transparent text-white" name="skype[]" /></td>
+                                  <td><input type="text" class="form-control border-1 bg-transparent text-white" name="skype[]" /></td>
                                   <td><input type="text" class="form-control border-1 bg-transparent text-white"  name="designation[]" /></td>
                                   <td><input type="text" class="form-control border-1 bg-transparent text-white"  name="department[]" /></td>
                                 </tr>
@@ -744,7 +764,7 @@ function reloadPayment() {
             
             <div class="row mt-5">
                 <div class="col-sm-12 col-md-2 col-lg-2 mt-3">
-                    <input type="submit" class="btn btn-outline-warning form-control bg-warning text-dark" style="font-weight: bold;" value="save">
+                    <input type="submit" class="btn btn-outline-warning form-control bg-warning text-dark" style="font-weight: bold;" value="Save">
                     <!-- <a href="{% url 'add_vendor' %}" role="button" class="form-control bg-light text-dark"></a> -->
                     <!-- <button type="submit">save</button> -->
                 </div>
@@ -937,12 +957,7 @@ function reloadPayment() {
           txtzip1.value = txtzip.value; 
           txtphone1.value = txtphone.value;
           txtfx1.value = txtfx.value;
-          
-
-
-
-          
-  
+          txtcry1.value = txtcry.value;
         } else {
           txtadrs21.value = "";
           txtcty1.value = "";
@@ -952,8 +967,6 @@ function reloadPayment() {
           txtfx1.value = "";
           txtcry1.value = "";
           textatn1.value = "";
-
-  
         }
       }
 
@@ -1040,7 +1053,7 @@ function reloadPayment() {
       {
         var a1=document.getElementById("bfx").value;
         var b1=document.getElementById("fax_label");
-        var expr=/^[0-9]{7}$/;
+        var expr=/^[0-9]{10}$/;
         if (!expr.test(a1)) {
             b1.style.color="red";
             b1.innerHTML = "Invalid Fax Number.";
@@ -1057,7 +1070,7 @@ function reloadPayment() {
       {
         var a1=document.getElementById("sfx").value;
         var b1=document.getElementById("sfax_label");
-        var expr=/^[0-9]{7}$/;
+        var expr=/^[0-9]{10}$/;
         if (!expr.test(a1)) {
             b1.style.color="red";
             b1.innerHTML = "Invalid Fax Number.";

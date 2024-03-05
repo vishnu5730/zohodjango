@@ -925,25 +925,24 @@ def add_vendor(request):
         vendor_data.szip=request.POST['szip']
         vendor_data.sphone=request.POST['sphone']
         vendor_data.sfax=request.POST['sfax']
-        if vendor_table.objects.filter(pan_number=vendor_data.pan_number).exists():
+        if vendor_table.objects.filter(user=udata,pan_number=vendor_data.pan_number).exists():
             messages.info(request,'PAN no already exist!!!')
             return redirect('vendor')
-        elif vendor_table.objects.filter(vendor_email=vendor_data.vendor_email).exists():
+        elif vendor_table.objects.filter(user=udata,vendor_email=vendor_data.vendor_email).exists():
             messages.info(request,'Email already exist!!!')
             return redirect('vendor')
-        elif vendor_table.objects.filter(vendor_wphone=vendor_data.vendor_wphone).exists():
+        elif vendor_table.objects.filter(user=udata,vendor_wphone=vendor_data.vendor_wphone).exists():
             messages.info(request,'Work number already exist!!!')
             return redirect('vendor')
-        elif vendor_table.objects.filter(vendor_mphone=vendor_data.vendor_mphone).exists():
+        elif vendor_table.objects.filter(user=udata,vendor_mphone=vendor_data.vendor_mphone).exists():
             messages.info(request,'Mobile number already exist!!!')
             return redirect('vendor')
-        elif vendor_data.gst_number:
-            if vendor_table.objects.filter(gst_number=vendor_data.gst_number).exists():
-                messages.info(request,'GST number already exist!!!')
-                return redirect('vendor')
         else:
+            if vendor_data.gst_number:
+                if vendor_table.objects.filter(user=udata,gst_number=vendor_data.gst_number).exists():
+                    messages.info(request,'GST number already exist!!!')
+                    return redirect('vendor')
             vendor_data.save()
-    
             vdata=vendor_table.objects.get(id=vendor_data.id)
             vendor=vdata
             rdata=remarks_table()
@@ -951,7 +950,6 @@ def add_vendor(request):
             rdata.user=udata
             rdata.vendor=vdata
             rdata.save()
-
             salutation =request.POST.getlist('salutation[]')
             first_name =request.POST.getlist('first_name[]')
             last_name =request.POST.getlist('last_name[]')
@@ -963,19 +961,14 @@ def add_vendor(request):
             department =request.POST.getlist('department[]') 
             vdata=vendor_table.objects.get(id=vendor_data.id)
             vendor=vdata
-            print("hi")
             print(salutation)
             if salutation != ['Select']:
                 if len(salutation)==len(first_name)==len(last_name)==len(email)==len(work_phone)==len(mobile)==len(skype_number)==len(designation)==len(department):
                     mapped2=zip(salutation,first_name,last_name,email,work_phone,mobile,skype_number,designation,department)
                     mapped2=list(mapped2)
-                    print(mapped2)
                     for ele in mapped2:
                         created = contact_person_table.objects.get_or_create(salutation=ele[0],first_name=ele[1],last_name=ele[2],email=ele[3],
-                                work_phone=ele[4],mobile=ele[5],skype_number=ele[6],designation=ele[7],department=ele[8],user=udata,vendor=vendor)
-                
-        
-                    
+                                work_phone=ele[4],mobile=ele[5],skype_number=ele[6],designation=ele[7],department=ele[8],user=udata,vendor=vendor)  
             return redirect('view_vendor_list')
         
 
@@ -984,24 +977,24 @@ def sample(request):
     return redirect('base')
 
 def downloadVendorSampleImportFile(request):
-    sheet1_columns = ['salutation', 'first_name', 'last_name', 'company_name', 'email', 'work phone', 'mobile phone', 
-                      'skype_number', 'designation', 'department', 'website', 'gst_treatment', 
-                      'gst_number', 'pan_number', 'place_of_supply', 'currency', 'opening_balance', 
-                      'opening_bal_type (credit/debit)', 'payment_terms', 'billing_attention', 'billing_street', 'billing_country', 
-                      'billing_address', 'billing_city', 'billing_state', 'billing_pin', 'billing_zip', 'billing_phone', 'billing_fax', 'shipping_attention', 
-                      'shipping_street', 'shipping_country', 'shipping_address', 'shipping_city', 'shipping_state', 'shipping_zip', 'shipping_pin', 'shipping_phone', 
-                      'shipping_fax', 'credit_limit']
+    sheet1_columns = ['Salutation', 'First Name', 'Last Name', 'Company Name', 'Email', 'Work Phone', 'Mobile Phone', 
+                      'Skype Number', 'Designation', 'Department', 'Website', 'Gst Treatment', 
+                      'Gst Number', 'Pan Number', 'Place of Supply', 'Currency', 'Opening Balance', 
+                      'Opening Balance Type (credit/debit)', 'Billing Attention', 'Billing Street', 'Billing Country', 
+                      'Billing Address', 'Billing City', 'Billing State', 'Billing Pin', 'Billing Zip', 'Billing Phone', 'Billing Fax', 'Shipping Attention', 
+                      'Shipping Street', 'Shipping Country', 'Shipping Address', 'Shipping City', 'Shipping State', 'Shipping Zip', 'Shipping Pin', 'Shipping Phone', 
+                      'Shipping Fax', 'Credit Limit']
     
     # Create empty dataframes with only column titles
     df_sheet1 = pd.DataFrame(columns=sheet1_columns)
 
     # Create Excel Writer
-    with pd.ExcelWriter('sample_vendor_table.xlsx') as writer:
+    with pd.ExcelWriter('import_vendor_table.xlsx') as writer:
         # Write empty dataframes to Excel file
         df_sheet1.to_excel(writer, sheet_name='Sheet1', index=False)
 
     # Generate response
-    excel_data = open('sample_vendor_table.xlsx', 'rb').read()
+    excel_data = open('import_vendor_table.xlsx', 'rb').read()
     response = HttpResponse(excel_data, content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=sample_vendor_table.xlsx'
     return response
@@ -1012,50 +1005,52 @@ def import_vendor(request):
             file = request.FILES['excel_file']
             df = pd.read_excel(file)
             for index, row in df.iterrows():
-                salutation = row.get('salutation')
-                first_name = row.get('first_name')
-                last_name = row.get('last_name')
-                vendor_mail = row.get('email')
-                gst_treatment = row.get('gst_treatment')
-                gst_number = row.get('gst_number') if row.get('gst_number') is not None else ''
-                opening_bal = row.get('opening_balance')
+                salutation = row.get('Salutation')
+                first_name = row.get('First Name')
+                last_name = row.get('Last Name')
+                vendor_mail = row.get('Email')
+                gst_treatment = row.get('Gst Treatment')
+                if 'Unregistered' in gst_treatment:
+                    gst_number = row.get('Gst Number')
+                else:
+                    gst_number = ''
+                opening_bal = row.get('Opening Balance')
                 vendor_display_name = salutation + ' ' + first_name + ' ' + last_name
-                company_name = row.get('company_name') if row.get('company_name') is not None else ''
-                vendor_wphone = row.get('work phone') if row.get('work phone') is not None else ''
-                vendor_mphone = row.get('mobile phone') if row.get('mobile phone') is not None else ''
-                skype_number = row.get('skype_number') if row.get('skype_number') is not None else ''
-                designation = row.get('designation') if row.get('designation') is not None else ''
-                department = row.get('department') if row.get('department') is not None else ''
-                website = row.get('website') if row.get('website') is not None else ''
-                pan_number = row.get('pan_number')
-                source_supply = row.get('place_of_supply') if row.get('place_of_supply') is not None else ''
+                company_name = row.get('Company Name') if row.get('Company Name') is not None else ''
+                vendor_wphone = row.get('Work Phone') if row.get('Work Phone') is not None else ''
+                vendor_mphone = row.get('Mobile Phone') if row.get('Mobile Phone') is not None else ''
+                skype_number = row.get('Skype Number') if row.get('Skype Number') is not None else ''
+                designation = row.get('Designation') if row.get('Designation') is not None else ''
+                department = row.get('Department') if row.get('Department') is not None else ''
+                website = row.get('Website') if row.get('Website') is not None else ''
+                pan_number = row.get('Pan Number')
+                source_supply = row.get('Place of Supply') if row.get('Place of Supply') is not None else ''
                 
-                opening_bal_type = row.get('opening_bal_type (credit/debit)')
+                opening_bal_type = row.get('Opening Balance Type (credit/debit)')
                 if opening_bal_type == 'credit':
                     opening_bal = -(int(opening_bal))
-                payment_terms = row.get('payment_terms') if row.get('payment_terms') is not None else ''
-                battention = row.get('billing_attention') if row.get('billing_attention') is not None else ''
-                bstreet = row.get('billing_street') if row.get('billing_street') is not None else ''
-                bcountry = row.get('billing_country') if row.get('billing_country') is not None else ''
-                baddress = row.get('billing_address') if row.get('billing_address') is not None else ''
-                bcity = row.get('billing_city') if row.get('billing_city') is not None else ''
-                bstate = row.get('billing_state') if row.get('billing_state') is not None else ''
-                bpin = row.get('billing_pin') if row.get('billing_pin') is not None else ''
-                bzip = row.get('billing_zip') if row.get('billing_zip') is not None else ''
-                bphone = row.get('billing_phone') if row.get('billing_phone') is not None else ''
-                bfax = row.get('billing_fax') if row.get('billing_fax') is not None else ''
-                sattention = row.get('shipping_attention') if row.get('shipping_attention') is not None else ''
-                sstreet = row.get('shipping_street') if row.get('shipping_street') is not None else ''
-                scountry = row.get('shipping_country') if row.get('shipping_country') is not None else ''
-                saddress = row.get('shipping_address') if row.get('shipping_address') is not None else ''
-                scity = row.get('shipping_city') if row.get('shipping_city') is not None else ''
-                sstate = row.get('shipping_state') if row.get('shipping_state') is not None else ''
-                szip = row.get('shipping_zip') if row.get('shipping_zip') is not None else ''
-                spin = row.get('shipping_pin') if row.get('shipping_pin') is not None else ''
-                sphone = row.get('shipping_phone') if row.get('shipping_phone') is not None else ''
-                sfax = row.get('shipping_fax') if row.get('shipping_fax') is not None else ''
+                battention = row.get('Billing Attention') if row.get('Billing Attention') is not None else ''
+                bstreet = row.get('Billing Street') if row.get('Billing Street') is not None else ''
+                bcountry = row.get('Billing Country') if row.get('Billing Country') is not None else ''
+                baddress = row.get('Billing Address') if row.get('Billing Address') is not None else ''
+                bcity = row.get('Billing City') if row.get('Billing City') is not None else ''
+                bstate = row.get('Billing State') if row.get('Billing State') is not None else ''
+                bpin = row.get('Billing Pin') if row.get('Billing Pin') is not None else ''
+                bzip = row.get('Billing Zip') if row.get('Billing Zip') is not None else ''
+                bphone = row.get('Billing Phone') if row.get('Billing Phone') is not None else ''
+                bfax = row.get('Billing Fax') if row.get('Billing Fax') is not None else ''
+                sattention = row.get('Shipping Attention') if row.get('Shipping Attention') is not None else ''
+                sstreet = row.get('Shipping Street') if row.get('Shipping Street') is not None else ''
+                scountry = row.get('Shipping Country') if row.get('Shipping Country') is not None else ''
+                saddress = row.get('Shipping Address') if row.get('Shipping Address') is not None else ''
+                scity = row.get('Shipping City') if row.get('Shipping City') is not None else ''
+                sstate = row.get('Shipping State') if row.get('Shipping State') is not None else ''
+                szip = row.get('Shipping Zip') if row.get('Shipping Zip') is not None else ''
+                spin = row.get('Shipping Pin') if row.get('Shipping Pin') is not None else ''
+                sphone = row.get('Shipping Phone') if row.get('Shipping Phone') is not None else ''
+                sfax = row.get('Shipping Fax') if row.get('Shipping Fax') is not None else ''
                 status = 'Active'
-                credit_limit = row.get('credit_limit') if row.get('credit_limit') is not None else 0
+                credit_limit = row.get('Credit Limit') if row.get('Credit Limit') is not None else 0
                 vendor_obj = vendor_table(
                     user=request.user,
                     salutation=salutation,
@@ -1074,10 +1069,9 @@ def import_vendor(request):
                     gst_number=gst_number,
                     pan_number=pan_number,
                     source_supply=source_supply,
-                    currency='INR',
+                    currency='Indian Rupee',
                     opening_bal=opening_bal,
                     opening_bal_type=opening_bal_type,
-                    payment_terms=payment_terms,
                     battention=battention,
                     bstreet=bstreet,
                     bcountry=bcountry,
@@ -1101,8 +1095,18 @@ def import_vendor(request):
                     status=status,
                     credit_limit=credit_limit
                 )
-                if vendor_table.objects.filter(pan_number=pan_number, first_name=first_name, last_name=last_name).exists():
-                    messages.error(request, f'Vendor: {vendor_display_name} with PAN: {pan_number} already exists!')
+                if vendor_table.objects.filter(user=request.user,pan_number=pan_number).exists():
+                    messages.error(request, f'PAN: {pan_number} already exists!')
+                    return redirect('view_vendor_list')
+                elif gst_number != '':
+                    if vendor_table.objects.filter(user=request.user,gst_number=gst_number).exists():
+                        messages.error(request, f'GST: {gst_number} already exists!')
+                        return redirect('view_vendor_list')
+                elif vendor_table.objects.filter(user=request.user,vendor_wphone=vendor_wphone).exists():
+                    messages.error(request, f'Work Phone: {vendor_wphone} already exists!')
+                    return redirect('view_vendor_list')
+                elif vendor_table.objects.filter(user=request.user,vendor_mphone=vendor_mphone).exists():
+                    messages.error(request, f'Vendor Mobile: {vendor_mphone} already exists!')
                     return redirect('view_vendor_list')
                 else:
                     vendor_obj.save()
@@ -1385,19 +1389,17 @@ def edit_vendor(request,pk):
     company=company_details.objects.get(user=request.user)
     vdata=vendor_table.objects.get(id=pk)
     sb = payment_terms.objects.filter(user=request.user)
-    if remarks_table.objects.filter(vendor=vdata).exists() or contact_person_table.objects.filter(vendor=vdata).exists():
-        if remarks_table.objects.filter(vendor=vdata).exists() and contact_person_table.objects.filter(vendor=vdata).exists():
-            rdata=remarks_table.objects.get(vendor=vdata)
-            pdata=contact_person_table.objects.filter(vendor=vdata)
-            return render(request,'edit_vendor.html',{'vdata':vdata,'rdata':rdata,'pdata':pdata,'sb':sb})
+    if contact_person_table.objects.filter(user=request.user,vendor=vdata).exists():
+        pdata=contact_person_table.objects.filter(vendor=vdata) 
+    if remarks_table.objects.filter(user=request.user,vendor=vdata).exists():
+        rdata=remarks_table.objects.get(user=request.user,vendor=vdata) 
+    if pdata or rdata:
+        if not rdata:
+            return render(request,'edit_vendor.html',{'vdata':vdata,"company":company,'sb':sb,'pdata':pdata})
+        elif not pdata:
+            return render(request,'edit_vendor.html',{'vdata':vdata,"company":company,'sb':sb,'rdata':rdata})
         else:
-            if remarks_table.objects.filter(vendor=vdata).exists():
-                rdata=remarks_table.objects.get(vendor=vdata)
-                return render(request,'edit_vendor.html',{'vdata':vdata,'rdata':rdata,'sb':sb})
-            if contact_person_table.objects.filter(vendor=vdata).exists():
-                pdata=contact_person_table.objects.filter(vendor=vdata)
-                return render(request,'edit_vendor.html',{'vdata':vdata,'pdata':pdata,'sb':sb})      
-        
+            return render(request,'edit_vendor.html',{'vdata':vdata,"company":company,'sb':sb,'rdata':rdata,'pdata':pdata})
     else:
         return render(request,'edit_vendor.html',{'vdata':vdata,"company":company,'sb':sb})
 
@@ -1405,6 +1407,7 @@ def edit_vendor(request,pk):
 def edit_vendor_details(request,pk):
     if request.method=='POST':
         vdata=vendor_table.objects.get(id=pk)
+        vdata2=vendor_table.objects.get(id=pk)
         vdata.salutation=request.POST['salutation']
         vdata.first_name=request.POST['first_name']
         vdata.last_name=request.POST['last_name']
@@ -1420,7 +1423,7 @@ def edit_vendor_details(request,pk):
         vdata.gst_treatment=request.POST['gst']
         if vdata.gst_treatment=="Unregistered Business-not Registered under GST":
             vdata.pan_number=request.POST['pan_number']
-            vdata.gst_number="null"
+            vdata.gst_number=""
         else:
             vdata.gst_number=request.POST['gst_number']
             vdata.pan_number=request.POST['pan_number']
@@ -1447,55 +1450,68 @@ def edit_vendor_details(request,pk):
         vdata.szip=request.POST['szip']
         vdata.sphone=request.POST['sphone']
         vdata.sfax=request.POST['sfax']
-
-        vdata.save()
-             # .................................edit remarks_table ..........................
-        vendor=vdata
-        user_id=request.user.id
-        udata=User.objects.get(id=user_id)
-        if remarks_table.objects.filter(vendor=vdata).exists():
-            rdata=remarks_table.objects.get(vendor=vdata)
-            rdata.remarks=request.POST['remark']
-            rdata.save()
+        if vendor_table.objects.filter(user=request.user,pan_number=vdata.pan_number).exists() and vdata2.pan_number != vdata.pan_number:
+            messages.info(request,'PAN no already exist!!!')
+            return redirect('view_vendor_details',pk)
+        elif vendor_table.objects.filter(user=request.user,vendor_email=vdata.vendor_email).exists() and vdata2.vendor_email != vdata.vendor_email:
+            messages.info(request,'Email already exist!!!')
+            return redirect('view_vendor_details',pk)
+        elif vendor_table.objects.filter(user=request.user,vendor_wphone=vdata.vendor_wphone).exists() and vdata2.vendor_wphone != vdata.vendor_wphone:
+            messages.info(request,'Work number already exist!!!')
+            return redirect('view_vendor_details',pk)
+        elif vendor_table.objects.filter(user=request.user,vendor_mphone=vdata.vendor_mphone).exists() and vdata2.vendor_mphone != vdata.vendor_mphone:
+            messages.info(request,'Mobile number already exist!!!')
+            return redirect('view_vendor_details',pk)
         else:
-            rdata=remarks_table()
-            rdata.remarks=request.POST["remark"]
-            rdata.vendor=vendor
-            rdata.user=udata
-            rdata.save()
+            if vdata.gst_number != "":
+                if vendor_table.objects.filter(user=request.user,gst_number=vdata.gst_number).exists() and vdata2.gst_number != vdata.gst_number:
+                    messages.info(request,'GST number already exist!!!')
+                    return redirect('vendor')
+            vdata.save()
+                # .................................edit remarks_table ..........................
+            vendor=vdata
+            user_id=request.user.id
+            udata=User.objects.get(id=user_id)
+            if remarks_table.objects.filter(vendor=vdata).exists():
+                rdata=remarks_table.objects.get(vendor=vdata)
+                rdata.remarks=request.POST['remark']
+                rdata.save()
+            else:
+                rdata=remarks_table()
+                rdata.remarks=request.POST["remark"]
+                rdata.vendor=vendor
+                rdata.user=udata
+                rdata.save()
 
-            # .......................contact_person_table................ deleting existing entries and inserting  ...............
+                # .......................contact_person_table................ deleting existing entries and inserting  ...............
 
-        pdata=contact_person_table.objects.filter(vendor=vdata)
-        salutation =request.POST.getlist('salutation[]')
-        first_name =request.POST.getlist('first_name[]')
-        last_name =request.POST.getlist('last_name[]')
-        email =request.POST.getlist('email[]')
-        work_phone =request.POST.getlist('wphone[]')
-        mobile =request.POST.getlist('mobile[]')
-        skype_number =request.POST.getlist('skype[]')
-        designation =request.POST.getlist('designation[]')
-        department =request.POST.getlist('department[]') 
+            pdata=contact_person_table.objects.filter(vendor=vdata)
+            salutation =request.POST.getlist('salutation[]')
+            first_name =request.POST.getlist('first_name[]')
+            last_name =request.POST.getlist('last_name[]')
+            email =request.POST.getlist('email[]')
+            work_phone =request.POST.getlist('wphone[]')
+            mobile =request.POST.getlist('mobile[]')
+            skype_number =request.POST.getlist('skype[]')
+            designation =request.POST.getlist('designation[]')
+            department =request.POST.getlist('department[]') 
 
-        vdata=vendor_table.objects.get(id=vdata.id)
-        vendor=vdata
-        user_id=request.user.id
-        udata=User.objects.get(id=user_id)
+            vdata=vendor_table.objects.get(id=vdata.id)
+            vendor=vdata
+            user_id=request.user.id
+            udata=User.objects.get(id=user_id)
 
-        # .....  deleting existing rows......
-        pdata.delete()
-        if len(salutation)==len(first_name)==len(last_name)==len(email)==len(work_phone)==len(mobile)==len(skype_number)==len(designation)==len(department):
-            mapped2=zip(salutation,first_name,last_name,email,work_phone,mobile,skype_number,designation,department)
-            mapped2=list(mapped2)
-            print(mapped2)
-            for ele in mapped2:
-                created = contact_person_table.objects.get_or_create(salutation=ele[0],first_name=ele[1],last_name=ele[2],email=ele[3],
-                         work_phone=ele[4],mobile=ele[5],skype_number=ele[6],designation=ele[7],department=ele[8],user=udata,vendor=vendor)
-        
-
-
-
-        return redirect("view_vendor_list")
+            # .....  deleting existing rows......
+            pdata.delete()
+            if len(salutation)==len(first_name)==len(last_name)==len(email)==len(work_phone)==len(mobile)==len(skype_number)==len(designation)==len(department):
+                mapped2=zip(salutation,first_name,last_name,email,work_phone,mobile,skype_number,designation,department)
+                mapped2=list(mapped2)
+                print(mapped2)
+                for ele in mapped2:
+                    created = contact_person_table.objects.get_or_create(salutation=ele[0],first_name=ele[1],last_name=ele[2],email=ele[3],
+                            work_phone=ele[4],mobile=ele[5],skype_number=ele[6],designation=ele[7],department=ele[8],user=udata,vendor=vendor)
+            
+            return redirect("view_vendor_list")
 
 def upload_document(request,pk):
     if request.method=='POST':
@@ -4657,34 +4673,34 @@ def add_customer_for_sorder(request):
                                   city=shipcity,state=shipstate,zipcode=bzip,phone1=wphone,
                                    fax=shipfax,
                                   user=u ,GSTIN=gstin,pan_no=panno)
-            if customer.objects.filter(pan_no=panno).exists():
+            if customer.objects.filter(user=u,pan_no=panno).exists():
                 response_data = {
-                    "message": "panexists",
+                    "message": "exists",
                     "error": "PAN No already exists.",
                     }
                 return JsonResponse(response_data, status=400)
-            elif customer.objects.filter(customerEmail=email).exists():
+            elif customer.objects.filter(user=u,customerEmail=email).exists():
                 response_data = {
-                    "message": "emailexists",
+                    "message": "exists",
                     "error": "Email already exists.",
                     }
                 return JsonResponse(response_data, status=400)
-            elif customer.objects.filter(customerWorkPhone=wphone).exists():
+            elif customer.objects.filter(user=u,customerWorkPhone=wphone).exists():
                 response_data = {
-                    "message": "wmobileexists",
+                    "message": "exists",
                     "error": "Work phone already exists.",
                     }
                 return JsonResponse(response_data, status=400)
-            elif customer.objects.filter(customerMobile=mobile).exists():
+            elif customer.objects.filter(user=u,customerMobile=mobile).exists():
                 response_data = {
-                    "message": "pmobileexists",
+                    "message": "exists",
                     "error": "Mobile number already exists.",
                     }
                 return JsonResponse(response_data, status=400)
             elif gstin:
-                if customer.objects.filter(GSTIN=gstin).exists():
+                if customer.objects.filter(user=u,GSTIN=gstin).exists():
                     response_data = {
-                    "message": "gstexists",
+                    "message": "exists",
                     "error": "GST No already exists.",
                     }
                     return JsonResponse(response_data, status=400)
@@ -4693,7 +4709,102 @@ def add_customer_for_sorder(request):
                 response_data = {
                 "message": "success"
                 }
-            return JsonResponse(response_data)
+                return JsonResponse(response_data)
+
+@login_required(login_url='login')
+def add_customer_for_sorder_purchase(request):
+    if request.user.is_authenticated:
+        if request.method=='POST':
+            tax=request.POST.get('tax')
+            type=request.POST.get('title')
+            first=request.POST['firstname']
+            last=request.POST['lastname']
+            txtFullName= request.POST['display_name']
+            
+            itemtype=request.POST.get('itemtype')
+            cpname=request.POST['company_name']
+            
+            email=request.POST.get('email')
+            wphone=request.POST.get('work_mobile')
+            mobile=request.POST.get('pers_mobile')
+            skname=request.POST.get('skype')
+            desg=request.POST.get('desg')      
+            dept=request.POST.get('dpt')
+            wbsite=request.POST.get('website')
+
+            gstt=request.POST.get('gsttype')
+            gstin=request.POST.get('gstin')
+            panno=request.POST.get('panno')
+
+
+            posply=request.POST.get('placesupply')
+            crncy=request.POST.get('currency')
+            obal=request.POST.get('openingbalance')
+            pterms=request.POST.get('paymentterms')
+            fbk=request.POST.get('facebook')
+            twtr=request.POST.get('twitter')
+          
+            ctry=request.POST.get('country')
+            
+            street=request.POST.get('street')
+            shipstate=request.POST.get('shipstate')
+            shipcity=request.POST.get('shipcity')
+            bzip=request.POST.get('shippincode')
+            shipfax=request.POST.get('shipfax')
+
+            sal=request.POST.get('title')
+            addres=street +','+ shipcity+',' + shipstate+',' + bzip
+            adress2=addres
+            u = User.objects.get(id = request.user.id)
+
+            print(tax)
+            ctmr=customer(customerName=txtFullName,customerType=itemtype,
+                        companyName=cpname,customerEmail=email,customerWorkPhone=wphone,
+                         customerMobile=mobile,skype=skname,designation=desg,department=dept,
+                           website=wbsite,GSTTreatment=gstt,placeofsupply=posply, Taxpreference=tax,
+                             currency=crncy,OpeningBalance=obal,PaymentTerms=pterms,
+                               Facebook=fbk,Twitter=twtr
+                                 ,country=ctry,Address1=addres,Address2=adress2,
+                                  city=shipcity,state=shipstate,zipcode=bzip,phone1=wphone,
+                                   fax=shipfax,
+                                  user=u ,GSTIN=gstin,pan_no=panno)
+            if customer.objects.filter(user=u,pan_no=panno).exists():
+                response_data = {
+                    "message": "exists",
+                    "error": "PAN No already exists.",
+                    }
+                return JsonResponse(response_data, status=400)
+            elif customer.objects.filter(user=u,customerEmail=email).exists():
+                response_data = {
+                    "message": "exists",
+                    "error": "Email already exists.",
+                    }
+                return JsonResponse(response_data, status=400)
+            elif customer.objects.filter(user=u,customerWorkPhone=wphone).exists():
+                response_data = {
+                    "message": "exists",
+                    "error": "Work phone already exists.",
+                    }
+                return JsonResponse(response_data, status=400)
+            elif customer.objects.filter(user=u,customerMobile=mobile).exists():
+                response_data = {
+                    "message": "exists",
+                    "error": "Mobile number already exists.",
+                    }
+                return JsonResponse(response_data, status=400)
+            elif gstin:
+                if customer.objects.filter(user=u,GSTIN=gstin).exists():
+                    response_data = {
+                    "message": "exists",
+                    "error": "GST No already exists.",
+                    }
+                    return JsonResponse(response_data, status=400)
+            else:
+                ctmr.save()
+                response_data = {
+                "message": "success"
+                }
+                return JsonResponse(response_data)
 
     
 @login_required(login_url='login')        
@@ -8617,26 +8728,26 @@ def purchaseView(request):
 #--------------------------------------------------------------------------------
 def downloadPurchaseSampleImportFile(request):
     sheet1_columns = [
-        'vendor_name', 'vendor_mail', 'Type (Organisation/Customer)', 'Organisation',
-        'Org_address', 'Org_gst', 'Org_street', 'Org_state', 'Org_city', 'Org_mail',
-        'customer_name', 'customer_mail', 'Purchase Order No', 'Place of Supply','ord_date[yyyy-mm-dd]',
-        'exp_date[yyyy-mm-dd]','payment_terms', 'shipping_charge', 'adjustment_charge',
-        'advance', 'note', 'payment_type', 'cheque_id', 'upi_id', 'document', 'comments',
-        'term']
-    sheet2_columns = ['item', 'quantity', 'tax(%)', 'discount','Purchase Order No']
+        'Vendor Name', 'Vendor Mail', 'Type (Organisation/Customer)', 'Organisation',
+        'Org Address', 'Org GST', 'Org Street', 'Org State', 'Org City', 'Org Mail',
+        'Customer Name', 'Customer Mail', 'Purchase Order No', 'Vendor Place of Supply','Customer Place of Supply', 'Order Date[yyyy-mm-dd]',
+        'Expiry Date[yyyy-mm-dd]', 'Shipping Charge', 'Adjustment Charge',
+        'Advance', 'Note', 'Payment Type', 'Cheque Id', 'UPI Id', 'Document',
+        'Term']
+    sheet2_columns = ['Item', 'Quantity', 'Tax(%)', 'Discount','Purchase Order No']
 
     # Create empty dataframes with only column titles
     df_sheet1 = pd.DataFrame(columns=sheet1_columns)
     df_sheet2 = pd.DataFrame(columns=sheet2_columns)
 
     # Create Excel Writer
-    with pd.ExcelWriter('sample_purchase_order.xlsx') as writer:
+    with pd.ExcelWriter('import_purchase_order.xlsx') as writer:
         # Write empty dataframes to Excel file
         df_sheet1.to_excel(writer, sheet_name='Sheet1', index=False)
         df_sheet2.to_excel(writer, sheet_name='Sheet2', index=False)
 
     # Generate response
-    excel_data = open('sample_purchase_order.xlsx', 'rb').read()
+    excel_data = open('import_purchase_order.xlsx', 'rb').read()
     response = HttpResponse(excel_data, content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=sample_purchase_order.xlsx'
     return response
@@ -8652,8 +8763,8 @@ def import_purchase(request):
             for index, row in df.iterrows():
                 user = request.user
                 company = company_details.objects.get(user=request.user)
-                vendor_name = row.get('vendor_name')
-                vendor_mail = row.get('vendor_mail')
+                vendor_name = row.get('Vendor Name')
+                vendor_mail = row.get('Vendor Mail')
                 v_name = ''
                 new_name=''
                 a = vendor_name.split(' ')
@@ -8670,15 +8781,16 @@ def import_purchase(request):
                 vendor_gst_no = vendor_obj.gst_number
                 typ = row.get('Type (Organisation/Customer)')
                 Org_name = row.get('Organisation') if row.get('Organisation') is not None else ''
-                Org_address = row.get('Org_address') if row.get('Org_address') is not None else ''
-                Org_gst = row.get('Org_gst') if row.get('Org_gst') is not None else ''
-                Org_street = row.get('Org_street') if row.get('Org_street') is not None else ''
-                Org_state = row.get('Org_state') if row.get('Org_state') is not None else ''
-                Org_city = row.get('Org_city') if row.get('Org_city') is not None else ''
-                Org_mail = row.get('Org_mail') if row.get('Org_mail') is not None else ''
+                Org_address = row.get('Org Address') if row.get('Org Address') is not None else ''
+                Org_gst = row.get('Org GST') if row.get('Org GST') is not None else ''
+                Org_street = row.get('Org Street') if row.get('Org Street') is not None else ''
+                Org_state = row.get('Org State') if row.get('Org State') is not None else ''
+                Org_city = row.get('Org City') if row.get('Org City') is not None else ''
+                Org_mail = row.get('Org Mail') if row.get('Org Mail') is not None else ''
                 if typ == 'Customer':
-                    customer_name = row.get('customer_name') 
-                    customer_mail = row.get('customer_mail') 
+                    customer_name = row.get('Customer Name') 
+                    customer_mail = row.get('Customer Mail') 
+                    customer_source_supply = row.get('Customer Place of Supply') 
                     customer_obj = customer.objects.get(user=request.user,customerName=customer_name,customerEmail=customer_mail)
                     customer_address = customer_obj.Address1
                     customer_state = customer_obj.state
@@ -8691,19 +8803,18 @@ def import_purchase(request):
                     return redirect('purchaseView')
                 p_reference = purchaseOrderReference(reference=count+1,user=request.user)
                 p_reference.save()
-                source_supply = row.get('Place of Supply')
+                source_supply = row.get('Vendor Place of Supply')
 
-                Ord_date = row.get('ord_date[yyyy-mm-dd]')
-                exp_date = row.get('exp_date[yyyy-mm-dd]')
-                payment_terms = row.get('payment_terms') if row.get('payment_terms') is not None else ''
-                shipping_charge = row.get('shipping_charge') if row.get('shipping_charge') is not None else 0
-                adjustment_charge = row.get('adjustment_charge') if row.get('adjustment_charge') is not None else 0
-                payed = row.get('advance') if row.get('advance') is not None else 0
-                note = row.get('note') if row.get('note') is not None else ''
-                payment_type = row.get('payment_type') if row.get('payment_type') is not None else ''
-                cheque_id = row.get('cheque_id') if row.get('cheque_id') is not None else ''
-                upi_id = row.get('upi_id') if row.get('upi_id') is not None else ''
-                term = row.get('term') if row.get('term') is not None else ''
+                Ord_date = row.get('Order Date[yyyy-mm-dd]')
+                exp_date = row.get('Expiry Date[yyyy-mm-dd]')
+                shipping_charge = row.get('Shipping Charge') if row.get('Shipping Charge') is not None else 0
+                adjustment_charge = row.get('Adjustment Charge') if row.get('Adjustment Charge') is not None else 0
+                payed = row.get('Advance') if row.get('Advance') is not None else 0
+                note = row.get('Note') if row.get('Note') is not None else ''
+                payment_type = row.get('Payment Type') if row.get('Payment Type') is not None else ''
+                cheque_id = row.get('Cheque Id') if row.get('Cheque Id') is not None else ''
+                upi_id = row.get('UPI Id') if row.get('UPI Id') is not None else ''
+                term = row.get('Term') if row.get('Term') is not None else ''
                 status = 'Draft'
                 if typ == 'Customer':
                     purchase_obj = Purchase_Order(
@@ -8715,24 +8826,24 @@ def import_purchase(request):
                         vendor_gst_no=vendor_gst_no,
                         Ord_date=Ord_date,
                         exp_date=exp_date,
-                        Org_name=Org_name,
-                        Org_address=Org_address,
-                        Org_gst=Org_gst,
-                        Org_street=Org_street,
-                        Org_state=Org_state,
-                        Org_city=Org_city,
                         typ=typ,
                         custo=custo,
-                        Org_mail=Org_mail,
+                        Org_mail='',
+                        Org_name='',
+                        Org_address='',
+                        Org_gst='',
+                        Org_street='',
+                        Org_state='',
+                        Org_city='',
                         customer_name=customer_name,
                         customer_mail=customer_mail,
                         customer_address=customer_address,
                         customer_state=customer_state,
                         customer_city=customer_city,
+                        customer_source_supply = customer_source_supply,
                         Pur_no=Pur_no,
                         source_supply=source_supply,
                         ref=count+1,
-                        payment_terms=payment_terms,
                         shipping_charge=shipping_charge,
                         adjustment_charge=adjustment_charge,
                         payed=payed,
@@ -8764,10 +8875,15 @@ def import_purchase(request):
                         Org_city=Org_city,
                         typ=typ,
                         Org_mail=Org_mail,
+                        customer_name='',
+                        customer_mail='',
+                        customer_address='',
+                        customer_state='',
+                        customer_city='',
+                        customer_source_supply = '',
                         Pur_no=Pur_no,
                         source_supply=source_supply,
                         ref=count+1,
-                        payment_terms=payment_terms,
                         shipping_charge=shipping_charge,
                         adjustment_charge=adjustment_charge,
                         payed=payed,
@@ -8789,13 +8905,13 @@ def import_purchase(request):
                         user = request.user
                         company = company_details.objects.get(user=request.user)
                         PO = purchase_obj
-                        item = row.get('item')
+                        item = row.get('Item')
                         item_obj = AddItem.objects.get(user=user,Name=item)
-                        quantity = row.get('quantity')
+                        quantity = row.get('Quantity')
                         rate = float(item_obj.s_price)
                         hsn = item_obj.hsn
-                        tax = row.get('tax(%)')
-                        discount = row.get('discount') if row.get('discount') is not None else 0
+                        tax = row.get('Tax(%)')
+                        discount = row.get('Discount') if row.get('Discount') is not None else 0
                         amount = (quantity*rate)-discount
                         count_tax=count_tax+((tax/100)*amount)
                         count_amt=count_amt+amount
@@ -8813,7 +8929,13 @@ def import_purchase(request):
                         )
                         purchase_obj_items.save()
                 purchase_obj.tax_amount=count_tax
-                if purchase_obj.source_supply[5:] == company.state:
+                pobjsourcesupply = purchase_obj.source_supply
+                pobjsourcesupply_name = ''
+                if pobjsourcesupply == '[DNH]-Dadra and Nagar Haveli':
+                    pobjsourcesupply_name = 'Dadra and Nagar Haveli'
+                else:
+                    pobjsourcesupply_name = purchase_obj.source_supply[5:]
+                if pobjsourcesupply_name == company.state:
                     purchase_obj.cgst=count_tax/2
                     purchase_obj.sgst=count_tax/2
                     purchase_obj.igst=0
@@ -8829,6 +8951,90 @@ def import_purchase(request):
         messages.error(request, 'Vendor, customer and items should be saved in database before importing.')
         return redirect('purchaseView')
 
+
+@login_required(login_url='login')
+def purchase_vendor_purchase(request):
+    
+    company = company_details.objects.get(user = request.user)
+
+    if request.method=='POST':
+        title=request.POST.get('title')
+        first_name=request.POST.get('firstname')
+        last_name=request.POST.get('lastname')
+        comp=request.POST.get('company_name')
+        dispn = request.POST.get('display_name')
+        email=request.POST.get('email')
+        website=request.POST.get('website')
+        w_mobile=request.POST.get('work_mobile')
+        p_mobile=request.POST.get('pers_mobile')
+        skype = request.POST.get('skype')
+        desg = request.POST.get('desg')
+        dpt = request.POST.get('dpt')
+        gsttype=request.POST.get('gsttype')
+        gstin=request.POST.get('gstin')
+        panno=request.POST.get('panno')
+        supply=request.POST.get('sourceofsupply')
+        currency=request.POST.get('currency')
+        balance=request.POST.get('openingbalance')
+        payment=request.POST.get('paymentterms')
+        street=request.POST.get('street')
+        city=request.POST.get('city')
+        state=request.POST.get('state')
+        pincode=request.POST.get('pincode')
+        country=request.POST.get('country')
+        fax=request.POST.get('fax')
+        phone=request.POST.get('phone')
+        shipstreet=request.POST.get('shipstreet')
+        shipcity=request.POST.get('shipcity')
+        shipstate=request.POST.get('shipstate')
+        shippincode=request.POST.get('shippincode')
+        shipcountry=request.POST.get('shipcountry')
+        shipfax=request.POST.get('shipfax')
+        shipphone=request.POST.get('shipphone')
+        u = User.objects.get(id = request.user.id)
+        vndr = vendor_table(salutation=title, first_name=first_name, last_name=last_name,vendor_display_name = dispn, status='Active', company_name= comp, gst_treatment=gsttype, gst_number=gstin, 
+                    pan_number=panno,vendor_wphone = w_mobile,vendor_mphone = p_mobile, vendor_email=email,skype_number = skype,
+                    source_supply=supply,currency=currency, website=website, designation = desg, department = dpt,
+                    opening_bal=balance,baddress=street, bcity=city, bstate=state, payment_terms=payment,bzip=pincode, 
+                    bcountry=country, saddress=shipstreet, scity=shipcity, sstate=shipstate,szip=shippincode, scountry=shipcountry,
+                    bfax = fax, sfax = shipfax, bphone = phone, sphone = shipphone,user = u)
+        if vendor_table.objects.filter(user = u,pan_number=panno).exists():
+            response_data = {
+                "message": "exists",
+                "error": "PAN No already exists.",
+                }
+            return JsonResponse(response_data, status=400)
+        elif vendor_table.objects.filter(user = u,vendor_email=email).exists():
+            response_data = {
+                "message": "exists",
+                "error": "Email already exists.",
+                }
+            return JsonResponse(response_data, status=400)
+        elif 'Registered' in gsttype:
+            if vendor_table.objects.filter(user = u,gst_number=gstin).exists():
+                response_data = {
+                    "message": "exists",
+                    "error": "GST No already exists.",
+                    }
+                return JsonResponse(response_data, status=400)
+        elif vendor_table.objects.filter(user = u,vendor_wphone = w_mobile).exists():
+            response_data = {
+                "message": "exists",
+                "error": "Work phone already exists.",
+                }
+            return JsonResponse(response_data, status=400)
+        elif vendor_table.objects.filter(user = u,vendor_mphone = p_mobile).exists():
+            response_data = {
+                "message": "exists",
+                "error": "Work phone already exists.",
+                }
+            return JsonResponse(response_data, status=400)
+        else:
+            vndr.save()
+            response_data = {
+            "message": "success"
+            }
+            return JsonResponse(response_data)
 
 @login_required(login_url='login')
 def purchase_vendor(request):
@@ -8876,37 +9082,37 @@ def purchase_vendor(request):
                     opening_bal=balance,baddress=street, bcity=city, bstate=state, payment_terms=payment,bzip=pincode, 
                     bcountry=country, saddress=shipstreet, scity=shipcity, sstate=shipstate,szip=shippincode, scountry=shipcountry,
                     bfax = fax, sfax = shipfax, bphone = phone, sphone = shipphone,user = u)
-        if vendor_table.objects.filter(pan_number=panno).exists():
+        if vendor_table.objects.filter(user = u,pan_number=panno).exists():
             response_data = {
-                "message": "panexists",
+                "message": "exists",
                 "error": "PAN No already exists.",
                 }
             return JsonResponse(response_data, status=400)
-        elif vendor_table.objects.filter(vendor_email=email).exists():
+        elif vendor_table.objects.filter(user = u,vendor_email=email).exists():
             response_data = {
-                "message": "emailexists",
+                "message": "exists",
                 "error": "Email already exists.",
                 }
             return JsonResponse(response_data, status=400)
-        elif vendor_table.objects.filter(vendor_wphone=w_mobile).exists():
+        elif 'Registered' in gsttype:
+            if vendor_table.objects.filter(user = u,gst_number=gstin).exists():
+                response_data = {
+                    "message": "exists",
+                    "error": "GST No already exists.",
+                    }
+                return JsonResponse(response_data, status=400)
+        elif vendor_table.objects.filter(user = u,vendor_wphone = w_mobile).exists():
             response_data = {
-                "message": "wmobileexists",
+                "message": "exists",
                 "error": "Work phone already exists.",
                 }
             return JsonResponse(response_data, status=400)
-        elif vendor_table.objects.filter(vendor_mphone=p_mobile).exists():
+        elif vendor_table.objects.filter(user = u,vendor_mphone = p_mobile).exists():
             response_data = {
-                "message": "pmobileexists",
-                "error": "Personal number already exists.",
+                "message": "exists",
+                "error": "Work phone already exists.",
                 }
             return JsonResponse(response_data, status=400)
-        elif gstin:
-            if vendor_table.objects.filter(gst_number=gstin).exists():
-                response_data = {
-                "message": "gstexists",
-                "error": "GST No already exists.",
-                }
-                return JsonResponse(response_data, status=400)
         else:
             vndr.save()
             response_data = {
@@ -8998,8 +9204,27 @@ def purchase_pay(request):
             "message": "success"
             }
             return JsonResponse(response_data)
-        
-        
+
+@login_required(login_url='login')
+def purchase_pay_purchase(request):
+    company = company_details.objects.get(user = request.user)
+    if request.method=='POST':
+        name=request.POST.get('name')
+        days=request.POST.get('days')
+        u = User.objects.get(id = request.user.id)
+        pay = payment_terms(Terms=name, Days=days, user = u)
+        if payment_terms.objects.filter(user = u,Terms=name).exists():
+            response_data = {
+                "message": "paymentexists",
+                "error": "Payment term already exists.",
+                }
+            return JsonResponse(response_data, status=400)
+        else:
+            pay.save()
+            response_data = {
+            "message": "success"
+            }
+            return JsonResponse(response_data)
         
 @login_required(login_url='login')
 def payment_dropdown(request):
@@ -9094,6 +9319,54 @@ def purchase_unit_dropdown(request):
 
 @login_required(login_url='login')
 def purchase_item(request):
+    if request.method=='POST':
+        type=request.POST.get('type')
+        name=request.POST['name']
+        ut=request.POST['unit']
+        hsn=request.POST['hsn']
+        inter=request.POST['inter']
+        intra=request.POST['intra']
+        sell_price=request.POST.get('sell_price')
+        sell_acc=request.POST.get('sell_acc')
+        sell_desc=request.POST.get('sell_desc')
+        cost_price=request.POST.get('cost_price')
+        cost_acc=request.POST.get('cost_acc')      
+        cost_desc=request.POST.get('cost_desc')
+        invasset=request.POST.get('invasset')
+        opening_stock=request.POST.get('opening_stock')
+        opening_stock_unit=request.POST.get('opening_stock_unit')
+        active_type=request.POST.get('active_type')
+        units=Unit.objects.get(id=ut)
+        sel=Sales.objects.get(id=sell_acc)
+        cost=Purchase.objects.get(id=cost_acc)
+
+        history="Created by " + str(request.user)
+        user = User.objects.get(id = request.user.id)
+
+        item=AddItem(type=type,hsn=hsn,unit=units,sales=sel,purchase=cost,Name=name,p_desc=cost_desc,s_desc=sell_desc,s_price=sell_price,
+                    p_price=cost_price,user=user,creat=history,interstate=inter,intrastate=intra,invacc=invasset,stock=opening_stock,
+                    rate=opening_stock_unit,satus=active_type,status_stock=active_type)
+        if AddItem.objects.filter(user=user,Name=name).exists():
+            response_data = {
+                "message": "itemexists",
+                "error": "Item already exists.",
+                }
+            return JsonResponse(response_data, status=400)
+        elif AddItem.objects.filter(user=user,hsn=hsn).exists():
+            response_data = {
+                "message": "hsnexists",
+                "error": "HSN no already exists.",
+                }
+            return JsonResponse(response_data, status=400)
+        else:
+            item.save()
+            response_data = {
+            "message": "success"
+            }
+            return JsonResponse(response_data)
+
+@login_required(login_url='login')
+def purchase_item_purchase(request):
     if request.method=='POST':
         type=request.POST.get('type')
         name=request.POST['name']
@@ -12781,7 +13054,7 @@ def create_purchase_bill1_purchase(request):
         vendor_name = request.POST['vendor_name']
         vendor_email = request.POST['vendor_email']
         vendor_gst = request.POST['gstin_inp']
-        sos = request.POST['sos']
+        sos = ''
         cust_name = request.POST['customer_name']
         cus=customer.objects.get(customerName=cust_name)   
         custo=cus.id 
@@ -18296,15 +18569,15 @@ def payment_terms_vend(request):
             }
             return JsonResponse(response_data, status=400)  # Return 400 for client-side handling
         
-        # If payment term does not exist, create it
-        ptr = payment_terms(user=request.user, Terms=terms, Days=day)
-        ptr.save()
-        
-        response_data = {
-            "message": "success",
-            "terms": terms,
-        }
-        return JsonResponse(response_data)
+        else:
+            ptr = payment_terms(user=request.user, Terms=terms, Days=day)
+            ptr.save()
+            
+            response_data = {
+                "message": "success",
+                "terms": terms,
+            }
+            return JsonResponse(response_data)
         
 def customer_active(request,id):
     p=customer.objects.get(id=id)

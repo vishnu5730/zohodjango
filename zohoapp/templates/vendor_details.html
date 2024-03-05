@@ -529,7 +529,7 @@
                                 </div>
                             </div>
                             {% if contact_persons %}
-                            <div class="p-2">
+                            <div>
                                 <h4 class="text-center mt-4 text-dark">Contact Persons
                                     <hr>
                                 </h4>
@@ -545,7 +545,7 @@
                                         </tr>
                                         {% for p in contact_persons %}
                                         <tr>
-                                            <td>{{p.salutation}}.{{p.first_name}}{{p.last_name}}</td>
+                                            <td>{{p.salutation}}. {{p.first_name}} {{p.last_name}}</td>
                                             <td>{{p.email}}</td>
                                             <td>{{p.work_phone}}</td>
                                             <td>{{p.mobile}}</td>
@@ -555,8 +555,6 @@
                                         </tr>
                                         {% endfor %}
                                     </table>
-            
-                                
                             </div>
                             {% endif %}
                         </div>

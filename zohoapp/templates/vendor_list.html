@@ -181,7 +181,7 @@
             </div>
           </div>
         </div>
-        <a href="{% url 'downloadVendorSampleImportFile' %}" class="text-primary" style="font-size:medium;">Download Sample File here</a><br><br>
+        <a href="{% url 'downloadVendorSampleImportFile' %}" class="text-primary" style="font-size:medium;">Download File to Edit</a><br><br>
 
         <form action="{% url 'import_vendor' %}" method="post" enctype="multipart/form-data">
           {% csrf_token %}

@@ -106,19 +106,16 @@
         </div>
         <div class="col-md-6 d-flex">
             <select name="vendor" id="vendor" class="form-control text-dark bg-light" style="flex: 1;">
-                <option value="{{nameid}} {{po_item.vendor_name}}" class="text-dark bg-light" selected hidden>{{po_item.vendor_name}}</option>
-                {% for v in vendor %}
-                <option value="{{v.id}} {{ v.first_name }} {{ v.last_name }}" class="text-dark bg-light">{{ v.first_name }} {{ v.last_name }}</option>
-                {% endfor %}
+                <option value="{{nameid}} {{po_item.vendor_name}}" class="text-dark bg-light" selected>{{po_item.vendor_name}}</option>
                 
             </select>
             
         </div>
         <div class="col-md-3">
-          <a data-toggle="modal" data-target="#newvendor">
+          <!-- <a data-toggle="modal" data-target="#newvendor">
             <i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); height: 36px; "
                 data-toggle="tooltip" title="Create Vendor"></i>
-        </a>
+        </a> -->
       </div>
     </div>
     
@@ -128,7 +125,7 @@
           <label for="email_inp">Vendor Email</label>
         </div>
         <div class="col-md-6">
-          <input type="text" value="{{po_item.vendor_mail}}" class="form-control text-dark bg-light" id="email_inp" name="email_inp">
+          <input type="text" value="{{po_item.vendor_mail}}" class="form-control text-dark bg-light" id="email_inp" name="email_inp" readonly>
         </div>
       </div>
 
@@ -137,7 +134,7 @@
           <label for="gst_trt_inp">GST Treatment</label>
         </div>
         <div class="col-md-6">
-          <input type="text" value="{{po_item.vendor_gst_traet}}" class="form-control text-dark bg-light" id="gst_trt_inp" name="gst_trt_inp">
+          <input type="text" value="{{po_item.vendor_gst_traet}}" class="form-control text-dark bg-light" id="gst_trt_inp" name="gst_trt_inp" readonly>
         </div>
       </div>
 
@@ -146,7 +143,7 @@
           <label for="gstin_inp">GST Number</label>
         </div>
         <div class="col-md-6">
-          <input type="text" value="{{po_item.vendor_gst_no}}" class="form-control text-dark bg-light"  id="gstin_inp" name="gstin_inp">
+          <input type="text" value="{{po_item.vendor_gst_no}}" class="form-control text-dark bg-light"  id="gstin_inp" name="gstin_inp" readonly>
         </div>
       </div>
 
@@ -156,7 +153,7 @@
         </div>
 
         <div class="col-md-6">
-          <input type="text" class="form-control text-dark bg-light" id="vsrcofsupply" name="vsrcofsupply"  >
+          <input type="text" class="form-control text-dark bg-light" id="vsrcofsupply" name="vsrcofsupply" readonly>
            
         </div>
       </div> 
@@ -176,7 +173,7 @@
         </div>
 
         <div class="col-md-6">
-          <input type="text" class="form-control text-dark bg-light" name="ord_no" value="{{po_item.Pur_no}}">
+          <input type="text" class="form-control text-dark bg-light" name="ord_no" value="{{po_item.Pur_no}}" readonly>
         </div>
       </div>
       <div class="row mt-2">
@@ -254,7 +251,7 @@
          
         </div>
         <div class="col-md-3">
-          <a data-toggle="modal" data-target="#newpayment"><i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); height: 36px;"></i></a>
+          <!-- <a data-toggle="modal" data-target="#newpayment"><i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); height: 36px;"></i></a> -->
           </div>
       </div>  
 
@@ -274,9 +271,7 @@
         <div class="col-md-6 d-flex align-items-center">
             <select name="customer" id="customer" class="form-control text-dark bg-light" style="flex: 1;">
                 <option value="{{po_item.custo.id}} {{po_item.customer_name}}">{{po_item.customer_name}}</option>
-                {% for c in customer %}
-                <option value="{{c.id}} {{c.customerName}}">{{ c.customerName }}</option>
-                {% endfor %}
+                
             </select>
            
             <input type="hidden" id="cust_state" value="" readonly >
@@ -286,10 +281,10 @@
         </div>
 
         <div class="col-md-3 mt-2">
-          <a data-toggle="modal" data-target="#newcustomer">
+          <!-- <a data-toggle="modal" data-target="#newcustomer">
             <i class="fas fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); height: 36px;"
                 data-toggle="tooltip" title="Create Customer"></i>
-        </a>
+        </a> -->
       </div>
     </div>
     
@@ -299,7 +294,7 @@
           <label for="cemail_inp">Customer Email</label>
         </div>
         <div class="col-md-6">
-          <input type="text" class="form-control text-dark bg-light"  id="cemail_inp" name="cemail_inp"  >
+          <input type="text" class="form-control text-dark bg-light"  id="cemail_inp" name="cemail_inp"  readonly>
         </div>
       </div>
 
@@ -310,7 +305,7 @@
           <label for="gst_trt_inp">GST Treatment</label>
         </div>
         <div class="col-md-6">
-          <input type="text" class="form-control text-dark bg-light" id="cgst_trt_inp" name="cgst_trt_inp"  >
+          <input type="text" class="form-control text-dark bg-light" id="cgst_trt_inp" name="cgst_trt_inp"  readonly>
         </div>
       </div>
 
@@ -319,7 +314,7 @@
           <label for="gstin_inp">GST Number</label>
         </div>
         <div class="col-md-6">
-          <input type="text" class="form-control text-dark bg-light"  id="cgstin_inp" name="cgstin_inp" >
+          <input type="text" class="form-control text-dark bg-light"  id="cgstin_inp" name="cgstin_inp" readonly>
         </div>
       </div>
       <div class="row mt-2" id="c_sou_supply_row">
@@ -337,7 +332,7 @@
             <thead>
               <tr>
                 <th class="text-center text-uppercase">Item Details <br>
-                  <a href="" data-toggle="modal" data-target="#newitem" class="text-capitalize">+ add item</a>
+                  <!-- <a href="" data-toggle="modal" data-target="#newitem" class="text-capitalize">+ add item</a> -->
                 </th>
                 <th class="text-center text-uppercase">hsn </th>
                 <th class="text-center text-uppercase">quantity</th>

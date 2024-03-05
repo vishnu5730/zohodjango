@@ -176,22 +176,18 @@ debugger
                     <select class="form-control text-dark" id="vendor_sel" name="vendor_name"
                         style="width: 50%;  background: white;">
                         <option id="crt_vendor" value="{{po_item.vendor_name}}" selected>{{po_item.vendor_name}}</option>
-                        {% for v in vendors %}
-                        <option value="{{v.first_name}} {{v.last_name}}">
-                            {{v.first_name}} {{v.last_name}}
-                        </option>
-                        {% endfor %}
+                        
                     </select>
-                    <a href="" class="p-2" data-toggle="modal" data-target="#create_vendor">
+                    <!-- <a href="" class="p-2" data-toggle="modal" data-target="#create_vendor">
                         <i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); "
                             data-toggle="tooltip" title="Create Vendor"></i>
-                    </a>
+                    </a> -->
                 </div>
             </div>
             <div class="row mb-4  d-none " id="vendor_email_row">
                 <div class="col-sm-2"><label for="vendor_email">Email</label></div>
                 <div class="col-sm-10"><input type="email" value="{{po_item.vendor_mail}}" id="vendor_email" name="vendor_email"
-                        class="form-control bg-white text-dark" style="width: 50%;">
+                        class="form-control bg-white text-dark" style="width: 50%;" readonly>
 
                 </div>
             </div>
@@ -201,7 +197,7 @@ debugger
               <label for="gst_trt_inp">GST Treatment</label>
             </div>
             <div class="col-sm-10">
-              <input type="text" class="form-control text-dark bg-light" value="{{po_item.vendor_gst_traet}}" id="v_gsttype" name="v_gsttype" style="width: 50%;">
+              <input type="text" class="form-control text-dark bg-light" value="{{po_item.vendor_gst_traet}}" id="v_gsttype" name="v_gsttype" style="width: 50%;" readonly>
             </div>
           </div>
           <div class="row mt-2 mb-2 d-none pt-2" id="gstin_row">
@@ -209,16 +205,16 @@ debugger
               <label for="gstin_inp">GST Number</label>
             </div>
             <div class="col-sm-10">
-              <input type="text" class="form-control text-dark bg-light"  value="{{po_item.vendor_gst_no}}" id="gstin_inp" name="gstin_inp"  style="width: 50%;">
+              <input type="text" class="form-control text-dark bg-light"  value="{{po_item.vendor_gst_no}}" id="gstin_inp" name="gstin_inp"  style="width: 50%;" readonly>
             </div>
           </div>
-            <div class="row mb-4 d-none pt-2" id="sos_row">
+            <!-- <div class="row mb-4 d-none pt-2" id="sos_row">
                 <div class="col-sm-2"><label for="vendor_sos">Source Of Supply</label></div>
                 <div class="col-sm-10"><input type="text" id="sos" name="sos" class="form-control bg-white text-dark"
                         style="width: 50%;">
 
                 </div>
-            </div>
+            </div> -->
             
             <div class="row mb-4   pt-5">
                 <div class="col-sm-2"><label for="bill_number">Bill#*</label></div>
@@ -246,13 +242,13 @@ debugger
             
             <div class="row mb-4">
                 <div class="col-sm-2"><label for="reference">Order Number</label></div>
-                <div class="col-sm-4"> <input type="number" id="order_number" name="order_number"
-                        class="form-control bg-white text-dark" value="{{po_item.Pur_no}}" style="width: 132%;"></div>
+                <div class="col-sm-4"> <input type="text" id="order_number" name="order_number"
+                        class="form-control bg-white text-dark" value="{{po_item.Pur_no}}" style="width: 132%;" readonly></div>
             </div>
             <div class="row mb-4 pt-2" id="pos_row" >
               <div class="col-sm-2"><label for="customer_pos">Place Of Supply</label></div>
               <div class="col-sm-10"><input type="text" id="pos" value="{{po_item.source_supply}}" name="pos" class="form-control bg-white text-dark"
-                      style="width: 50%;">
+                      style="width: 50%;" readonly>
 
               </div>
           </div>
@@ -289,10 +285,10 @@ debugger
                       <option value="{{t.Days}}">{{t.Terms}}</option>
                       {% endfor%}
                   </select>
-                  <button type="button" class="btn p-2" data-toggle="modal" data-target="#newpayment">
+                  <!-- <button type="button" class="btn p-2" data-toggle="modal" data-target="#newpayment">
                       <i class="fas fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); "
                           data-toggle="tooltip" title="Configure Terms"></i>
-                  </button>
+                  </button> -->
                   
               </div>
             </div>
@@ -302,22 +298,18 @@ debugger
                   <select class="form-control text-dark" id="customer_sel" name="customer_name"
                       style="width: 50%;  background: white;">
                       <option id="crt_cust" selected>{{po_item.customer_name}}</option>
-                      {% for cust in customers %}
-                      <option value="{{cust.customerName}}" data-pos="{{cust.placeofsupply}}">
-                          {{cust.customerName}}
-                      </option>
-                      {% endfor %}
+                      
                   </select>
-                  <a href="" class="p-2" data-toggle="modal" data-target="#create_customer">
+                  <!-- <a href="" class="p-2" data-toggle="modal" data-target="#create_customer">
                       <i class="fas fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); "
                           data-toggle="tooltip" title="Create Customer"></i>
-                  </a>
+                  </a> -->
               </div>
           </div>
           <div class="row mb-4  d-none " id="customer_email_row">
               <div class="col-sm-2"><label for="customer_email">Email</label></div>
               <div class="col-sm-10"><input type="email" id="customer_email" name="customer_email"
-                      class="form-control bg-white text-dark" style="width: 50%;">
+                      class="form-control bg-white text-dark" style="width: 50%;" readonly>
 
               </div>
           </div>
@@ -326,7 +318,7 @@ debugger
               <label for="c_gsttype">GST Treatment</label>
             </div>
             <div class="col-sm-10">
-              <input type="text" class="form-control text-dark bg-light" id="c_gsttype" name="c_gsttype" style="width: 50%;"  >
+              <input type="text" class="form-control text-dark bg-light" id="c_gsttype" name="c_gsttype" style="width: 50%;" readonly>
             </div>
           </div>
     
@@ -335,7 +327,7 @@ debugger
               <label for="gstin_inp">GST Number</label>
             </div>
             <div class="col-sm-10">
-              <input type="text" class="form-control text-dark bg-light"  id="cgstin_inp" name="cgstin_inp"style="width: 50%;" >
+              <input type="text" class="form-control text-dark bg-light"  id="cgstin_inp" name="cgstin_inp"style="width: 50%;" readonly>
             </div>
           </div>
           

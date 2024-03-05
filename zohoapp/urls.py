@@ -128,6 +128,7 @@ urlpatterns = [
     path('view_sales_order',views.view_sales_order,name='view_sales_order'),
     path('create_sales_order',views.create_sales_order,name='create_sales_order'),
     path('add_customer_for_sorder',views.add_customer_for_sorder,name='add_customer_for_sorder'),
+    path('add_customer_for_sorder_purchase',views.add_customer_for_sorder_purchase,name='add_customer_for_sorder_purchase'),
     path('payment_term_for_sorder',views.payment_term_for_sorder,name='payment_term_for_sorder'),
 
     path('add_sales_order',views.add_sales_order,name='add_sales_order'),
@@ -257,11 +258,13 @@ urlpatterns = [
   
     path('purchase_order',views.purchase_order,name='purchase_order'),
     path('purchase_vendor',views.purchase_vendor,name='purchase_vendor'),
+    path('purchase_vendor_purchase',views.purchase_vendor_purchase,name='purchase_vendor_purchase'),
     path('purchase_customer',views.purchase_customer,name='purchase_customer'),
     path('customer_dropdown',views.customer_dropdown,name='customer_dropdown'),
     path('payment_dropdown',views.payment_dropdown,name='payment_dropdown'),
     path('payment_dropdown_purchase',views.payment_dropdown_purchase,name='payment_dropdown_purchase'),
     path('purchase_pay',views.purchase_pay,name='purchase_pay'),
+    path('purchase_pay_purchase',views.purchase_pay_purchase,name='purchase_pay_purchase'),
     path('customer_det',views.customer_det,name='customer_det'),
     
     path('vendor_det',views.vendor_det,name='vendor_det'),
@@ -270,6 +273,7 @@ urlpatterns = [
     path('purchase_unit_dropdown',views.purchase_unit_dropdown,name='purchase_unit_dropdown'),
 
     path('purchase_item',views.purchase_item,name='purchase_item'),
+    path('purchase_item_purchase',views.purchase_item_purchase,name='purchase_item_purchase'),
     path('purchase_item_dropdown',views.purchase_item_dropdown,name='purchase_item_dropdown'),
 
     path('purchase_account',views.purchase_account,name='purchase_account'),

@@ -5,9 +5,17 @@
 <!-- <div class="fixed-top" style="top: 7rem; margin-left: 18rem;" > -->
     <div  style="top: 7rem; " >
 
-     
+        {% for message in messages %}
+        <div class="alert alert-danger">
+            <div class="d-flex justify-content-between">
+              <p>{{ message }}</p>
+              <a class="close" href="#" data-dismiss="alert">x</a>
+            </div>
+            
+        </div>
+        {% endfor %}
     <!-- <div style="height: 600px;overflow-y: scroll;"> -->
-       <h3  class="mb-3  text-white " style="font-size: 2rem;">Edit Vendor</h3>     
+       <h3  class="mb-4  text-white " style="font-size: 2rem;">Edit Vendor</h3>     
 
       <form  method="post" action="{% url 'edit_vendor_details' vdata.id %}" enctype="multipart/form-data">
         {% csrf_token %}
@@ -19,7 +27,7 @@
           </div>
           <div class="col-sm-12 col-md-3 col-lg-3">
               <select id="select1"  name="salutation" class="form-control bg-light text-dark ">
-                  <option  value="{{ vdata.salutation }}"  selected>{{ vdata.salutation }}</option>
+                  <option  value="{{ vdata.salutation }}" selected>{{ vdata.salutation }}</option>
                   <option  value="Mr">Mr</option>
                   <option value="Mrs">Mrs</option>
 
@@ -27,11 +35,11 @@
                  </select> 
           </div>
           <div class="col-sm-12 col-md-3 col-lg-3">
-              <input  type="text" class="form-control bg-light text-dark" id="fname" name="first_name" value="{{ vdata.first_name }}" placeholder="first name" required>
+              <input  type="text" class="form-control bg-light text-dark" id="fname" name="first_name" value="{{ vdata.first_name }}" placeholder="First Name" required>
 
           </div>
           <div class="col-sm-12 col-md-3 col-lg-3">
-              <input type="text" class="form-control bg-light text-dark" id="lname" name="last_name" value="{{ vdata.last_name }}" placeholder="last name" required>
+              <input type="text" class="form-control bg-light text-dark" id="lname" name="last_name" value="{{ vdata.last_name }}" placeholder="Last Name" required>
 
           </div>
       </div>
@@ -48,28 +56,25 @@
               <div class="col-sm-12 col-md-3 col-lg-3 col-form-label"><label>Vendor Display Name</label></div>
                <div class="col-sm-12 col-md-6 col-lg-6">
                   
-                      <select  name="v_display_name" class="form-control bg-light text-dark">
+                      <select  name="v_display_name" class="form-control bg-light text-dark" onclick="vendor_display()">
                       <!-- <option id="select2"></option> -->
                       <option id="select2" selected>{{ vdata.vendor_display_name }}</option>
-
-                          
+                      <option id="select3"></option>
+                      <option id="select4"></option>
                       </select> 
-    
-                          
-                        
                </div>
                <script type="text/javascript">
-                  function vendor_display()
-                  {
-                      var x=document.getElementById("select1").value;
-                      var y=document.getElementById("fname").value;
-                      var z=document.getElementById("lname").value;
+                function vendor_display()
+                {
+                    var x=document.getElementById("select1").value;
+                    var y=document.getElementById("fname").value;
+                    var z=document.getElementById("lname").value;
 
-                      document.getElementById("select2").innerHTML=x+" "+y+" "+z
-                     
-                      
-                  }
-               </script>
+                    document.getElementById("select3").innerHTML=x+" "+y+" "+z
+                    document.getElementById("select4").innerHTML=x+" "+z+" "+y
+                    
+                }
+             </script>
 
 
            </div>
@@ -86,18 +91,15 @@
            <div class="form-group row mt-4">
               <label class="col-sm-12 col-md-3 col-lg-3 col-form-label">Vendor phone</label>
                <div class="col-sm-12 col-md-3 col-lg-3">
-                   <input id="workphone"  type="tel" pattern="[0-9]{7}" class="form-control bg-light text-dark" oninput="work_phone()" name="w_phone" value="{{ vdata.vendor_wphone }}" required>  
+                   <input id="workphone"  type="tel" pattern="[0-9]{7}" class="form-control bg-light text-dark" oninput="work_phone()" name="w_phone" value="{{ vdata.vendor_wphone }}" placeholder="Work Phone" required>  
                    <label for="" id="workphone_label"></label>
     
                </div>
                <div class=" col-sm-12 col-md-3 col-lg-3">
-                  <input id="mphone" type="tel" pattern="[0-9]{10}" class="form-control bg-light text-dark" oninput="mobile_phone()" name="m_phone" value="{{ vdata.vendor_mphone }}" required>   
+                  <input id="mphone" type="tel" pattern="[0-9]{10}" class="form-control bg-light text-dark" oninput="mobile_phone()" name="m_phone" value="{{ vdata.vendor_mphone }}" placeholder="Mobile Phone" required>   
                   <label for="" id="mphone_label"></label>
 
               </div>
-              
-
-
            </div>
            
 
@@ -110,9 +112,6 @@
                    <div class="col-sm-12 col-md-6 col-lg-6">
                      <input  type="text" class="form-control bg-light text-dark" name="skype_number" value="{{ vdata.skype_number }}">      
                    </div>
-                   
-
-
                </div>
 
 
@@ -145,7 +144,7 @@
 
 
           
-          <span class="input-group mb-1 mt-3">
+          <span class="input-group mb-1 mt-5">
             <div class="toggle2"
               style="color: rgb(230, 171, 45);font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-size:22px;">
               <a href="" style="color: rgb(230, 171, 45);">Other Details </a></div>
@@ -255,25 +254,44 @@
               <div class=" col-sm-12 col-md-3 col-lg-3">
                   <select name="source_supply" id="PLACE" class="form-control bg-light text-dark">
                       <option value="{{ vdata.source_supply }}">{{ vdata.source_supply }}</option>
-
-                      <option value="value"></option>
-                      <option value="[AN]-Andaman And Nicobar Islands">[AN]-Andaman And Nicobar Islands</option> <option value="[AD]-Andhra Pradesh">[AD]-Andhra Pradesh</option>
-                      <option value="[AR]-Arunachal Pradesh">[AR]-Arunachal Pradesh	</option> <option value="volvo">[AS]-Assam</option>
-                      <option value="[BR]-Bihar">[BR]-Bihar</option> <option value="volvo">[CH]-	Chandhigarh</option><option value="[CG]-Chattisgarh">[CG]-Chattisgarh</option>
-                      <option value="[DD]-Daman Diu">[DD]-Daman Diu</option><option value="volvo">[DL]-	Delhi</option><option value="[GA]-Goa">[GA]-Goa</option> <option value="[GJ]-Gujarat">[GJ]-Gujarat</option>
-                      <option value="[HR]-Haryana">[HR]-Haryana</option> <option value="[HP]-Himachal Pradesh">[HP]-Himachal Pradesh</option>
-                      <option value="[JK]-Jammu And Kashmir">[JK]-Jammu And Kashmir</option><option value="[JH]-Jharkand">[JH]-Jharkand</option>
-                      <option value="[KA]-Karnataka">[KA]-Karnataka</option><option value="[KL]-Kerala">[KL]-Kerala</option>
-                      <option value="[LA]-Ladakh">[LA]-Ladakh</option><option value="[LD]-Lakshadweep">[LD]-Lakshadweep</option>
-                      <option value="[MP]-Madhyapradesh">[MP]-Madhyapradesh</option><option value="[MH]-Maharashtra">[MH]-Maharashtra</option>
-                      <option value="[MN]-Manipur">[MN]-Manipur</option>  <option value="[ML]-Meghalaya">[ML]-Meghalaya</option>
-                    <option value="[MZ]-Mizoram">[MZ]-Mizoram</option> <option value="[NL]-Nagaland">[NL]-Nagaland</option> <option value="[NL]-Nagaland">[NL]-Nagaland</option>
-                     <option value="[OD]-Odisha">[OD]-Odisha</option><option value="[PY]-Puducherry">[PY]-Puducherry</option>
-                      <option value="[PB]-Punjab">[PB]-Punjab.</option><option value="[RL]-Rajasthan">[RL]-Rajasthan</option>
-                      <option value="[SK]-Sikkim">[SK]-Sikkim</option><option value="[TN]-Tamilnadu">[TN]-Tamilnadu</option>
-                      <option value="[TS]-Telenghana">[TS]-Telenghana</option><option value="[TR]-Tripura">[TR]-Tripura</option><option value="[UP]-Uttar Pradesh">[UP]-Uttar Pradesh</option>
-                      <option value="[UK]-Utharakhand">[UK]-Utharakhand</option><option value="[WB]-West Bengal">[WB]-West Bengal</option>
-                      <option value="[OT]-Other Territory">[OT]-Other Territory</option>
+                      <option value="[AN] Andaman and Nicobar Islads">[AN] Andaman and Nicobar Islads</option>
+                      <option value="[AD] Andhra Predhesh">[AD] Andhra Predhesh</option>
+                      <option value="[AR] Arunachal Predesh">[AR] Arunachal Predesh</option>
+                      <option value="[AS] Assam">[AS] Assam</option>
+                      <option value="[BR] Bihar">[BR] Bihar</option>
+                      <option value="[CH] Chandigarh">[CH] Chandigarh</option>
+                      <option value="[CG] Chhattisgarh">[CG] Chhattisgarh</option>
+                      <option value="[DNH] Dadra and Nagar Haveli">[DNH] Dadra and Nagar Haveli</option>
+                      <option value="[DD] Damn anad Diu">[DD] Damn anad Diu</option>
+                      <option value="[DL] Delhi">[DL] Delhi</option>
+                      <option value="[GA] Goa">[GA] Goa</option>
+                      <option value="[GJ] Gujarat">[GJ] Gujarat</option>
+                      <option value="[HR] Haryana">[HR] Haryana</option>
+                      <option value="[HP] Himachal Predesh">[HP] Himachal Predesh</option>
+                      <option value="[JK] Jammu and Kashmir">[JK] Jammu and Kashmir</option>
+                      <option value="[JH] Jharkhand">[JH] Jharkhand</option>
+                      <option value="[KA] Karnataka">[KA] Karnataka</option>
+                      <option value="[KL] Kerala">[KL] Kerala</option>
+                      <option value="[LA] Ladakh">[LA] Ladakh</option>
+                      <option value="[LD] Lakshadweep">[LD] Lakshadweep</option>
+                      <option value="[MP] Madhya Predesh">[MP] Madhya Predesh</option>
+                      <option value="[MH] Maharashtra">[MH] Maharashtra</option>
+                      <option value="[MN] Manipur">[MN] Manipur</option>
+                      <option value="[ML] Meghalaya">[ML] Meghalaya</option>
+                      <option value="[MZ] Mizoram">[MZ] Mizoram</option>
+                      <option value="[NL] Nagaland">[NL] Nagaland</option>
+                      <option value="[OD] Odisha">[OD] Odisha</option>
+                      <option value="[PY] Puducherry">[PY] Puducherry</option>
+                      <option value="[PB] Punjab">[PB] Punjab</option>
+                      <option value="[RJ] Rajasthan">[RJ] Rajasthan</option>
+                      <option value="[SK] Sikkim">[SK] Sikkim</option>
+                      <option value="[TN] Tamil Nadu">[TN] Tamil Nadu</option>
+                      <option value="[TS] Telangana">[TS] Telangana</option>
+                      <option value="[TR] Tripura">[TR] Tripura</option>
+                      <option value="[UP] Uttar Predesh">[UP] Uttar Predesh</option>
+                      <option value="[UK] Uttarakhand">[UK] Uttarakhand</option>
+                      <option value="[WB] West Bengal">[WB] West Bengal</option>
+                      <option value="[OT] Other Territory">[OT] Other Territory</option>
                     </select>
               </div>
 
@@ -316,7 +334,7 @@
                   <select name="payment_terms" id="PLACE" class="form-control bg-light text-dark">
                       <option value="{{ vdata.payment_terms }}">{{ vdata.payment_terms }}</option>                    
                       {% for p in sb %}
-                            <option value="{{ p.term }}">{{ p.Terms}}</option>
+                            <option value="{{ p.Terms }}">{{ p.Terms}}</option>
                             {% endfor %}
                      
                   </select>
@@ -383,7 +401,7 @@
                     <div class="form-group row mt-4">
                         <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > Phone </label>                    
                         <div class=" col-sm-12 col-md-6 col-lg-6">
-                            <input id="bphone_num"  type="tel" pattern="[0-9]{10}" class="form-control bg-light text-dark" name="bphone" value="{{ vdata.bphone }}" id="bphn">      
+                            <input id="bphone_num"  type="tel" pattern="[0-9]{10}" class="form-control bg-light text-dark" oninput="bphone_number()" name="bphone" value="{{ vdata.bphone }}" id="bphn">      
                             <label for="" id="bphone_label"></label>      
 
                         </div>
@@ -391,7 +409,7 @@
                     <div class="form-group row mt-4">
                         <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > Fax </label>                    
                         <div class=" col-sm-12 col-md-6 col-lg-6">
-                            <input  type="tel" pattern="[0-9]{7}" class="form-control bg-light text-dark" onclick="bphone_number()"  onmouseout="fax_number()" name="bfax" value="{{ vdata.bfax }}" id="bfx">      
+                            <input  type="tel" pattern="[0-9]{10}" class="form-control bg-light text-dark" oninput="fax_number()" name="bfax" value="{{ vdata.bfax }}" id="bfx">      
                             <label for="" id="fax_label"></label> 
 
                         </div>
@@ -448,7 +466,7 @@
                     <div class="form-group row mt-4">
                         <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > Phone </label>                    
                         <div class=" col-sm-12 col-md-6 col-lg-6">
-                            <input  type="tel" pattern="[0-9]{10}" class="form-control bg-light text-dark" name="sphone" value="{{ vdata.sphone }}" id="sphone_num"> 
+                            <input  type="tel" pattern="[0-9]{10}" class="form-control bg-light text-dark" name="sphone" oninput="sphone_number()" value="{{ vdata.sphone }}" id="sphone_num"> 
                             <label for="" id="sphone_label"></label>    
 
 
@@ -457,7 +475,7 @@
                     <div class="form-group row mt-4">
                         <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > Fax </label>                    
                         <div class=" col-sm-12 col-md-6 col-lg-6">
-                            <input  type="tel" pattern="[0-9]{7}" class="form-control bg-light text-dark" onclick="sphone_number()" onmouseout="sfax_number()" name="sfax" value="{{ vdata.sfax }}" id="sfx">  
+                            <input  type="tel" pattern="[0-9]{7}" class="form-control bg-light text-dark"  oninput="sfax_number()" name="sfax" value="{{ vdata.sfax }}" id="sfx">  
                             <label for="" id="sfax_label"></label>     
 
                         </div>
@@ -488,11 +506,11 @@
                         <tr>
                           <td><select name="salutation[]" id="PLACE" class="bg-transparent border-0 text-white" >
                              <option value="{{ p.salutation }}" selected>{{ p.salutation }}</option>
-                              <option value="Mr" >Mr.</option>
-                              <option value="Mrs">Mrs.</option>
-                              <option value="Ms">Ms.</option>
-                              <option value="Miss">Miss.</option>
-                              <option value="Dr">Dr.</option>  
+                              <option style="color: black;" value="Mr">Mr.</option>
+                              <option style="color: black;" value="Mrs">Mrs.</option>
+                              <option style="color: black;" value="Ms">Ms.</option>
+                              <option style="color: black;" value="Miss">Miss.</option>
+                              <option style="color: black;" value="Dr">Dr.</option>  
                             </select></td>
                           <td><input type="text" class="form-control border-1 bg-transparent text-white" value="{{ p.first_name }}"   name="first_name[]" /></td>
                           <td><input type="text" class="form-control border-1 bg-transparent text-white" value="{{ p.last_name }}" name="last_name[]" /></td>
@@ -502,6 +520,8 @@
                           <td><input type="text" class="form-control border-1 bg-transparent text-white" value="{{ p.skype_number }}" name="skype[]" /></td>
                           <td><input type="text" class="form-control border-1 bg-transparent text-white" value="{{ p.designation }}" name="designation[]" /></td>
                           <td><input type="text" class="form-control border-1 bg-transparent text-white" value="{{ p.department }}" name="department[]" /></td>
+                          <td class="btn bg-danger mt-4 p-1 delete-row">X</td>
+                          <td></td>
                         </tr>
                         {% endfor %}
                       </table>
@@ -538,9 +558,9 @@
 
 
       
-          <div class="row mt-4">
+          <div class="row mt-5">
               <div class="col-sm-12 col-md-2 col-lg-2">
-                  <input type="submit" class="form-control bg-warning text-dark " style="font-weight: bold;" value="save">
+                  <input type="submit" class="form-control bg-warning text-dark " style="font-weight: bold;" value="Edit">
                   
               </div>
                
@@ -779,7 +799,7 @@
       {
         var a1=document.getElementById("bfx").value;
         var b1=document.getElementById("fax_label");
-        var expr=/^[0-9]{7}$/;
+        var expr=/^[0-9]{10}$/;
         if (!expr.test(a1)) {
             b1.style.color="red";
             b1.innerHTML = "Invalid Fax Number.";
@@ -796,7 +816,7 @@
       {
         var a1=document.getElementById("sfx").value;
         var b1=document.getElementById("sfax_label");
-        var expr=/^[0-9]{7}$/;
+        var expr=/^[0-9]{10}$/;
         if (!expr.test(a1)) {
             b1.style.color="red";
             b1.innerHTML = "Invalid Fax Number.";
