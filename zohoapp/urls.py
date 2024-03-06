@@ -167,6 +167,7 @@ urlpatterns = [
     path('filter_chellan',views.filter_chellan,name='filter_chellan'),
     path('filter_chellan_type',views.filter_chellan_type,name='filter_chellan_type'),
     path('itemdata_challan',views.itemdata_challan,name='itemdata_challan'),
+    path('purchase_itemdata_challan_n',views.purchase_itemdata_challan_n,name='purchase_itemdata_challan_n'),
     path('payment_term_for_sales',views.payment_term_for_sales,name="payment_term_for_sales"),
     
     path('report_page/',views.report_page,name='report_page'),

@@ -277,13 +277,7 @@ debugger
                       
                       <option id="crt_term" value="{{po_item.payment_terms}}" selected>{{po_item.payment_terms}}</option>
                      
-                      <option value="30">Net 30</option>
                       
-                      <option value="30">Net 60</option>
-                      <option value="recpt">Due On Receipt</option>
-                      {% for t in terms %}
-                      <option value="{{t.Days}}">{{t.Terms}}</option>
-                      {% endfor%}
                   </select>
                   <!-- <button type="button" class="btn p-2" data-toggle="modal" data-target="#newpayment">
                       <i class="fas fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); "
@@ -462,23 +456,23 @@ debugger
                             <td><input type="number" id="subtotal" name="subtotal" step="any" value="{{po_item.sub_total}}"
                                     class="bg-transparent border-0 text-right subtotal "></td>
                         </tr>
-                        <tr id="tr_igst">
-                            <td>IGST</td>
+                        <tr id="tr_igst" hidden>
+                            <!-- <td>IGST</td> -->
                             <td></td>
                             <td><input type="number" id='igst' name="igst" step="any" value="{{po_item.igst}}"
-                                    class="form-control bg-transparent border-0 text-right igst text-dark"></td>
+                                    class="form-control bg-transparent border-0 text-right igst text-dark" hidden></td>
                         </tr>
                         <tr id="tr_cgst">
-                            <td>CGST</td>
+                            <!-- <td>CGST</td> -->
                             <td></td>
                             <td><input type="number" id='cgst' name="cgst" step="any" value="{{po_item.cgst}}"
-                                    class="form-control bg-transparent border-0 text-right cgst text-dark"></td>
+                                    class="form-control bg-transparent border-0 text-right cgst text-dark" hidden></td>
                         </tr>
                         <tr id="tr_sgst">
-                            <td>SGST</td>
+                            <!-- <td>SGST</td> -->
                             <td></td>
                             <td><input type="number" id='sgst' name="sgst" step="any" value="{{po_item.sgst}}"
-                                    class="form-control bg-transparent border-0 text-right sgst text-dark"></td>
+                                    class="form-control bg-transparent border-0 text-right sgst text-dark" hidden></td>
                         </tr>
                         <tr>
                             <td>Tax Amount</td>

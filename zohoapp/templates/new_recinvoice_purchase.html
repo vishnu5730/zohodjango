@@ -234,17 +234,8 @@
         <div class="col-md-6">
           <div class="d-flex">
             <select class="form-control text-dark bg-light" id="terms" name="terms">
-              <option id="crt_term" value="{{po_item.payment_terms}}" selected hidden>{{po_item.payment_terms}}</option>
-              <option value="30">NET 30</option>
+              <option id="crt_term" value="{{po_item.payment_terms}}" selected>{{po_item.payment_terms}}</option>
               
-              <option value="60">NET 60</option>
-             
-             
-              <option value="recpt">Due on receipt</option>
-              {% for p in payments %}
-                <option value="{{p.Days}}" class="text-dark bg-light">{{p.Terms}}</option>
-              {% endfor %}
-             
             </select>
            
           </div> 
@@ -465,21 +456,21 @@
             </div>
           </div>
           
-          <div class="row container-fluid p-2 m-0" id="igst1">
+          <div class="row container-fluid p-2 m-0" id="igst1" hidden>
             <div class="col-sm-5 mt-2"><label for="a" class="text-center">IGST</label></div>
             <div class="col-sm-3 mt-2"></div>
             <div class="col-sm-4 mt-2"><input type="number" name='igst' step="0.00" min="0" value="{{po_item.igst|floatformat:2}}" id="igst" placeholder=0 
                 class="form-control text-dark bg-light" readonly style="background-color: #2A3038;border: 1px solid #2c2e33;"/>
             </div>
           </div>
-          <div class="row container-fluid p-2 m-0" id="cgst1">
+          <div class="row container-fluid p-2 m-0" id="cgst1" hidden>
             <div class="col-sm-5 mt-2"><label for="a" class="text-center">CGST</label></div>
             <div class="col-sm-3 mt-2"></div>
             <div class="col-sm-4 mt-2"><input type="number" name='cgst' step="0.00" value="{{po_item.cgst|floatformat:2}}" min="0" id="cgst" placeholder=0 
                 class="form-control text-dark bg-light" readonly style="background-color: #2A3038;border: 1px solid #2c2e33;"/>
             </div>
           </div>
-          <div class="row container-fluid p-2 m-0" id="sgst1">
+          <div class="row container-fluid p-2 m-0" id="sgst1" hidden>
             <div class="col-sm-5 mt-2"><label for="a" class="text-center">SGST</label></div>
             <div class="col-sm-3 mt-2"></div>
             <div class="col-sm-4 mt-2"><input type="number" name='sgst' value="{{po_item.sgst|floatformat:2}}" step="0.00" min="0" id="sgst" placeholder=0 

@@ -448,7 +448,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
   
           <div class="col-md-6">
               <select id="custsrcofsupply" name="cust_source_supply" class="form-control bg-light text-dark">
-                  <option value="{{po.customer_source_supply}}">{{po.customer_source_supply}}</option>
+                  <option value="{{po.customer_source_supply}}" selected>{{po.customer_source_supply}}</option>
                   <option value="[AN] Andaman and Nicobar Islads">[AN] Andaman and Nicobar Islads</option>
                   <option value="[AD] Andhra Predhesh">[AD] Andhra Predhesh</option>
                   <option value="[AR] Arunachal Predesh">[AR] Arunachal Predesh</option>
@@ -3069,7 +3069,7 @@ $.ajax({
         if (response.message === "success") {
           document.getElementById("verror_message").innerHTML = "Item added successfully.";
           document.getElementById("modalItem").reset();
-          reloadItems();
+          reloadItem();
           $('#vendorExistsModal').modal('show');
       }
     },
@@ -3777,7 +3777,7 @@ function toggleDateInput() {
           console.log(customer);
           $.ajax({
               type: "GET",
-              url: "{% url 'itemdata_challan' %}",
+              url: "{% url 'purchase_itemdata_challan_n' %}",
               data: {
                   id: select,
                   cust: customer
@@ -3818,7 +3818,7 @@ function toggleDateInput() {
 
     $.ajax({
         type: "GET",
-        url: "{% url 'itemdata_challan' %}",
+        url: "{% url 'purchase_itemdata_challan_n' %}",
         data: {
             id: select,
             cust: customer
@@ -4026,15 +4026,9 @@ $(document).ready(function() {
         $("#cust_gst_trt_row").addClass('d-none');
         $("#cust_gst_trt_row").removeClass('d-flex');
     }
-      if (data.ssupply) {
-        console.log(data.ssupply);
+     
         $("#custsrcofsupply_row").removeClass('d-none');
         $("#custsrcofsupply").show();
-        $("#custsrcofsupply option:selected").text(data.ssupply).attr('value', data.ssupply);
-    } else {
-        $("#custsrcofsupply").hide(); // Hide the field if state doesn't exist
-        $("#custsrcofsupply_row").addClass('d-none');
-      }
       }
     });
 });

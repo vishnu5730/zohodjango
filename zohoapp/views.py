@@ -980,7 +980,7 @@ def downloadVendorSampleImportFile(request):
     sheet1_columns = ['Salutation', 'First Name', 'Last Name', 'Company Name', 'Email', 'Work Phone', 'Mobile Phone', 
                       'Skype Number', 'Designation', 'Department', 'Website', 'Gst Treatment', 
                       'Gst Number', 'Pan Number', 'Place of Supply', 'Currency', 'Opening Balance', 
-                      'Opening Balance Type (credit/debit)', 'Billing Attention', 'Billing Street', 'Billing Country', 
+                      'Opening Balance Type (Credit/Debit)', 'Billing Attention', 'Billing Street', 'Billing Country', 
                       'Billing Address', 'Billing City', 'Billing State', 'Billing Pin', 'Billing Zip', 'Billing Phone', 'Billing Fax', 'Shipping Attention', 
                       'Shipping Street', 'Shipping Country', 'Shipping Address', 'Shipping City', 'Shipping State', 'Shipping Zip', 'Shipping Pin', 'Shipping Phone', 
                       'Shipping Fax', 'Credit Limit']
@@ -996,7 +996,7 @@ def downloadVendorSampleImportFile(request):
     # Generate response
     excel_data = open('import_vendor_table.xlsx', 'rb').read()
     response = HttpResponse(excel_data, content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=sample_vendor_table.xlsx'
+    response['Content-Disposition'] = 'attachment; filename=import_vendor_table.xlsx'
     return response
 
 def import_vendor(request):
@@ -1011,9 +1011,9 @@ def import_vendor(request):
                 vendor_mail = row.get('Email')
                 gst_treatment = row.get('Gst Treatment')
                 if 'Unregistered' in gst_treatment:
-                    gst_number = row.get('Gst Number')
-                else:
                     gst_number = ''
+                else:
+                    gst_number = row.get('Gst Number')
                 opening_bal = row.get('Opening Balance')
                 vendor_display_name = salutation + ' ' + first_name + ' ' + last_name
                 company_name = row.get('Company Name') if row.get('Company Name') is not None else ''
@@ -1026,8 +1026,8 @@ def import_vendor(request):
                 pan_number = row.get('Pan Number')
                 source_supply = row.get('Place of Supply') if row.get('Place of Supply') is not None else ''
                 
-                opening_bal_type = row.get('Opening Balance Type (credit/debit)')
-                if opening_bal_type == 'credit':
+                opening_bal_type = row.get('Opening Balance Type (Credit/Debit)')
+                if opening_bal_type == 'Credit':
                     opening_bal = -(int(opening_bal))
                 battention = row.get('Billing Attention') if row.get('Billing Attention') is not None else ''
                 bstreet = row.get('Billing Street') if row.get('Billing Street') is not None else ''
@@ -1098,10 +1098,6 @@ def import_vendor(request):
                 if vendor_table.objects.filter(user=request.user,pan_number=pan_number).exists():
                     messages.error(request, f'PAN: {pan_number} already exists!')
                     return redirect('view_vendor_list')
-                elif gst_number != '':
-                    if vendor_table.objects.filter(user=request.user,gst_number=gst_number).exists():
-                        messages.error(request, f'GST: {gst_number} already exists!')
-                        return redirect('view_vendor_list')
                 elif vendor_table.objects.filter(user=request.user,vendor_wphone=vendor_wphone).exists():
                     messages.error(request, f'Work Phone: {vendor_wphone} already exists!')
                     return redirect('view_vendor_list')
@@ -1109,6 +1105,7 @@ def import_vendor(request):
                     messages.error(request, f'Vendor Mobile: {vendor_mphone} already exists!')
                     return redirect('view_vendor_list')
                 else:
+                    print('tata')
                     vendor_obj.save()
         return redirect('view_vendor_list')
     except:
@@ -1389,14 +1386,16 @@ def edit_vendor(request,pk):
     company=company_details.objects.get(user=request.user)
     vdata=vendor_table.objects.get(id=pk)
     sb = payment_terms.objects.filter(user=request.user)
+    pdata = ''
+    rdata = ''
     if contact_person_table.objects.filter(user=request.user,vendor=vdata).exists():
-        pdata=contact_person_table.objects.filter(vendor=vdata) 
+        pdata=contact_person_table.objects.filter(user=request.user,vendor=vdata) 
     if remarks_table.objects.filter(user=request.user,vendor=vdata).exists():
         rdata=remarks_table.objects.get(user=request.user,vendor=vdata) 
-    if pdata or rdata:
-        if not rdata:
+    if pdata != '' or rdata != '':
+        if rdata == '':
             return render(request,'edit_vendor.html',{'vdata':vdata,"company":company,'sb':sb,'pdata':pdata})
-        elif not pdata:
+        elif pdata == '':
             return render(request,'edit_vendor.html',{'vdata':vdata,"company":company,'sb':sb,'rdata':rdata})
         else:
             return render(request,'edit_vendor.html',{'vdata':vdata,"company":company,'sb':sb,'rdata':rdata,'pdata':pdata})
@@ -1472,8 +1471,8 @@ def edit_vendor_details(request,pk):
             vendor=vdata
             user_id=request.user.id
             udata=User.objects.get(id=user_id)
-            if remarks_table.objects.filter(vendor=vdata).exists():
-                rdata=remarks_table.objects.get(vendor=vdata)
+            if remarks_table.objects.filter(user=udata,vendor=vdata).exists():
+                rdata=remarks_table.objects.get(user=udata,vendor=vdata)
                 rdata.remarks=request.POST['remark']
                 rdata.save()
             else:
@@ -1485,7 +1484,7 @@ def edit_vendor_details(request,pk):
 
                 # .......................contact_person_table................ deleting existing entries and inserting  ...............
 
-            pdata=contact_person_table.objects.filter(vendor=vdata)
+            pdata=contact_person_table.objects.filter(user=udata,vendor=vdata)
             salutation =request.POST.getlist('salutation[]')
             first_name =request.POST.getlist('first_name[]')
             last_name =request.POST.getlist('last_name[]')
@@ -3493,7 +3492,15 @@ def convert_to_recinvoice_frm_purchaseorder(request,pk):
     last_id = recurring_bills.objects.filter(user_id=request.user.id).order_by('-id').values('id').first()
     po_id=Purchase_Order.objects.get(id=pk)
     poitems = Purchase_Order_items.objects.filter(PO=po_id)
+    pattern2 = r'^\d+$'
+    if po_id.payment_terms:
+        match2 = re.match(pattern2, po_id.payment_terms)
+        if match2:
+            payment2=payment_terms.objects.get(user=request.user,id=po_id.payment_terms)
+            po_id.payment_terms = payment2.Terms
     pos = po_id.source_supply[5:]
+    if po_id.source_supply == '[DNH] Dadra and Nagar Haveli':
+        pos = 'Dadra and Nagar Haveli'
     for i in poitems:
         for j in item:
             if i.item == j.Name:
@@ -4792,13 +4799,6 @@ def add_customer_for_sorder_purchase(request):
                     "error": "Mobile number already exists.",
                     }
                 return JsonResponse(response_data, status=400)
-            elif gstin:
-                if customer.objects.filter(user=u,GSTIN=gstin).exists():
-                    response_data = {
-                    "message": "exists",
-                    "error": "GST No already exists.",
-                    }
-                    return JsonResponse(response_data, status=400)
             else:
                 ctmr.save()
                 response_data = {
@@ -5983,6 +5983,31 @@ def filter_chellan_type(request):
 import re
 
 def itemdata_challan(request):
+    cur_user = request.user
+    user = cur_user.id
+    try:
+        id = request.GET.get('id')
+
+        try:
+            item = AddItem.objects.get(Name=id, user=user)
+            name = item.Name
+            rate = item.s_price
+            hsn = item.hsn
+            igst = item.interstate
+            gst = item.intrastate
+            match = re.search(r'\[(\d+)%\]', igst)
+            match2 = re.search(r'\[(\d+)%\]', gst)
+            igst1 = int(match.group(1))
+            gst1 = int(match2.group(1))
+            # Assuming `company_name` is a field in the `company_details` model
+            place = company_details.objects.get(user=cur_user).company_name
+            return JsonResponse({"status": "not", 'place': place, 'rate': rate, 'hsn': hsn,'igst':igst,'gst':gst,'igst1':igst1,'gst1':gst1})
+        except AddItem.DoesNotExist:
+            return JsonResponse({"status": "error", 'message': "Item not found"})
+    except Exception as e:
+        return JsonResponse({"status": "error", 'message': str(e)})
+
+def purchase_itemdata_challan_n(request):
     cur_user = request.user
     user = cur_user.id
     try:
@@ -8728,12 +8753,11 @@ def purchaseView(request):
 #--------------------------------------------------------------------------------
 def downloadPurchaseSampleImportFile(request):
     sheet1_columns = [
-        'Vendor Name', 'Vendor Mail', 'Type (Organisation/Customer)', 'Organisation',
+        'Vendor First Name', 'Vendor Last Name', 'Vendor Full Name (With Salutation)', 'Vendor Mail', 'Type (Organisation/Customer)', 'Organisation',
         'Org Address', 'Org GST', 'Org Street', 'Org State', 'Org City', 'Org Mail',
-        'Customer Name', 'Customer Mail', 'Purchase Order No', 'Vendor Place of Supply','Customer Place of Supply', 'Order Date[yyyy-mm-dd]',
+        'Customer Name (With Salutation)', 'Customer Mail', 'Purchase Order No', 'Vendor Place of Supply','Customer Place of Supply', 'Order Date[yyyy-mm-dd]',
         'Expiry Date[yyyy-mm-dd]', 'Shipping Charge', 'Adjustment Charge',
-        'Advance', 'Note', 'Payment Type', 'Cheque Id', 'UPI Id', 'Document',
-        'Term']
+        'Advance', 'Note', 'Payment Type', 'Cheque Id', 'UPI Id', 'Term']
     sheet2_columns = ['Item', 'Quantity', 'Tax(%)', 'Discount','Purchase Order No']
 
     # Create empty dataframes with only column titles
@@ -8749,7 +8773,7 @@ def downloadPurchaseSampleImportFile(request):
     # Generate response
     excel_data = open('import_purchase_order.xlsx', 'rb').read()
     response = HttpResponse(excel_data, content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=sample_purchase_order.xlsx'
+    response['Content-Disposition'] = 'attachment; filename=import_purchase_order.xlsx'
     return response
 
 def import_purchase(request):
@@ -8763,18 +8787,18 @@ def import_purchase(request):
             for index, row in df.iterrows():
                 user = request.user
                 company = company_details.objects.get(user=request.user)
-                vendor_name = row.get('Vendor Name')
+                vendor_name = row.get('Vendor Full Name (With Salutation)')
                 vendor_mail = row.get('Vendor Mail')
+                vendor_first_name = row.get('Vendor First Name')
+                vendor_last_name = row.get('Vendor Last Name')
                 v_name = ''
                 new_name=''
                 a = vendor_name.split(' ')
                 if len(a) == 3:
                     new_name = a[1]+' '+a[2]
-                    v_name = f'Mr {a[1]} {a[2]}'
                 else:
                     new_name = a[1]
-                    v_name = f'Mr {a[1]}'
-                vendor_obj = vendor_table.objects.get(user=request.user,vendor_display_name=v_name,vendor_email=vendor_mail)
+                vendor_obj = vendor_table.objects.get(user=request.user,first_name=vendor_first_name,last_name=vendor_last_name,vendor_email=vendor_mail)
                 
                 vendor_name = new_name+' '+str(vendor_obj.id)
                 vendor_gst_traet = vendor_obj.gst_treatment
@@ -8788,7 +8812,7 @@ def import_purchase(request):
                 Org_city = row.get('Org City') if row.get('Org City') is not None else ''
                 Org_mail = row.get('Org Mail') if row.get('Org Mail') is not None else ''
                 if typ == 'Customer':
-                    customer_name = row.get('Customer Name') 
+                    customer_name = row.get('Customer Name (With Salutation)') 
                     customer_mail = row.get('Customer Mail') 
                     customer_source_supply = row.get('Customer Place of Supply') 
                     customer_obj = customer.objects.get(user=request.user,customerName=customer_name,customerEmail=customer_mail)
@@ -9010,13 +9034,6 @@ def purchase_vendor_purchase(request):
                 "error": "Email already exists.",
                 }
             return JsonResponse(response_data, status=400)
-        elif 'Registered' in gsttype:
-            if vendor_table.objects.filter(user = u,gst_number=gstin).exists():
-                response_data = {
-                    "message": "exists",
-                    "error": "GST No already exists.",
-                    }
-                return JsonResponse(response_data, status=400)
         elif vendor_table.objects.filter(user = u,vendor_wphone = w_mobile).exists():
             response_data = {
                 "message": "exists",
@@ -9673,6 +9690,12 @@ def purchase_bill_view(request,id):
     po_table=Purchase_Order.objects.get(id=id)
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
+    pattern2 = r'^\d+$'
+    if po_item.payment_terms:
+        match2 = re.match(pattern2, po_item.payment_terms)
+        if match2:
+            payment2=payment_terms.objects.get(user=request.user,id=po_item.payment_terms)
+            po_item.payment_terms = payment2.Terms
     pcom_state=po_item.source_supply
     pattern = r'\[(.*?)\] (\w+)'
     pcom_match = re.search(pattern, pcom_state)
@@ -9715,6 +9738,12 @@ def purchase_bill_view_by_name(request,id):
     po_table=Purchase_Order.objects.get(id=id)
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
+    pattern2 = r'^\d+$'
+    if po_item.payment_terms:
+        match2 = re.match(pattern2, po_item.payment_terms)
+        if match2:
+            payment2=payment_terms.objects.get(user=request.user,id=po_item.payment_terms)
+            po_item.payment_terms = payment2.Terms
     pcom_state=po_item.source_supply
     pattern = r'\[(.*?)\] (\w+)'
     pcom_match = re.search(pattern, pcom_state)
@@ -9760,6 +9789,12 @@ def purchase_bill_view_by_ordno(request,id):
     po_table=Purchase_Order.objects.get(id=id)
     company=company_details.objects.get(user_id=request.user.id)
     po_item=Purchase_Order.objects.get(id=id)
+    pattern2 = r'^\d+$'
+    if po_item.payment_terms:
+        match2 = re.match(pattern2, po_item.payment_terms)
+        if match2:
+            payment2=payment_terms.objects.get(user=request.user,id=po_item.payment_terms)
+            po_item.payment_terms = payment2.Terms
     pcom_state=po_item.source_supply
     pattern = r'\[(.*?)\] (\w+)'
     pcom_match = re.search(pattern, pcom_state)
@@ -9869,6 +9904,12 @@ def edit(request,pk):
     purchase=Purchase.objects.all()
     bank = Bankcreation.objects.filter(user=request.user)
     po=Purchase_Order.objects.get(id=pk)
+    pattern2 = r'^\d+$'
+    if po.payment_terms:
+        match2 = re.match(pattern2, po.payment_terms)
+        if match2:
+            payment2=payment_terms.objects.get(user=request.user,id=po.payment_terms)
+            po.payment_terms = payment2.Terms
     vname=po.vendor_name.split()
     pofsupply = po.source_supply
     pattern = r"\[.*?\]\s*(\w+)"
@@ -9958,6 +9999,32 @@ def edit_Purchase_order(request,id):
                     os.remove(po_id.document.path)
                 po_id.document=request.FILES.get('file')
             po_id.save()
+            item = request.POST.getlist("item[]")
+            hsn = request.POST.getlist("hsn[]")        
+            quantity = request.POST.getlist("quantity[]")
+            rate = request.POST.getlist("rate[]")
+            tax = request.POST.getlist("tax[]")
+            discount = request.POST.getlist("discount[]")
+            amount = request.POST.getlist("amount[]")
+            obj_dele = Purchase_Order_items.objects.filter(PO=po_id)
+            obj_dele.delete()
+
+            if len(item) == len(quantity) == len(rate) == len(discount) == len(tax) == len(amount):
+                for i in range(len(item)):
+                    created = Purchase_Order_items.objects.create(
+                        item=item[i],
+                        quantity=quantity[i],
+                        hsn=hsn[i],
+                        rate=rate[i],
+                        tax=tax[i],
+                        discount=discount[i],
+                        amount=amount[i],
+                        user=u,
+                        company=company,
+                        PO=po_id
+                    )
+
+            return redirect('purchase_bill_view',id)
         else:
             po_id.vendor_name = request.POST.get('vendor')
             po_id.vendor_mail = request.POST.get('email_inp')
@@ -10002,30 +10069,30 @@ def edit_Purchase_order(request,id):
                 po_id.document=request.FILES.get('file')
             u = User.objects.get(id = request.user.id)
             po_id.save()
-        item = request.POST.getlist("item[]")
-        hsn = request.POST.getlist("hsn[]")        
-        quantity = request.POST.getlist("quantity[]")
-        rate = request.POST.getlist("rate[]")
-        tax = request.POST.getlist("tax[]")
-        discount = request.POST.getlist("discount[]")
-        amount = request.POST.getlist("amount[]")
-        obj_dele = Purchase_Order_items.objects.filter(PO=po_id)
-        obj_dele.delete()
+            item = request.POST.getlist("item[]")
+            hsn = request.POST.getlist("hsn[]")        
+            quantity = request.POST.getlist("quantity[]")
+            rate = request.POST.getlist("rate[]")
+            tax = request.POST.getlist("tax[]")
+            discount = request.POST.getlist("discount[]")
+            amount = request.POST.getlist("amount[]")
+            obj_dele = Purchase_Order_items.objects.filter(PO=po_id)
+            obj_dele.delete()
 
-        if len(item) == len(quantity) == len(rate) == len(discount) == len(tax) == len(amount):
-            for i in range(len(item)):
-                created = Purchase_Order_items.objects.create(
-                    item=item[i],
-                    quantity=quantity[i],
-                    hsn=hsn[i],
-                    rate=rate[i],
-                    tax=tax[i],
-                    discount=discount[i],
-                    amount=amount[i],
-                    user=u,
-                    company=company,
-                    PO=po_id
-                )
+            if len(item) == len(quantity) == len(rate) == len(discount) == len(tax) == len(amount):
+                for i in range(len(item)):
+                    created = Purchase_Order_items.objects.create(
+                        item=item[i],
+                        quantity=quantity[i],
+                        hsn=hsn[i],
+                        rate=rate[i],
+                        tax=tax[i],
+                        discount=discount[i],
+                        amount=amount[i],
+                        user=u,
+                        company=company,
+                        PO=po_id
+                    )
 
             return redirect('purchase_bill_view',id)
     return redirect('purchaseView')
@@ -12999,6 +13066,14 @@ def convert_to_invoice_purchase(request,pk):
     user = request.user
     po_id=Purchase_Order.objects.get(id=pk)
     pos = po_id.source_supply[5:]
+    if po_id.source_supply == '[DNH] Dadra and Nagar Haveli':
+        pos = 'Dadra and Nagar Haveli'
+    pattern2 = r'^\d+$'
+    if po_id.payment_terms:
+        match2 = re.match(pattern2, po_id.payment_terms)
+        if match2:
+            payment2=payment_terms.objects.get(user=request.user,id=po_id.payment_terms)
+            po_id.payment_terms = payment2.Terms
     company = company_details.objects.get(user_id=user.id)
     items = AddItem.objects.filter(user_id=user.id)
     vendors = vendor_table.objects.filter(user_id=user.id)
