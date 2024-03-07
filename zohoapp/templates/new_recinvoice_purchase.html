@@ -340,9 +340,6 @@
                   <div class="d-flex" >
                     <select name='item[]' id="item{{forloop.counter|add:'-1'}}" class="form-control item text-dark bg-light" onchange = "showRate(this.id,this.value);">
                       <option value="{{ri.id}}" selected >{{ri.item}}</option>
-                      {% for i in item %}
-                        <option value="{{i.id}}">{{i.Name}}</option>
-                      {% endfor %}
                     </select>
                     
                   </div>  

@@ -378,7 +378,7 @@
                   <div class="dropdown-menu m-1">
                     <a class="dropdown-item" href="{% url 'purchase_bill_view' po_item.id  %}">All</a>
                 <a class="dropdown-item" href="{% url 'draft' po_item.id  %}">Draft</a>
-                <a class="dropdown-item" href="{% url 'Approved' po_item.id  %}">Approved</a>
+                <a class="dropdown-item" href="{% url 'Approved' po_item.id  %}">Saved</a>
                   </div>
                 </div>
               </div>
@@ -408,7 +408,11 @@
                         </td>
                         <td class="text-right">
                           {{v.grand_total}} <br><br>
+                          {% if v.status == "Draft" %}
                           {{v.status}}
+                          {% else %}
+                          Saved
+                          {% endif %}
                         </td>
                       </tr>
                       {% endfor %}
@@ -462,37 +466,22 @@
                   <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
+                
                 <a href="#" class="text-dark">
                   <button data-toggle="modal" data-target="#commentModal" class="btn btn-outline-warning" title="Comment"><i class="fas fa-comment"></i></button>
                 </a>
+                <button onclick="show_attach()" title="Attach File" class="btn btn-outline-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                        margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
+                        <a class="text-dark" onclick="show_slip()">
+                          <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
                 <a href="{% url 'purchase_delet' po_item.id %}" class="  text-dark">
                   <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
                 </a>
-                <a class="  text-dark" onclick="exportToPDF()">
-                  <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
-                </a>
-                <a class=" text-dark" onclick="printSelectedArea()">
-                  <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
-                  </button>
-                </a>
-                <a class="text-dark" onclick="show_slip()">
-                  <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
-                  <button onclick="show_attach()" class="btn btn-outline-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-                        margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
-                </div>
-            </div><br>
-            <div class="row">
-              <div class="col-md-5">
-              </div>
-
-              <div class="col-md-7" style="text-align: center;">
                 {% if po_item.status == 'Draft' %}
-                  <a class="text-dark"  href="{% url 'change_status_appr' po_item.id %}">
-                    <button class="btn btn-outline-warning" title="Change Status to Approve">Change Status to Approve</button></a>
-                    {% else %}
-                    <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
-                      <button class="btn btn-outline-warning" title="Change Status to Draft">Change Status to Draft</button></a>
-                    {% endif %}
+                <a href="{% url 'change_status_appr' po_item.id %}" class=" text-dark">
+                  <button class="btn btn-outline-warning" title="Save Purchase Order">Convert</button>
+                </a>
+                {% endif %}
                 </div>
             </div><br>
             <div class="row" id="div-to-pdf"
@@ -511,7 +500,7 @@
                   </div>
                 </div>
                 <div class="row mt-3">
-                  <div class="col-5"><label class="text-dark" for="">Reference :</label></div>
+                  <div class="col-5"><label class="text-dark" for="">Reference No :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.ref}}</p>
                   </div>
@@ -531,15 +520,15 @@
                   </div>
                 </div>
                 <div class="row mt-3">
-                  <div class="col-5"><label class="text-dark" for="">GST Treatment :</label></div>
+                  <div class="col-5"><label class="text-dark" for="">Vendor GST Treatment :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">
                       {{po_item.vendor_gst_traet}}</p>
                   </div>
                 </div>
-                {% if po_item.vendor_gst_no %}
+                {% if po_item.vendor_gst_no != "" %}
                 <div class="row mt-3">
-                  <div class="col-5"><label class="text-dark" for="">GST Number :</label></div>
+                  <div class="col-5"><label class="text-dark" for="">Vendor GST Number :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.vendor_gst_no}}
                     </p>
@@ -547,11 +536,76 @@
                 </div>
                 {% endif %}
                 <div class="row mt-3">
-                  <div class="col-5"><label class="text-dark" for="">Place of Supply :</label></div>
+                  <div class="col-5"><label class="text-dark" for="">Vendor Place of Supply :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.source_supply}}</p>
                   </div>
                 </div>
+                {% if po_item.typ == "Customer" %}
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Customer Name :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.customer_name}}</p>
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Customer Email :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.customer_mail}}</p>
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Customer GST Treatment :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.custo.GSTTreatment}}</p>
+                  </div>
+                </div>
+                {% if po_item.custo.GSTTIN != "" %}
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Customer GST Number :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.custo.GSTIN}}</p>
+                  </div>
+                </div>
+                {% endif %}
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Customer Place of Supply :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.customer_source_supply}}</p>
+                  </div>
+                </div>
+                {% else %}
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Organization Name :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.Org_name}}</p>
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Organization Email :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.Org_mail}}</p>
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Organization GST Number :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.Org_gst}}</p>
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Organization Address :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.Org_address}}</p>
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Organization State :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.Org_state}}</p>
+                  </div>
+                </div>
+                {% endif %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Order Date :</label></div>
                   <div class="col-7">
@@ -679,7 +733,6 @@
                     </h2>
                   </div>
                   {% for i in pot %}
-
                   <div class="row mt-2">
                     <div class="col-5"><label for="">Product Name :</label></div>
                     <div class="col-7">
@@ -713,12 +766,21 @@
                       <p class="bold">{{i.discount}}</p>
                     </div>
                   </div>
+                  {% if pcom_state == company.state %}
                   <div class="row mt-2">
                     <div class="col-5"><label for="">Product Tax :</label></div>
                     <div class="col-7">
-                      <p class="bold">{{i.tax}}</p>
+                      <p class="bold">{{i.tax}}% GST</p>
                     </div>
                   </div>
+                  {% else %}
+                  <div class="row mt-2">
+                    <div class="col-5"><label for="">Product Tax :</label></div>
+                    <div class="col-7">
+                      <p class="bold">{{i.tax}}% IGST</p>
+                    </div>
+                  </div>
+                  {% endif %}
                   <div class="row mt-2">
                     <div class="col-5"><label for="">Product Total :</label></div>
                     <div class="col-7">
@@ -772,26 +834,25 @@
                   <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                 </a>
                 <div class="dropdown-menu ">
+                  <!-- <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a> -->
                   <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
+                {% if po_item.status == 'Draft' %}
+                <a href="{% url 'change_status_appr' po_item.id %}" class=" text-dark">
+                  <button class="btn btn-outline-warning" title="Save Purchase Order">Convert</button>
+                </a>
+                {% endif %}
                 <a href="#" class="text-dark">
                   <button data-toggle="modal" data-target="#commentModal" class="btn btn-outline-warning" title="Comment"><i class="fas fa-comment"></i></button>
                 </a>
+                <button onclick="show_attach()" title="Attach File" class="btn btn-outline-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                        margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
+                        <a class="text-dark" onclick="show_slip()">
+                          <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
                 <a href="{% url 'purchase_delet' po_item.id %}" class="  text-dark">
                   <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
                 </a>
-                <a class="  text-dark" onclick="exportToPDF()">
-                  <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
-                </a>
-                <a class=" text-dark" onclick="printSelectedArea()">
-                  <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
-                  </button>
-                </a>
-                <a class="text-dark" onclick="show_slip()">
-                  <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
-                  <button onclick="show_attach()" class="btn btn-outline-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-                        margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
                 </div>
             </div><br>
             <div class="row">
@@ -799,20 +860,21 @@
               </div>
 
               <div class="col-md-7" style="text-align: center;">
-                {% if po_item.status == 'Draft' %}
-                  <a class="text-dark"  href="{% url 'change_status_appr' po_item.id %}">
-                    <button class="btn btn-outline-warning" title="Change Status to Approve">Change Status to Approve</button></a>
-                    {% else %}
-                    <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
-                      <button class="btn btn-outline-warning" title="Change Status to Draft">Change Status to Draft</button></a>
-                    {% endif %}
+                <a class="  text-dark" onclick="exportToPDF4()">
+                  <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
+                </a>
+                <a class=" text-dark" onclick="printSelectedArea4()">
+                  <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
+                  </button>
+                </a>
+                
                 </div>
             </div>
 
             <div style="background-color: rgb(255, 221, 176);" class="mx-2 my-4">
 
               <div class="my-5 slip-page" size="A4">
-                <div class="row" style="margin-top: 20%; " id="printslip">
+                <div class="row" style="margin-top: 20%;" id="printslip">
                   <div class="col-md-3"></div>
                   <div class="col-md-7">
                     <div class="card bg-white" style="border: 1px dotted black;padding: 20px;">
@@ -824,24 +886,29 @@
                           {{company.city}},
                           {{company.state}}
                           {{company.pincode}} <br>
-                          {{ company.contact_number }} <br>{{ company.company_email }}
+                          Phone: {{ company.contact_number }} <br>Email: {{ company.company_email }}
                         </span>
                       </div>
                       <div class="ml-4 mt-2" style="color: black;">
                         <div class="row">
-                          <div class="col-md-6 text-left">Order No:</div>
+                          <div class="col-md-5 text-left"><b>Purchase Order No:</b></div>
                           <div class="col-md-5 text-right">{{po_item.Pur_no}}</div>
                         </div>
                         <div class="row">
-                          <div class="col-md-6 text-left">Vendor Name:</div>
+                          <div class="col-md-5 text-left"><b>Vendor Name:</b></div>
                           <div class="col-md-5 text-right">{{po_item.vendor_name}}</div>
                         </div>
                         <div class="row">
-                          <div class="col-md-6 text-left">Order Date :</div>
+                          <div class="col-md-5 text-left"><b>Vendor Email:</b></div>
+                          <div class="col-md-5 text-right">{{po_item.vendor_mail}}</div>
+                        </div>
+                        
+                        <div class="row">
+                          <div class="col-md-5 text-left"><b>Order Date:</b></div>
                           <div class="col-md-5 text-right">{{po_item.Ord_date | date:'d-m-Y'}}</div>
                         </div>
                         <div class="row">
-                          <div class="col-md-6 text-left">Expect Delivery Date:</div>
+                          <div class="col-md-5 text-left"><b>Expiry Date:</b></div>
                           <div class="col-md-5 text-right">{{po_item.exp_date | date:'d-m-Y'}}</div>
                         </div>
                       </div>
@@ -896,10 +963,10 @@
                           <div class="equal-length-item" style="text-align: center; ">
                             {{i.discount}}
                           </div>
-                          {% if i.PO.source_supply == "[KL] Kerala" %}
-                          <div class="equal-length-item" style="text-align: center; ">{{i.tax}} GST</div>
+                          {% if pcom_state == company.state %}
+                          <div class="equal-length-item" style="text-align: center; ">{{i.tax}}% GST</div>
                             {% else %}
-                            <div class="equal-length-item" style="text-align: center; ">{{i.tax}} IGST</div>
+                            <div class="equal-length-item" style="text-align: center; ">{{i.tax}}% IGST</div>
                           {% endif %}
                           <div class="equal-length-item" style="text-align: center; ">
                             {{i.amount}}
@@ -1039,43 +1106,28 @@
                   <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                 </a>
                 <div class="dropdown-menu ">
+                  <!-- <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a> -->
                   <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
+                
                 <a href="#" class="text-dark">
                   <button data-toggle="modal" data-target="#commentModal" class="btn btn-outline-warning" title="Comment"><i class="fas fa-comment"></i></button>
                 </a>
+                <button onclick="show_attach()" title="Attach File" class="btn btn-outline-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                        margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
+                         <a class="text-dark" onclick="show_slip()">
+                          <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
                 <a href="{% url 'purchase_delet' po_item.id %}" class="  text-dark">
                   <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
                 </a>
-                <a class="  text-dark" onclick="exportToPDF()">
-                  <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
-                </a>
-                <a class=" text-dark" onclick="printSelectedArea()">
-                  <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
-                  </button>
-                </a>
-                <a class="text-dark" onclick="show_slip()">
-                  <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
-                  <button onclick="show_attach()" class="btn btn-outline-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-                        margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
-                </div>
-            </div><br>
-            <div class="row">
-              <div class="col-md-5">
-              </div>
-
-              <div class="col-md-7" style="text-align: center;">
                 {% if po_item.status == 'Draft' %}
-                  <a class="text-dark"  href="{% url 'change_status_appr' po_item.id %}">
-                    <button class="btn btn-outline-warning" title="Change Status to Approve">Change Status to Approve</button></a>
-                    {% else %}
-                    <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
-                      <button class="btn btn-outline-warning" title="Change Status to Draft">Change Status to Draft</button></a>
-                    {% endif %}
+                <a href="{% url 'change_status_appr' po_item.id %}" class=" text-dark">
+                  <button class="btn btn-outline-warning" title="Save Purchase Order">Convert</button>
+                </a>
+                {% endif %}
                 </div>
             </div><br>
-
             <div style="background-color: rgba(255, 221, 176, 0);text-align: center;" class="mx-2 my-4">
 
               <table class="table text-white">
@@ -1146,42 +1198,28 @@
                     <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                   </a>
                   <div class="dropdown-menu ">
+                    <!-- <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a> -->
                     <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
                     <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                   </div>
+                  
                   <a href="#" class="text-dark">
                     <button data-toggle="modal" data-target="#commentModal" class="btn btn-outline-warning" title="Comment"><i class="fas fa-comment"></i></button>
                   </a>
+                  <button onclick="show_attach()" title="Attach File" class="btn btn-outline-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                          margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
+                  <a class="text-dark" onclick="show_slip()">
+                    <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
                   <a href="{% url 'purchase_delet' po_item.id %}" class="  text-dark">
                     <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
                   </a>
-                  <a class="  text-dark" onclick="exportToPDF()">
-                    <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
+                  {% if po_item.status == 'Draft' %}
+                  <a href="{% url 'change_status_appr' po_item.id %}" class=" text-dark">
+                    <button class="btn btn-outline-warning" title="Save Purchase Order">Convert</button>
                   </a>
-                  <a class=" text-dark" onclick="printSelectedArea()">
-                    <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
-                    </button>
-                  </a>
-                  <a class="text-dark" onclick="show_slip()">
-                    <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
-                    <button onclick="show_attach()" class="btn btn-outline-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-                        margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
+                  {% endif %}
                   </div>
               </div><br>
-              <div class="row">
-                <div class="col-md-5">
-                </div>
-  
-                <div class="col-md-7" style="text-align: center;">
-                  {% if po_item.status == 'Draft' %}
-                    <a class="text-dark"  href="{% url 'change_status_appr' po_item.id %}">
-                      <button class="btn btn-outline-warning" title="Change Status to Approve">Change Status to Approve</button></a>
-                      {% else %}
-                      <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
-                        <button class="btn btn-outline-warning" title="Change Status to Draft">Change Status to Draft</button></a>
-                      {% endif %}
-                  </div>
-              </div>
   
               <div style="background-color: rgba(255, 221, 176, 0);text-align: center;" class="mx-2 my-4 pt-5">
   
@@ -1247,7 +1285,6 @@
                 </div>
 
               </div>
-
               <div class="col-md-7" style="text-align: center;">
                 <a href="{% url 'edit' po_item.id %}" class=" text-dark">
                   <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
@@ -1256,26 +1293,26 @@
                   <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                 </a>
                 <div class="dropdown-menu ">
+                  <!-- <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a> -->
                   <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
+                
                 <a href="#" class="text-dark">
                   <button data-toggle="modal" data-target="#commentModal" class="btn btn-outline-warning" title="Comment"><i class="fas fa-comment"></i></button>
                 </a>
+                <button onclick="show_attach()" title="Attach File" class="btn btn-outline-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                        margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
+                <a class="text-dark" onclick="show_slip()">
+                  <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
                 <a href="{% url 'purchase_delet' po_item.id %}" class="  text-dark">
                   <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
                 </a>
-                <a class="  text-dark" onclick="exportToPDF()">
-                  <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
+                {% if po_item.status == 'Draft' %}
+                <a href="{% url 'change_status_appr' po_item.id %}" class=" text-dark">
+                  <button class="btn btn-outline-warning" title="Save Purchase Order">Convert</button>
                 </a>
-                <a class=" text-dark" onclick="printSelectedArea()">
-                  <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
-                  </button>
-                </a>
-                <a class="text-dark" onclick="show_slip()">
-                  <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
-                  <button onclick="show_attach()" class="btn btn-outline-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-                        margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
+                {% endif %}
                 </div>
             </div><br>
             <div class="row">
@@ -1283,15 +1320,16 @@
               </div>
 
               <div class="col-md-7" style="text-align: center;">
-                {% if po_item.status == 'Draft' %}
-                  <a class="text-dark"  href="{% url 'change_status_appr' po_item.id %}">
-                    <button class="btn btn-outline-warning" title="Change Status to Approve">Change Status to Approve</button></a>
-                    {% else %}
-                    <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
-                      <button class="btn btn-outline-warning" title="Change Status to Draft">Change Status to Draft</button></a>
-                    {% endif %}
+                <a class="  text-dark" onclick="exportToPDF()">
+                  <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
+                </a>
+                <a class=" text-dark" onclick="printSelectedArea()">
+                  <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
+                  </button>
+                </a>
+                
                 </div>
-            </div><br>
+            </div>
             <div class="mt-3 template2 whatToPrint2" style="height: auto;width: 100%; margin-left: -1vh">
 
               <section id="selected-area" style="background-color: rgb(255, 221, 176);height: auto;" class=" p-2 m-2">
@@ -1302,9 +1340,10 @@
                   </div> -->
                   <div style="background: #8b3131;color: white;" class="company-info">
                     <h2 class="text-white">{{company.company_name}}</h2>
-                    <p class="text-white"> {{company.address}}<br>{{company.city}}</p>
-                    <p> {{company.contact_number}}</p>
-                    <p>{{company.company_email}}</p>
+                    <p class="text-white">Address: {{company.address}}</p>
+                    <p class="text-white">State: {{company.state}}</p>
+                    <p>Phone: {{company.contact_number}}</p>
+                    <p>Email: {{company.company_email}}</p>
                   </div>
                 </header>
                 <div class="invoice-box">
@@ -1323,7 +1362,7 @@
                           <td class="table-cell text-black" style="border: none;">{{po_item.Ord_date}}</td>
                         </tr>
                         <tr>
-                          <td class="table-cell text-black" style="border: none;">Expect Delivery Date:</td>
+                          <td class="table-cell text-black" style="border: none;">Expiry Date:</td>
                           <td class="table-cell text-black" style="border: none;">:</td>
                           <td class="table-cell text-black" style="border: none;">{{po_item.exp_date}}</td>
                         </tr>
@@ -1332,7 +1371,7 @@
                     <div class="client-details" style="width: 50vh;">
                       <table>
                         <tr>
-                          <td class="table-cell text-black" style="border: none;"><b>{{po_item.vendor_name}}</b>
+                          <td class="table-cell text-black" style="border: none;"><b>Bill To: {{po_item.vendor_name}}</b>
                           </td>
                         </tr>
                         {% if po_item.vendor_mail %}
@@ -1345,13 +1384,52 @@
                         </tr>
                         {% if po_item.vendor_gst_no %}
                         <tr>
-                          <td class="table-cell text-black" style="border: none;">{{po_item.vendor_gst_no}}</td>
+                          <td class="table-cell text-black" style="border: none;">GST No: {{po_item.vendor_gst_no}}</td>
                         </tr>
                         {% endif %}
                       </table>
                     </div>
                   </div>
-
+                  <div class="invoice-header">
+                    <div class="invoice-details text-dark">
+                    </div>
+                    <div class="client-details" style="width: 50vh;">
+                      {% if po_item.typ == "Customer" %}
+                      <table>
+                        <tr>
+                          <td class="table-cell text-black" style="border: none;"><b>Deliver To: {{po_item.customer_name}}</b>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.customer_mail}}</td>
+                        </tr>
+                        <tr>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.custo.GSTTreatment}}</td>
+                        </tr>
+                        {% if po_item.custo.GSTIN != "" %}
+                        <tr>
+                          <td class="table-cell text-black" style="border: none;">GST No: {{po_item.custo.GSTIN}}</td>
+                        </tr>
+                        {% endif %}
+                      </table>
+                      {% else %}
+                      <table>
+                        <tr>
+                          <td class="table-cell text-black" style="border: none;"><b>Deliver To: {{po_item.Org_name}}</b>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.Org_mail}}</td>
+                        </tr>
+                        {% if po_item.Org_gst != "" %}
+                        <tr>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.Org_gst}}</td>
+                        </tr>
+                        {% endif %}
+                      </table>
+                      {% endif %}
+                    </div>
+                  </div>
                   <table>
                     <thead>
                       <tr>
@@ -1361,7 +1439,7 @@
                         <th id="th" style="text-align: center;">Quantity</th>
                         <th id="th" style="text-align: center;">Price</th>
                         <th id="th" style="text-align: center;">Discount</th>
-                        <th id="th" style="text-align: center;">Tax %</th>
+                        <th id="th" style="text-align: center;">Tax(%)</th>
                         <th id="th" style="text-align: center;"> Total</th>
                       </tr>
                     </thead>
@@ -1374,9 +1452,9 @@
                         <td style="text-align: center;">{{i.rate}}</td>
                         <td style="text-align: center;">{{i.discount}}</td>
                         {% if pcom_state == company.state %}
-                               <td>{{i.tax}} GST</td>
+                               <td>{{i.tax}}% GST</td>
                                {% else %}
-                               <td>{{i.tax}} IGST</td>
+                               <td>{{i.tax}}% IGST</td>
                                {% endif %}
                         <td style="text-align: center;">{{i.amount}}</td>
                       </tr>
@@ -1504,26 +1582,26 @@
                   <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                 </a>
                 <div class="dropdown-menu ">
+                  <!-- <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a> -->
                   <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
+                
                 <a href="#" class="text-dark">
                   <button data-toggle="modal" data-target="#commentModal" class="btn btn-outline-warning" title="Comment"><i class="fas fa-comment"></i></button>
                 </a>
+                <button onclick="show_attach()" title="Attach File" class="btn btn-outline-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                        margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
+                        <a class="text-dark" onclick="show_slip()">
+                          <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
                 <a href="{% url 'purchase_delet' po_item.id %}" class="  text-dark">
                   <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
                 </a>
-                <a class="  text-dark" onclick="exportToPDF()">
-                  <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
+                {% if po_item.status == 'Draft' %}
+                <a href="{% url 'change_status_appr' po_item.id %}" class=" text-dark">
+                  <button class="btn btn-outline-warning" title="Save Purchase Order">Convert</button>
                 </a>
-                <a class=" text-dark" onclick="printSelectedArea()">
-                  <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
-                  </button>
-                </a>
-                <a class="text-dark" onclick="show_slip()">
-                  <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
-                  <button onclick="show_attach()" class="btn btn-outline-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-                        margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
+                {% endif %}
                 </div>
             </div><br>
             <div class="row">
@@ -1531,15 +1609,16 @@
               </div>
 
               <div class="col-md-7" style="text-align: center;">
-                {% if po_item.status == 'Draft' %}
-                  <a class="text-dark"  href="{% url 'change_status_appr' po_item.id %}">
-                    <button class="btn btn-outline-warning" title="Change Status to Approve">Change Status to Approve</button></a>
-                    {% else %}
-                    <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
-                      <button class="btn btn-outline-warning" title="Change Status to Draft">Change Status to Draft</button></a>
-                    {% endif %}
+                <a class="  text-dark" onclick="exportToPDF2()">
+                  <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
+                </a>
+                <a class=" text-dark" onclick="printSelectedArea2()">
+                  <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
+                  </button>
+                </a>
+                
                 </div>
-            </div><br>
+            </div>
             <div id="template1" class="printTemplates template1">
               <div class="my-3 page" style="background-color: rgb(255, 221, 176);" id="selected-area2">
                 <div class="p-5">
@@ -1550,25 +1629,25 @@
                     <div class="col-md-7">
                       <h4 class="text-secondary" style="font-weight: bold;">{{company.company_name }}</h4>
                       <p class="address" style="font-weight: bold;color: #000;">
-                        {{company.address}}<br>
-                        {{company.city}},
-                        {{company.state}}<br>
-                        {{company.pincode}}<br>
-                        {{company.company_email}}<br>
-                        {{company.contact_number}}<br>
+                        Address: {{company.address}}<br>
+                        City: {{company.city}}<br>
+                        State: {{company.state}}<br>
+                        Pin: {{company.pincode}}<br>
+                        Email: {{company.company_email}}<br>
+                        Phone: {{company.contact_number}}<br>
                       </p>
                     </div>
                     <div class="col-md-5">
                       <div class="top-left">
                         <div class="graphic-path">
-                          <p>Order No. :<b>{{po_item.Pur_no}}</b></p>
+                          <p>Purchase Order No. :<b>{{po_item.Pur_no}}</b></p>
                         </div>
                         <div class="mt-2">
 
                           <p style="color: #000;">Purchase Order Date:
                             <b>{{ po_item.Ord_date | date:'d-m-Y'}}</b>
                           </p>
-                          <p style="color: #000;">Expect Delivery Date:
+                          <p style="color: #000;">Expiry Date:
                             <b>{{ po_item.exp_date | date:'d-m-Y'}}</b>
                           </p>
                         </div>
@@ -1581,36 +1660,86 @@
                     </div>
 
                   </section>
-
                   <section class="store-user">
                     <div class="col-12">
                       <div class="row bb pb-2 mt-3">
                         <div class="col-4 pl-0">
-                          <label class="text-white bg-secondary w-100 p-1"><b>BILL
-                              TO</b></label>
-                          <h5 class="" style="font-weight: bold; color: #8b3131;">
+                          <label class="text-white bg-success w-100 p-1"><b>BILL TO</b></label>
+                          <h5 class="pt-2" style="font-weight: bold; color: #8b3131;">
                             {{po_item.vendor_name}}</h5>
                           <p class="address" style="font-weight: bold;color: #000;">
-                            {{po_item.vendor_mail}}
+                            Email: {{po_item.vendor_mail}}
                             <br>
-                            {{sale.customer.Address1}}
+                          </p>
+                        </div>
+                        <div class="col-4"></div>
+                        <div class="col-4 pr-0">
+                          <label class="text-white bg-success w-100 p-1"><b>GST Details</b></label>
+                          <h5 class="pt-2" style="font-weight: bold; color: #8b3131;">
+                            {{po_item.vendor_gst_traet}}</h5>
+                          {% if po_item.vendor_gst_no %}
+                          <p class="address" style="font-weight: bold;color: #000;">
+                            GST No: {{po_item.vendor_gst_no}}
+                          </p>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <section class="store-user">
+                    {% if po_item.typ == "Customer" %}
+                    <div class="col-12">
+                      <div class="row bb pb-2 mt-3">
+                        <div class="col-4 pl-0">
+                          <label class="text-white bg-secondary w-100 p-1"><b>DELIVER TO</b></label>
+                          <h5 class="pt-2" style="font-weight: bold; color: #8b3131;">
+                            {{po_item.customer_name}}</h5>
+                          <p class="address" style="font-weight: bold;color: #000;">
+                            Email: {{po_item.customer_mail}}
                             <br>
-
-                            <span>Mob: </span><b>{{sale.customer.phone1}}</b>
+                            Place of Supply: {{po_item.customer_source_supply}}
+                            <br>
                           </p>
                         </div>
                         <div class="col-4"></div>
                         <div class="col-4 pr-0">
                           <label class="text-white bg-secondary w-100 p-1"><b>GST Details</b></label>
-                          <h5 class="" style="font-weight: bold; color: #8b3131;">
-                            {{po_item.vendor_gst_traet}}</h5>
+                          <h5 class="pt-2" style="font-weight: bold; color: #8b3131;">
+                            {{po_item.custo.GSTTreatment}}</h5>
+                          {% if po_item.custo.GSTIN %}
                           <p class="address" style="font-weight: bold;color: #000;">
-                            {{po_item.vendor_gst_no}}
+                            GST No: {{po_item.custo.GSTIN}}
                           </p>
+                          {% endif %}
                         </div>
                       </div>
-
                     </div>
+                    {% else %}
+                    <div class="col-12">
+                      <div class="row bb pb-2 mt-3">
+                        <div class="col-4 pl-0">
+                          <label class="text-white bg-secondary w-100 p-1"><b>DELIVER TO</b></label>
+                          <h5 class="pt-2" style="font-weight: bold; color: #8b3131;">
+                            {{po_item.Org_name}}</h5>
+                          <p class="address" style="font-weight: bold;color: #000;">
+                            Email: {{po_item.Org_mail}}
+                            <br>
+                            Address: {{po_item.Org_address}}
+                            <br>
+                          </p>
+                        </div>
+                        <div class="col-4"></div>
+                        <div class="col-4 pr-0">
+                          <label class="text-white bg-secondary w-100 p-1"><b>GST Details</b></label>
+                          {% if po_item.Org_gst != "" %}
+                          <p class="address" style="font-weight: bold;color: #000;">
+                            GST No: {{po_item.Org_gst}}
+                          </p>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                    {% endif %}
                   </section>
 
                   <section class="product-area mt-2">
@@ -1622,7 +1751,7 @@
                           <th class="text-center" style="color:#8b3131;">Quantity</th>
                           <th class="text-center" style="color:#8b3131;">Price</th>
                           <th class="text-center" style="color:#8b3131;">Discount</th>
-                          <th class="text-center" style="color:#8b3131;">Tax %</th>
+                          <th class="text-center" style="color:#8b3131;">Tax(%)</th>
                           <th class="text-center" style="color:#8b3131;">Total</th>
                         </tr>
                       </thead>
@@ -1635,9 +1764,9 @@
                           <td class="text-center" style="color:#000">{{i.rate}}</td>
                           <td class="text-center" style="color:#000">{{ i.discount }}</td>
                           {% if pcom_state == company.state %}
-                          <td class="text-center" style="color:#000">{{i.tax}} GST</td>
+                          <td class="text-center" style="color:#000">{{i.tax}}% GST</td>
                           {% else %}
-                          <td class="text-center" style="color:#000">{{i.tax}} IGST</td>
+                          <td class="text-center" style="color:#000">{{i.tax}}% IGST</td>
                           {% endif %}
                           <td class="text-center" style="color:#000">{{i.amount}}</td>
                         </tr>
@@ -1804,26 +1933,26 @@
                   <button class="btn btn-outline-warning " title="Share"><i class="fas fa-share"></i></button>
                 </a>
                 <div class="dropdown-menu ">
+                  <!-- <a class="dropdown-item" href="{% url 'EmailAttachementView_purchase' %}">GMAIL</a> -->
                   <a class="dropdown-item" data-target="#shareBillEmail" data-toggle="modal">GMAIL</a>
                   <a class="dropdown-item" href="javascript:void(0);" onclick="shareOnWhatsApp()">WhatsApp</a>
                 </div>
+                
                 <a href="#" class="text-dark">
                   <button data-toggle="modal" data-target="#commentModal" class="btn btn-outline-warning" title="Comment"><i class="fas fa-comment"></i></button>
                 </a>
+                <button onclick="show_attach()" title="Attach File" class="btn btn-outline-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                        margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
+                        <a class="text-dark" onclick="show_slip()">
+                          <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
                 <a href="{% url 'purchase_delet' po_item.id %}" class="  text-dark">
                   <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
                 </a>
-                <a class="  text-dark" onclick="exportToPDF()">
-                  <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
+                {% if po_item.status == 'Draft' %}
+                <a href="{% url 'change_status_appr' po_item.id %}" class=" text-dark">
+                  <button class="btn btn-outline-warning" title="Save Purchase Order">Convert</button>
                 </a>
-                <a class=" text-dark" onclick="printSelectedArea()">
-                  <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
-                  </button>
-                </a>
-                <a class="text-dark" onclick="show_slip()">
-                  <button class="btn btn-outline-warning" title="Slip"><i class="fas fa-receipt"></i></button></a>
-                  <button onclick="show_attach()" class="btn btn-outline-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-                        margin-right: 4px;"><i class="fas fa-paperclip"></i></button>
+                {% endif %}
                 </div>
             </div><br>
             <div class="row">
@@ -1831,13 +1960,14 @@
               </div>
 
               <div class="col-md-7" style="text-align: center;">
-                {% if po_item.status == 'Draft' %}
-                  <a class="text-dark"  href="{% url 'change_status_appr' po_item.id %}">
-                    <button class="btn btn-outline-warning" title="Change Status to Approve">Change Status to Approve</button></a>
-                    {% else %}
-                    <a class="text-dark"  href="{% url 'change_status_draft' po_item.id %}">
-                      <button class="btn btn-outline-warning" title="Change Status to Draft">Change Status to Draft</button></a>
-                    {% endif %}
+                <a class="  text-dark" onclick="exportToPDF3()">
+                  <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
+                </a>
+                <a class=" text-dark" onclick="printSelectedArea3()">
+                  <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
+                  </button>
+                </a>
+                
                 </div>
             </div>
             <div id="template3" class="template3">
@@ -1866,37 +1996,39 @@
                           <p>FROM,</p>
                           <h5>{{company.company_name }}</h5>
                           <p class="address "> {{company.address}}<br>
-                            {{company.city}},
+                            {{company.city}}<br>
                             {{company.state}}<br>
-                            {{company.pincode}}<br>
+                            Pin: {{company.pincode}}<br>
                           </p>
 
                         </div>
                         <div class="col-4">
-                          <p>TO,</p>
+                          <p>Bill To,</p>
                           <h5>{{po_item.vendor_name}}</h5>
                           <p class="address col-9" style="margin-left: 0px;">
-                            {{po_item.vendor_mail}}</p><br>
-                          <p class="address col-9">{{po_item.vendor_gst_traet}}</p><br>
-                          <p class="address col-9">{{po_item.vendor_gst_no}}</p>
-                          <p class="address col-9">{{po_item.source_supply}}</p>
+                            {{po_item.vendor_mail}}</p>
+                          <p class="address col-9">{{po_item.vendor_gst_traet}}</p>
+                          <p class="address col-9">GST No: {{po_item.vendor_gst_no}}</p>
+                          <p class="address col-9">Place of Supply: {{po_item.source_supply}}</p>
 
                         </div>
                         <div class="col-4">
-                          <p>Deliver TO,</p>
+                          <p>Deliver To,</p>
                           {% if po_item.customer_name == '' %}
                           <h5>{{po_item.Org_name}}</h5>
                           <p class="address col-9" style="margin-left: 0px;">
-                            {{po_item.Org_address}}</p><br>
-                          <p class="address col-9">{{po_item.Org_gst}}</p><br>
+                            {{po_item.Org_address}}</p>
+                          <p class="address col-9">GST No: {{po_item.Org_gst}}</p>
+                          <p class="address col-9">GST No: {{po_item.Org_address}}</p>
+                          <p class="address col-9">GST No: {{po_item.Org_state}}</p>
                           {% else %}
                           <h5>{{po_item.customer_name}}</h5>
                           <p class="address col-9" style="margin-left: 0px;">
-                            {{po_item.customer_mail}}</p><br>
-                          <p class="address col-9">{{po_item.customer_address}}</p><br>
-                          <p class="address col-9">{{po_item.custo.GSTTreatment}}</p><br>
-                          <p class="address col-9">{{po_item.custo.GSTIN}}</p>
-                          <p class="address col-9">{{po_item.customer_source_supply}}</p>
+                            {{po_item.customer_mail}}</p>
+                          <p class="address col-9">{{po_item.customer_address}}</p>
+                          <p class="address col-9">{{po_item.custo.GSTTreatment}}</p>
+                          <p class="address col-9">GST No: {{po_item.custo.GSTIN}}</p>
+                          <p class="address col-9">Place of Supply: {{po_item.customer_source_supply}}</p>
                           {% endif %}
                         </div>
                       </div>
@@ -1923,7 +2055,7 @@
                           <td style="font-weight:bold; color:black">Quantity</td>
                           <td style="font-weight:bold; color:black">Price</td>
                           <td style="font-weight:bold; color:black">Discount</td>
-                          <td style="font-weight:bold; color:black">Tax %</td>
+                          <td style="font-weight:bold; color:black">Tax(%)</td>
                           <td style="font-weight:bold; color:black">Total</td>
 
                         </tr>
@@ -1938,9 +2070,9 @@
                           <td style="color:black">{{j.rate}} </td>
                           <td style="color:black">{{j.discount}} </td>
                           {% if pcom_state == company.state %}
-                          <td style="color:black">{{j.tax}} GST</td>
+                          <td style="color:black">{{j.tax}}% GST</td>
                           {% else %}
-                          <td style="color:black">{{j.tax}} IGST</td>
+                          <td style="color:black">{{j.tax}}% IGST</td>
                           {% endif %}
                           <td style="color:black">{{j.amount}}</td>
 
@@ -2073,7 +2205,7 @@
             <div class="modal-dialog modal-xl">
               <div class="modal-content" style="background: rgb(32, 35, 37);border-radius: 20px;">
                 <div class="modal-header" style="background: rgb(32, 35, 37);">
-                  <h5 class="m-3 text-uppercase" id="shareBillEmailLabel">Share Purchase Bill Via Email</h5>
+                  <h5 class="m-3 text-uppercase" id="shareBillEmailLabel">Share Purchase Order Via Email</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                       aria-hidden="true">&times;</span></button>
                 </div>
@@ -2233,25 +2365,25 @@
     var content = document.getElementById('selected-area');
     html2pdf()
       .from(content)
-      .save('{{sale.sales_no}}' + '.pdf')
+      .save('purchase_order' + '.pdf')
   }
   function exportToPDF2() {
     var content = document.getElementById('selected-area2');
     html2pdf()
       .from(content)
-      .save('{{sale.sales_no}}' + '.pdf')
+      .save('purchase_order' + '.pdf')
   }
   function exportToPDF3() {
     var content = document.getElementById('selected-area3');
     html2pdf()
       .from(content)
-      .save('{{sale.sales_no}}' + '.pdf')
+      .save('purchase_order' + '.pdf')
   }
   function exportToPDF4() {
     var content = document.getElementById('printslip');
     html2pdf()
       .from(content)
-      .save('{{sale.sales_no}}' + '.pdf')
+      .save('purchase_order_slip' + '.pdf')
   }
 
 </script>

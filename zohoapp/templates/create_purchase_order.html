@@ -150,7 +150,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
   </div>
   <div>
   <div class="card radius-15 p-5">
-    <form action="{% url 'create_Purchase_order' %}" class="my-2" method="post" enctype="multipart/form-data">
+    <form id="myForm" class="my-2" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="row">
         <input type="hidden" id="company_state" value="{{company.state}}" readonly>
@@ -531,7 +531,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
       </div>
       <div class="row mt-2">
         <div class="col-md-3">
-          <label for="date2">Expected Delivery On</label>
+          <label for="date2">Expiry Date</label>
         </div>
         <div class="col-md-3">
           <input type="date" class="form-control bg-light text-dark" id="date2" name="end_date" readonly required>
@@ -786,14 +786,25 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
        
     
      
-        <input style="width: 150px;margin-right: 2rem;" type="submit" class="btn btn-primary mt-2" value="Save">
+        <input style="width: 150px;margin-right: 2rem;" type="submit" class="btn btn-primary mt-2" value="Save" onclick="submitForm('save')">
+        <input style="width: 150px;margin-right: 2rem;" type="submit" class="btn btn-warning mt-2" value="Draft" onclick="submitForm('draft')">
            <input style="width: 150px;margin-right: 2rem;" class="btn btn-danger mt-2" type="reset" value="Cancel">
      
         
        
       </div>
     </form>
-
+    <script>
+      function submitForm(action) {
+        var form = document.getElementById("myForm");
+        if (action === 'save') {
+          form.action = "{% url 'create_Purchase_order_save' %}"; // Change the action URL for Save button
+        } else if (action === 'draft') {
+          form.action = "{% url 'create_Purchase_order' %}"; // Change the action URL for Update button
+        }
+        form.submit(); // Submit the form
+      }
+    </script>
     <!-- modal vendor -->
 
     <div class="modal fade" id="newvendor">

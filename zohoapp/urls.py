@@ -270,6 +270,7 @@ urlpatterns = [
     
     path('vendor_det',views.vendor_det,name='vendor_det'),
     path('create_Purchase_order',views.create_Purchase_order,name='create_Purchase_order'),
+    path('create_Purchase_order_save',views.create_Purchase_order_save,name='create_Purchase_order_save'),
     path('purchase_unit',views.purchase_unit,name='purchase_unit'),
     path('purchase_unit_dropdown',views.purchase_unit_dropdown,name='purchase_unit_dropdown'),
 

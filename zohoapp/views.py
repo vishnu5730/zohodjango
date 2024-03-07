@@ -1258,7 +1258,9 @@ def sharePurchaseBillToEmail(request,id):
                 pcom_state=po_item.source_supply
                 pattern = r'\[(.*?)\] (\w+)'
                 pcom_match = re.search(pattern, pcom_state)
-                if pcom_match:
+                if pcom_state == '[DNH] Dadra and Nagar Haveli':
+                    pcom_state = 'Dadra and Nagar Haveli'
+                elif pcom_match:
                     pcom_state = pcom_match.group(2)
                 name = po_item.vendor_name.split(' ')
                 if len(name) == 3:
@@ -4773,7 +4775,7 @@ def add_customer_for_sorder_purchase(request):
                                Facebook=fbk,Twitter=twtr
                                  ,country=ctry,Address1=addres,Address2=adress2,
                                   city=shipcity,state=shipstate,zipcode=bzip,phone1=wphone,
-                                   fax=shipfax,
+                                   fax=shipfax,status="Active",
                                   user=u ,GSTIN=gstin,pan_no=panno)
             if customer.objects.filter(user=u,pan_no=panno).exists():
                 response_data = {
@@ -7148,7 +7150,7 @@ def vendor_dropdown(request):
     user = User.objects.get(id=request.user.id)
 
     options = {}
-    option_objects = vendor_table.objects.filter(user = user)
+    option_objects = vendor_table.objects.filter(user = user,status="Active")
     for option in option_objects:
         
         options[option.id] = [option.salutation, option.first_name, option.last_name, option.id]
@@ -7158,7 +7160,7 @@ def vendor_dropdown(request):
 def custom_dropdown(request):
     user = User.objects.get(id=request.user.id)
     options = {}
-    option_objects = customer.objects.filter(user = user)
+    option_objects = customer.objects.filter(user = user,status='Active')
     for option in option_objects:
         options[option.id] = [option.customerName,option.id]
     return JsonResponse(options)
@@ -7268,7 +7270,7 @@ def item_dropdown(request):
     user = User.objects.get(id=request.user.id)
 
     options = {}
-    option_objects = AddItem.objects.filter(user = request.user)
+    option_objects = AddItem.objects.filter(user = request.user,satus='Active')
     for option in option_objects:
         options[option.id] = option.Name
 
@@ -8627,10 +8629,10 @@ def payment_edit_view(request, pk):
     
 def purchase_order(request):
     company=company_details.objects.get(user=request.user)
-    vendor=vendor_table.objects.filter(user=request.user)
-    cust=customer.objects.filter(user = request.user)
+    vendor=vendor_table.objects.filter(user=request.user,status="Active")
+    cust=customer.objects.filter(user = request.user,status="Active")
     payment=payment_terms.objects.filter(user=request.user)
-    item = AddItem.objects.filter(user=request.user)
+    item = AddItem.objects.filter(user=request.user,satus='Active')
     account=Account.objects.all()
     unit=Unit.objects.all()
     sales=Sales.objects.all()
@@ -9678,6 +9680,213 @@ def create_Purchase_order(request):
         return redirect('purchaseView')
     return render(request,'create_purchase_order.html')
 
+@login_required(login_url='login')
+def create_Purchase_order_save(request):
+
+    company = company_details.objects.get(user = request.user)
+    if request.method == 'POST':
+        typ=request.POST.get('option')
+        vname = request.POST.get('vendor')
+        vmail = request.POST.get('email_inp')
+        vgst_t = request.POST.get('gst_trt_inp')
+        vgst_n = request.POST.get('gstin_inp')
+            
+        orgname = request.POST.get('orgName')
+        org_gst = request.POST.get('gstNumber')
+        org_address = request.POST.get('orgAddress')
+        org_street = request.POST.get('orgstreet')
+        org_city = request.POST.get('orgcity')
+        org_state = request.POST.get('orgstate')
+            
+        cname = request.POST.get('custom')
+        
+        cmail = request.POST.get('custMail')
+        caddress = request.POST.get('custAddress')
+        cstreet = request.POST.get('custStreet')
+        ccity = request.POST.get('custcity')
+        cstate = request.POST.get('custstate')
+        csrc_supply = request.POST.get('cust_srcofsupply')
+        src_supply = request.POST.get('srcofsupply')
+        po = request.POST['pur_ord']
+        if Purchase_Order.objects.filter(Pur_no=po).exists():
+            messages.error(request, 'Purchase order no already exists!')
+            return redirect('purchase_order')
+        ref = request.POST['ref']
+        terms1 = request.POST['terms']
+        pay=payment_terms.objects.get(id=terms1)
+        terms=pay.Terms
+        start = request.POST.get('start_date')
+        end =  request.POST.get('end_date')
+        sub_total =request.POST['subtotal']
+        sgst=request.POST['sgst']
+        cgst=request.POST['cgst']
+        igst=request.POST['igst']
+        tax = request.POST['total_taxamount']
+        shipping_charge= request.POST['shipping_charge']
+        grand_total=request.POST['grandtotal']
+        adjustment_charge= request.POST['adjustment_charge']
+        advance= request.POST['advance']
+        note=request.POST['customer_note']
+        payment_type=request.POST['ptype']
+        cheque_id=request.POST['cheque_id']
+        upi_id=request.POST['upi_id']
+        terms_con = request.POST['tearms_conditions']
+        orgMail=request.POST.get('orgMail')
+        u = User.objects.get(id = request.user.id)
+        last_reference = purchaseOrderReference.objects.filter(user=request.user.id).last()
+        if last_reference == None:
+            refe = purchaseOrderReference(reference = int(ref),user=u)
+            refe.save()
+        else:
+            last_reference.reference = int(ref)
+            last_reference.save()
+        if typ=='Organization':
+            purchase = Purchase_Order(vendor_name=vname,
+                                    vendor_mail=vmail,
+                                    vendor_gst_traet=vgst_t,
+                                    vendor_gst_no=vgst_n,
+                                    Org_name=orgname,
+                                    Org_address=org_address,
+                                    Org_gst=org_gst,
+                                    Org_street=org_street,
+                                    Org_city=org_city,
+                                    Org_state=org_state,
+                                    Org_mail=orgMail,
+                                    Pur_no=po,
+                                    ref=ref,
+                                    customer_name = '',
+                                    customer_mail='',
+                                    customer_address='',
+                                    customer_street='',
+                                    customer_city='',
+                                    customer_state='',
+                                    source_supply=src_supply,
+                                    payment_terms = terms,
+                                    Ord_date = start,
+                                    exp_date = end,
+                                    sub_total=sub_total,
+                                    sgst=sgst,
+                                    cgst=cgst,
+                                    igst=igst,
+                                    cheque_id=cheque_id,
+                                    upi_id=upi_id,
+                                    tax_amount=tax,
+                                    shipping_charge = shipping_charge,
+                                    grand_total=grand_total,
+                                    adjustment_charge = adjustment_charge,
+                                    payed = advance,
+                                    note=note,
+                                    payment_type = payment_type,
+                                    term=terms_con,
+                                    status="Approved",
+                                    company=company,
+                                    user = u,typ=typ)
+            purchase.save()
+
+            p_bill = Purchase_Order.objects.get(id=purchase.id)
+
+            if len(request.FILES) != 0:
+                p_bill.document=request.FILES['file'] 
+                p_bill.save()
+            item = request.POST.getlist("item[]")
+            hsn = request.POST.getlist("hsn[]")
+            quantity = request.POST.getlist("quantity[]")
+            rate = request.POST.getlist("rate[]")
+            tax = request.POST.getlist("tax[]")
+            discount = request.POST.getlist("discount[]")
+            amount = request.POST.getlist("amount[]")
+            if len(item) == len(quantity) == len(rate) == len(discount) == len(tax) == len(amount):
+                for i in range(len(item)):
+                    created = Purchase_Order_items.objects.create(
+                        item=item[i],
+                        hsn=hsn[i],
+                        quantity=quantity[i],
+                        rate=rate[i],
+                        tax=tax[i],
+                        discount=discount[i],
+                        amount=amount[i],
+                        user=u,
+                        company=company,
+                        PO=p_bill
+                    )
+        else:
+            cus=customer.objects.get(customerName=cname)   
+            purchase = Purchase_Order(vendor_name=vname,
+                                    vendor_mail=vmail,
+                                    vendor_gst_traet=vgst_t,
+                                    vendor_gst_no=vgst_n,
+                                    customer_name = cname,
+                                    customer_mail=cmail,
+                                    customer_street=cstreet,
+                                    customer_city=ccity,
+                                    customer_state=cstate,
+                                    Pur_no=po,
+                                    ref=ref,
+                                    Org_name='',
+                                    Org_address='',
+                                    Org_gst='',
+                                    Org_street='',
+                                    Org_city='',
+                                    Org_state='',
+                                    Org_mail='',
+                                    customer_address=caddress,
+                                    customer_source_supply = csrc_supply,
+                                    source_supply=src_supply,
+                                    payment_terms = terms,
+                                    Ord_date = start,
+                                    exp_date = end,
+                                    sub_total=sub_total,
+                                    cheque_id=cheque_id,
+                                    upi_id=upi_id,
+                                    payment_type=payment_type,
+                                    sgst=sgst,
+                                    cgst=cgst,
+                                    igst=igst,
+                                    tax_amount=tax,
+                                    shipping_charge = shipping_charge,
+                                    adjustment_charge = adjustment_charge,
+                                    grand_total=grand_total,
+                                    payed = advance,
+                                    note=note,
+                                    custo=cus,
+                                    status="Approved",
+                                    term=terms_con,
+                                    company=company,
+                                    user = u,typ=typ)
+            purchase.save()
+
+            p_bill = Purchase_Order.objects.get(id=purchase.id)
+
+    
+            if len(request.FILES) != 0:
+                p_bill.document=request.FILES['file'] 
+                p_bill.save()
+            item = request.POST.getlist("item[]")
+            hsn = request.POST.getlist("hsn[]")
+            quantity = request.POST.getlist("quantity[]")
+            rate = request.POST.getlist("rate[]")
+            tax = request.POST.getlist("tax[]")
+            discount = request.POST.getlist("discount[]")
+            amount = request.POST.getlist("amount[]")
+            if len(item) == len(quantity) == len(rate) == len(discount) == len(tax) == len(amount):
+                for i in range(len(item)):
+                    created = Purchase_Order_items.objects.create(
+                        item=item[i],
+                        hsn=hsn[i],
+                        quantity=quantity[i],
+                        rate=rate[i],
+                        tax=tax[i],
+                        discount=discount[i],
+                        amount=amount[i],
+                        user=u,
+                        company=company,
+                        PO=p_bill
+                    )
+                print('Done')
+
+        return redirect('purchaseView')
+    return render(request,'create_purchase_order.html')
+
 def purchase_delet(request,id):
     po=Purchase_Order.objects.get(id=id)
     po.delete()
@@ -9699,7 +9908,9 @@ def purchase_bill_view(request,id):
     pcom_state=po_item.source_supply
     pattern = r'\[(.*?)\] (\w+)'
     pcom_match = re.search(pattern, pcom_state)
-    if pcom_match:
+    if pcom_state == '[DNH] Dadra and Nagar Haveli':
+        pcom_state = 'Dadra and Nagar Haveli'
+    elif pcom_match:
         pcom_state = pcom_match.group(2)
     ddata=doc_upload_table_purchase.objects.filter(user=request.user,purchase=po_item)
     name = po_item.vendor_name.split(' ')
@@ -9747,7 +9958,9 @@ def purchase_bill_view_by_name(request,id):
     pcom_state=po_item.source_supply
     pattern = r'\[(.*?)\] (\w+)'
     pcom_match = re.search(pattern, pcom_state)
-    if pcom_match:
+    if pcom_state == '[DNH] Dadra and Nagar Haveli':
+        pcom_state = 'Dadra and Nagar Haveli'
+    elif pcom_match:
         pcom_state = pcom_match.group(2)
     cmt_data = purchase_order_comments.objects.filter(user=request.user,PO=po_item)
     ddata=doc_upload_table_purchase.objects.filter(user=request.user,purchase=po_item)
@@ -9798,7 +10011,9 @@ def purchase_bill_view_by_ordno(request,id):
     pcom_state=po_item.source_supply
     pattern = r'\[(.*?)\] (\w+)'
     pcom_match = re.search(pattern, pcom_state)
-    if pcom_match:
+    if pcom_state == '[DNH] Dadra and Nagar Haveli':
+        pcom_state = 'Dadra and Nagar Haveli'
+    elif pcom_match:
         pcom_state = pcom_match.group(2)
     cmt_data = purchase_order_comments.objects.filter(user=request.user,PO=po_item)
     ddata=doc_upload_table_purchase.objects.filter(user=request.user,purchase=po_item)
@@ -9894,10 +10109,10 @@ def export_purchase_pdf(request,id):
 
 def edit(request,pk):
     company=company_details.objects.get(user=request.user)
-    vendor=vendor_table.objects.filter(user=request.user)
-    cust=customer.objects.filter(user = request.user)
+    vendor=vendor_table.objects.filter(user=request.user,status='Active')
+    cust=customer.objects.filter(user = request.user,status='Active')
     payment=payment_terms.objects.filter(user=request.user)
-    item = AddItem.objects.filter(user=request.user)
+    item = AddItem.objects.filter(user=request.user,satus='Active')
     account=Account.objects.all()
     unit=Unit.objects.all()
     sales=Sales.objects.all()

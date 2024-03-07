@@ -31,10 +31,18 @@
               <p><b>Phone: </b>{{ company.contact_number}}</p>
               <p><b>Email: </b>{{ company.company_email }}</p>
           </div>
-        <div class="col-md-6">
+        <div class="col-md-6" style="text-align: left;">
           <br>
           <p ><b>Purchase Order No: </b>{{po_item.Pur_no}}</p>
           <p ><b>Vendor Name: </b>{{po_item.vendor_name}}</p>
+          <p ><b>Vendor Email: </b>{{po_item.vendor_mail}}</p>
+          {% if po_item.typ == "Customer" %}
+          <p ><b>Customer Name: </b>{{po_item.customer_name}}</p>
+          <p ><b>Customer Email: </b>{{po_item.customer_mail}}</p>
+          {% else %}
+          <p ><b>Organization Name: </b>{{po_item.Org_name}}</p>
+          <p ><b>Organization Email: </b>{{po_item.Org_mail}}</p>
+          {% endif %}
             <p><b>Order Date: </b>{{po_item.Ord_date}}</p>
            <p><b>Expected Delivery: </b>{{po_item.exp_date}}</p>
            <p><b>Place of Supply: </b>{{po_item.source_supply}}</p>

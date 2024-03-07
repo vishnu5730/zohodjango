@@ -371,9 +371,7 @@ debugger
                             <div class='form-group'>
                               <select class='form-control bg-transparent text-black border-0 item_select itm itemlist'
                                     name='item[]' id='item{{ forloop.counter }}'>
-                                    {% for i in items %}
-                                    <option class="text-dark" value="{{i.Name}}" {% if i.Name == item.item %} selected="selected"{% endif %}>{{i.Name}}</option>
-                                    {% endfor %}
+                                    <option class="text-dark" value="{{item.item}}" selected>{{item.item}}</option>
                                 </select></div>
                         </td>
                        
