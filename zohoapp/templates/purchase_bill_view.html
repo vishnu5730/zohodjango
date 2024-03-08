@@ -512,13 +512,16 @@
                       {{po_item.vendor_name}}</p>
                   </div>
                 </div>
+                {% if po_item.vendor_mail != "" %}
                 <div class="row mt-3">
-                  <div class="col-5"><label class="text-dark" for="">Vendor Mail :</label></div>
+                  <div class="col-5"><label class="text-dark" for="">Vendor Email :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">
                       {{po_item.vendor_mail}}</p>
                   </div>
                 </div>
+                {% endif %}
+                {% if po_item.vendor_gst_traet != "" %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Vendor GST Treatment :</label></div>
                   <div class="col-7">
@@ -526,11 +529,21 @@
                       {{po_item.vendor_gst_traet}}</p>
                   </div>
                 </div>
+                {% endif %}
                 {% if po_item.vendor_gst_no != "" %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Vendor GST Number :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.vendor_gst_no}}
+                    </p>
+                  </div>
+                </div>
+                {% endif %}
+                {% if po_item.vendor_address != "" %}
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Vendor Billing Address :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.vendor_address}}
                     </p>
                   </div>
                 </div>
@@ -548,23 +561,35 @@
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.customer_name}}</p>
                   </div>
                 </div>
+                {% if po_item.customer_mail != "" %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Customer Email :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.customer_mail}}</p>
                   </div>
                 </div>
+                {% endif %}
+                {% if po_item.custo.GSTTreatment != "" %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Customer GST Treatment :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.custo.GSTTreatment}}</p>
                   </div>
                 </div>
+                {% endif %}
                 {% if po_item.custo.GSTTIN != "" %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Customer GST Number :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.custo.GSTIN}}</p>
+                  </div>
+                </div>
+                {% endif %}
+                {% if po_item.customer_address != "" %}
+                <div class="row mt-3">
+                  <div class="col-5"><label class="text-dark" for="">Customer Billing Address :</label></div>
+                  <div class="col-7">
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.customer_address}}</p>
                   </div>
                 </div>
                 {% endif %}
@@ -581,30 +606,38 @@
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.Org_name}}</p>
                   </div>
                 </div>
+                {% if po_item.Org_mail != "" %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Organization Email :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.Org_mail}}</p>
                   </div>
                 </div>
+                {% endif %}
+                {% if po_item.Org_gst != "" %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Organization GST Number :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.Org_gst}}</p>
                   </div>
                 </div>
+                {% endif %}
+                {% if po_item.Org_address != "" %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Organization Address :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.Org_address}}</p>
                   </div>
                 </div>
+                {% endif %}
+                {% if po_item.Org_state != "" %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Organization State :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.Org_state}}</p>
                   </div>
                 </div>
+                {% endif %}
                 {% endif %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Order Date :</label></div>
@@ -630,21 +663,21 @@
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.payment_type}}</p>
                   </div>
                 </div>
-                {% if po_item.payment_type == 'upi' %}
+                {% if po_item.payment_type == 'UPI' %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">UPI ID :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.upi_id}}</p>
                   </div>
                 </div>
-                {% elif po_item.payment_type == 'cheque' %}
+                {% elif po_item.payment_type == 'Cheque' %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Cheque ID :</label></div>
                   <div class="col-7">
                     <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.cheque_id}}</p>
                   </div>
                 </div>
-                {% elif po_item.payment_type != 'cash' %}
+                {% elif po_item.payment_type != 'Cash' %}
                 <div class="row mt-3">
                   <div class="col-5"><label class="text-dark" for="">Bank Account :</label></div>
                   <div class="col-7">
@@ -734,7 +767,7 @@
                   </div>
                   {% for i in pot %}
                   <div class="row mt-2">
-                    <div class="col-5"><label for="">Product Name :</label></div>
+                    <div class="col-5"><label for="">Item Name :</label></div>
                     <div class="col-7">
                       <p class="bold">{{i.item}}</p>
                     </div>
@@ -748,41 +781,41 @@
                   </div>
                   {% endif %}
                   <div class="row mt-2">
-                    <div class="col-5"><label for="">Product Quantity :</label></div>
-                    <div class="col-7">
-                      <p class="bold">{{i.quantity}}</p>
-                    </div>
-                  </div>
-                  <div class="row mt-2">
-                    <div class="col-5"><label for="">Product Rate :</label></div>
+                    <div class="col-5"><label for="">Price :</label></div>
                     <div class="col-7">
                       <p class="bold">{{i.rate}}</p>
                     </div>
                   </div>
-
                   <div class="row mt-2">
-                    <div class="col-5"><label for="">Product Discount :</label></div>
+                    <div class="col-5"><label for="">Quantity :</label></div>
                     <div class="col-7">
-                      <p class="bold">{{i.discount}}</p>
+                      <p class="bold">{{i.quantity}}</p>
                     </div>
                   </div>
                   {% if pcom_state == company.state %}
                   <div class="row mt-2">
-                    <div class="col-5"><label for="">Product Tax :</label></div>
+                    <div class="col-5"><label for="">Tax :</label></div>
                     <div class="col-7">
                       <p class="bold">{{i.tax}}% GST</p>
                     </div>
                   </div>
                   {% else %}
                   <div class="row mt-2">
-                    <div class="col-5"><label for="">Product Tax :</label></div>
+                    <div class="col-5"><label for="">Tax :</label></div>
                     <div class="col-7">
                       <p class="bold">{{i.tax}}% IGST</p>
                     </div>
                   </div>
                   {% endif %}
                   <div class="row mt-2">
-                    <div class="col-5"><label for="">Product Total :</label></div>
+                    <div class="col-5"><label for="">Discount :</label></div>
+                    <div class="col-7">
+                      <p class="bold">{{i.discount}}</p>
+                    </div>
+                  </div>
+                  
+                  <div class="row mt-2">
+                    <div class="col-5"><label for="">Total :</label></div>
                     <div class="col-7">
                       <p class="bold">{{i.amount}}</p>
                     </div>
@@ -891,31 +924,32 @@
                       </div>
                       <div class="ml-4 mt-2" style="color: black;">
                         <div class="row">
-                          <div class="col-md-5 text-left"><b>Purchase Order No:</b></div>
-                          <div class="col-md-5 text-right">{{po_item.Pur_no}}</div>
+                          <div class="text-left"><b>Purchase Order No:</b> {{po_item.Pur_no}}</div>
+                          
                         </div>
                         <div class="row">
-                          <div class="col-md-5 text-left"><b>Vendor Name:</b></div>
-                          <div class="col-md-5 text-right">{{po_item.vendor_name}}</div>
+                          <div class="text-left"><b>Vendor Name:</b> {{po_item.vendor_name}}</div>
+                          
                         </div>
+                        {% if po_item.vendor_mail != "" %}
                         <div class="row">
-                          <div class="col-md-5 text-left"><b>Vendor Email:</b></div>
-                          <div class="col-md-5 text-right">{{po_item.vendor_mail}}</div>
-                        </div>
+                          <div class="text-left"><b>Vendor Email:</b> {{po_item.vendor_mail}}</div>
                         
+                        </div>
+                        {% endif %}
                         <div class="row">
-                          <div class="col-md-5 text-left"><b>Order Date:</b></div>
-                          <div class="col-md-5 text-right">{{po_item.Ord_date | date:'d-m-Y'}}</div>
+                          <div class="text-left"><b>Order Date:</b> {{po_item.Ord_date | date:'d-m-Y'}}</div>
+                          
                         </div>
                         <div class="row">
-                          <div class="col-md-5 text-left"><b>Expiry Date:</b></div>
-                          <div class="col-md-5 text-right">{{po_item.exp_date | date:'d-m-Y'}}</div>
+                          <div class="text-left"><b>Expiry Date:</b> {{po_item.exp_date | date:'d-m-Y'}}</div>
+                       
                         </div>
                       </div>
                       <div><br>
                         <div class="equal-length-container" style="color: black; font-weight: bold;">
                           <div class="equal-length-item" style=" text-align: center;">
-                            Product
+                            Item
                             <hr style="border-bottom: 1px solid black; margin-top:1vh; width:95%">
                           </div>
                           <div class="equal-length-item ml-2" style=" text-align:center;">
@@ -923,19 +957,19 @@
                             <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%;">
                           </div>
                           <div class="equal-length-item" style=" text-align: center; ">
-                            Qty
-                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
-                          </div>
-                          <div class="equal-length-item" style=" text-align: center; ">
                             Price
                             <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
                           </div>
                           <div class="equal-length-item" style=" text-align: center; ">
-                            Discount
+                            Qty
                             <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
                           </div>
                           <div class="equal-length-item" style=" text-align: center; ">
                             Tax
+                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
+                          </div>
+                          <div class="equal-length-item" style=" text-align: center; ">
+                            Discount
                             <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
                           </div>
                           <div class="equal-length-item" style=" text-align: center; ">
@@ -951,23 +985,23 @@
                           <div class="equal-length-item" style="text-align: center; margin-left: 2px;">
                             {{i.item}}
                           </div>
-                          <div class="equal-length-item" style="text-align: right;">
+                          <div class="equal-length-item" style="text-align: center;">
                             {{i.hsn}}
-                          </div>
-                          <div class="equal-length-item" style="text-align: center; ">
-                            {{i.quantity}}
                           </div>
                           <div class="equal-length-item" style="text-align: center; ">
                             {{i.rate}}
                           </div>
                           <div class="equal-length-item" style="text-align: center; ">
-                            {{i.discount}}
+                            {{i.quantity}}
                           </div>
                           {% if pcom_state == company.state %}
                           <div class="equal-length-item" style="text-align: center; ">{{i.tax}}% GST</div>
                             {% else %}
                             <div class="equal-length-item" style="text-align: center; ">{{i.tax}}% IGST</div>
                           {% endif %}
+                          <div class="equal-length-item" style="text-align: center; ">
+                            {{i.discount}}
+                          </div>
                           <div class="equal-length-item" style="text-align: center; ">
                             {{i.amount}}
                           </div>
@@ -977,70 +1011,52 @@
 
                       <div><br>
                         <div class="row ">
-                          <div class="col-md-5 text-left" style=" color: black;">
-                            Subtotal
-                          </div>
-                          <div class="col-md-6 " style="color: black;text-align: end;">
-                            {{po_item.sub_total}}
+                          <div class="text-left" style=" color: black;">
+                            <b>Subtotal:</b> {{po_item.sub_total}}
                           </div>
                         </div>
                         {% if po_item.igst != 0 %}
                         <div class="row ">
-                          <div class="col-md-5 text-left " style=" color: black;">
-                            IGST
-                          </div>
-                          <div class="col-md-6" style="color: black;text-align: end;">
-                            {{po_item.igst}}
+                          <div class="text-left " style=" color: black;">
+                            <b>IGST:</b> {{po_item.igst}}
                           </div>
                         </div>
                         {% endif %}
                         {% if po_item.cgst != 0 %}
                         <div class="row">
-                          <div class="col-md-5 text-left" style=" color: black;">
-                            CGST
+                          <div class="text-left" style=" color: black;">
+                            <b>CGST:</b> {{po_item.cgst}}
                           </div>
-                          <div class="col-md-6 " style="color: black;text-align: end;">
-                            {{po_item.cgst}}
-                          </div>
+                          <!-- <div class="col-md-6 " style="color: black;text-align: end;">
+                            
+                          </div> -->
                         </div>
                         {% endif %}
                         {% if po_item.sgst != 0 %}
                         <div class="row ">
-                          <div class="col-md-5 text-left" style=" color: black;">
-                            SGST
-                          </div>
-                          <div class="col-md-6 " style="color: black;text-align: end;">
-                            {{po_item.sgst}}
+                          <div class="text-left" style=" color: black;">
+                            <b>SGST:</b> {{po_item.sgst}}
                           </div>
                         </div>
                         {% endif %}
                         {% if po_item.tax_amount != 0 %}
                         <div class="row">
-                          <div class="col-md-5 text-left" style=" color: black;">
-                            Tax Amount
-                          </div>
-                          <div class="col-md-6 " style="color: black;text-align: end;">
-                            {{po_item.tax_amount}}
+                          <div class="text-left" style=" color: black;">
+                            <b>Tax Amount:</b> {{po_item.tax_amount}}
                           </div>
                         </div>
                         {% endif %}
                         {% if po_item.shipping_charge != 0 %}
                         <div class="row">
-                          <div class="col-md-5 text-left" style=" color: black;">
-                            Shipping Charge
-                          </div>
-                          <div class="col-md-6 " style="color: black;text-align: end;">
-                            {{po_item.shipping_charge}}
+                          <div class="text-left" style=" color: black;">
+                            <b>Shipping Charge:</b> {{po_item.shipping_charge}}
                           </div>
                         </div>
                         {% endif %}
                         {% if po_item.adjustment_charge %}
                         <div class="row">
-                          <div class="col-md-5 text-left" style=" color: black;">
-                            Adjustment
-                          </div>
-                          <div class="col-md-6" style="color: black;text-align: end;">
-                            {{po_item.adjustment_charge}}
+                          <div class="text-left" style=" color: black;">
+                            <b>Adjustment:</b> {{po_item.adjustment_charge}}
                           </div>
                         </div>
                         {% endif %}
@@ -1050,14 +1066,14 @@
 
                       <div class="mb-2">
                         <div class="row">
-                          <div class="col-md-5 text-left ml-2"
+                          <div class="text-left ml-2"
                             style=" font-size: large; color: black; font-weight: bold;">
-                            Grand Total
+                            Grand Total: {{po_item.grand_total}}
                           </div>
-                          <div class="col-md-6"
+                          <!-- <div class="col-md-6"
                             style="font-size: large; color: black; font-weight: bold;text-align: end;">
-                            {{po_item.grand_total}}
-                          </div>
+                            
+                          </div> -->
                         </div>
                       </div>
                     </div>
@@ -1387,6 +1403,11 @@
                           <td class="table-cell text-black" style="border: none;">GST No: {{po_item.vendor_gst_no}}</td>
                         </tr>
                         {% endif %}
+                        {% if po_item.vendor_address %}
+                        <tr>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.vendor_address}}</td>
+                        </tr>
+                        {% endif %}
                       </table>
                     </div>
                   </div>
@@ -1400,15 +1421,22 @@
                           <td class="table-cell text-black" style="border: none;"><b>Deliver To: {{po_item.customer_name}}</b>
                           </td>
                         </tr>
+                        {% if po_item.customer_mail != "" %}
                         <tr>
                           <td class="table-cell text-black" style="border: none;">{{po_item.customer_mail}}</td>
                         </tr>
+                        {% endif %}
                         <tr>
                           <td class="table-cell text-black" style="border: none;">{{po_item.custo.GSTTreatment}}</td>
                         </tr>
                         {% if po_item.custo.GSTIN != "" %}
                         <tr>
                           <td class="table-cell text-black" style="border: none;">GST No: {{po_item.custo.GSTIN}}</td>
+                        </tr>
+                        {% endif %}
+                        {% if po_item.customer_address != "" %}
+                        <tr>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.customer_address}}</td>
                         </tr>
                         {% endif %}
                       </table>
@@ -1418,9 +1446,11 @@
                           <td class="table-cell text-black" style="border: none;"><b>Deliver To: {{po_item.Org_name}}</b>
                           </td>
                         </tr>
+                        {% if po_item.Org_mail != "" %}
                         <tr>
                           <td class="table-cell text-black" style="border: none;">{{po_item.Org_mail}}</td>
                         </tr>
+                        {% endif %}
                         {% if po_item.Org_gst != "" %}
                         <tr>
                           <td class="table-cell text-black" style="border: none;">{{po_item.Org_gst}}</td>
@@ -1433,29 +1463,30 @@
                   <table>
                     <thead>
                       <tr>
-
-                        <th id="th" style="text-align: center;">Product</th>
+                        <th id="th" style="text-align: center;">Sl No</th>
+                        <th id="th" style="text-align: center;">Item Name</th>
                         <th id="th" style="text-align: center;">HSN</th>
-                        <th id="th" style="text-align: center;">Quantity</th>
                         <th id="th" style="text-align: center;">Price</th>
+                        <th id="th" style="text-align: center;">Quantity</th>
+                        <th id="th" style="text-align: center;">Tax</th>
                         <th id="th" style="text-align: center;">Discount</th>
-                        <th id="th" style="text-align: center;">Tax(%)</th>
                         <th id="th" style="text-align: center;"> Total</th>
                       </tr>
                     </thead>
                     <tbody>
                       {% for i in pot %}
                       <tr style="color: black;">
+                        <td style="text-align: center;">{{forloop.counter}}</td>
                         <td style="text-align: center;">{{i.item}}</td>
                         <td style="text-align: center;">{{i.hsn}}</td>
-                        <td style="text-align: center;">{{i.quantity}}</td>
                         <td style="text-align: center;">{{i.rate}}</td>
-                        <td style="text-align: center;">{{i.discount}}</td>
+                        <td style="text-align: center;">{{i.quantity}}</td>
                         {% if pcom_state == company.state %}
                                <td>{{i.tax}}% GST</td>
                                {% else %}
                                <td>{{i.tax}}% IGST</td>
                                {% endif %}
+                        <td style="text-align: center;">{{i.discount}}</td>
                         <td style="text-align: center;">{{i.amount}}</td>
                       </tr>
                       {% endfor %}
@@ -1668,7 +1699,14 @@
                           <h5 class="pt-2" style="font-weight: bold; color: #8b3131;">
                             {{po_item.vendor_name}}</h5>
                           <p class="address" style="font-weight: bold;color: #000;">
+                            {% if po_item.vendor_mail != "" %}
                             Email: {{po_item.vendor_mail}}
+                            {% endif %}
+                            <br>
+                            {% if po_item.vendor_address != "" %}
+                            Address: {{po_item.vendor_address}}
+                            {% endif %}
+                            Place of Supply: {{po_item.source_supply}}
                             <br>
                           </p>
                         </div>
@@ -1677,7 +1715,7 @@
                           <label class="text-white bg-success w-100 p-1"><b>GST Details</b></label>
                           <h5 class="pt-2" style="font-weight: bold; color: #8b3131;">
                             {{po_item.vendor_gst_traet}}</h5>
-                          {% if po_item.vendor_gst_no %}
+                          {% if po_item.vendor_gst_no != "" %}
                           <p class="address" style="font-weight: bold;color: #000;">
                             GST No: {{po_item.vendor_gst_no}}
                           </p>
@@ -1695,18 +1733,23 @@
                           <h5 class="pt-2" style="font-weight: bold; color: #8b3131;">
                             {{po_item.customer_name}}</h5>
                           <p class="address" style="font-weight: bold;color: #000;">
+                            {% if po_item.customer_mail != "" %}
                             Email: {{po_item.customer_mail}}
+                            {% endif %}
                             <br>
+                            {% if po_item.customer_address != "" %}
+                            Address: {{po_item.customer_address}}
+                            {% endif %}
                             Place of Supply: {{po_item.customer_source_supply}}
                             <br>
                           </p>
                         </div>
                         <div class="col-4"></div>
                         <div class="col-4 pr-0">
-                          <label class="text-white bg-secondary w-100 p-1"><b>GST Details</b></label>
+                          <label class="text-white bg-secondary w-100 p-1"><b>GST DETAILS</b></label>
                           <h5 class="pt-2" style="font-weight: bold; color: #8b3131;">
                             {{po_item.custo.GSTTreatment}}</h5>
-                          {% if po_item.custo.GSTIN %}
+                          {% if po_item.custo.GSTIN != "" %}
                           <p class="address" style="font-weight: bold;color: #000;">
                             GST No: {{po_item.custo.GSTIN}}
                           </p>
@@ -1722,15 +1765,19 @@
                           <h5 class="pt-2" style="font-weight: bold; color: #8b3131;">
                             {{po_item.Org_name}}</h5>
                           <p class="address" style="font-weight: bold;color: #000;">
+                            {% if po_item.Org_mail != "" %}
                             Email: {{po_item.Org_mail}}
+                            {% endif %}
                             <br>
+                            {% if po_item.Org_address != "" %}
                             Address: {{po_item.Org_address}}
+                            {% endif %}
                             <br>
                           </p>
                         </div>
                         <div class="col-4"></div>
                         <div class="col-4 pr-0">
-                          <label class="text-white bg-secondary w-100 p-1"><b>GST Details</b></label>
+                          <label class="text-white bg-secondary w-100 p-1"><b>GST DETAILS</b></label>
                           {% if po_item.Org_gst != "" %}
                           <p class="address" style="font-weight: bold;color: #000;">
                             GST No: {{po_item.Org_gst}}
@@ -1746,28 +1793,30 @@
                     <table class="table table-hover table-bordered table-secondary">
                       <thead>
                         <tr class="">
-                          <th class="text-center" style="color:#8b3131;">Product</th>
+                          <th class="text-center" style="color:#8b3131;">Sl No</th>
+                          <th class="text-center" style="color:#8b3131;">Item Name</th>
                           <th class="text-center" style="color:#8b3131;">HSN</th>
-                          <th class="text-center" style="color:#8b3131;">Quantity</th>
                           <th class="text-center" style="color:#8b3131;">Price</th>
+                          <th class="text-center" style="color:#8b3131;">Quantity</th>
+                          <th class="text-center" style="color:#8b3131;">Tax</th>
                           <th class="text-center" style="color:#8b3131;">Discount</th>
-                          <th class="text-center" style="color:#8b3131;">Tax(%)</th>
                           <th class="text-center" style="color:#8b3131;">Total</th>
                         </tr>
                       </thead>
                       <tbody>
                         {% for i in pot %}
                         <tr>
+                          <td class="text-center" style="color:#000">{{forloop.counter}}</td>
                           <td class="text-center" style="color:#000">{{i.item}}</td>
                           <td class="text-center" style="color:#000">{{i.hsn}}</td>
-                          <td class="text-center" style="color:#000">{{i.quantity}}</td>
                           <td class="text-center" style="color:#000">{{i.rate}}</td>
-                          <td class="text-center" style="color:#000">{{ i.discount }}</td>
+                          <td class="text-center" style="color:#000">{{i.quantity}}</td>
                           {% if pcom_state == company.state %}
                           <td class="text-center" style="color:#000">{{i.tax}}% GST</td>
                           {% else %}
                           <td class="text-center" style="color:#000">{{i.tax}}% IGST</td>
                           {% endif %}
+                          <td class="text-center" style="color:#000">{{ i.discount }}</td>
                           <td class="text-center" style="color:#000">{{i.amount}}</td>
                         </tr>
                         {% endfor %}
@@ -1993,7 +2042,7 @@
                     <div class="col-12">
                       <div class="row bb pb-3">
                         <div class="col-4">
-                          <p>FROM,</p>
+                          <p>From,</p>
                           <h5>{{company.company_name }}</h5>
                           <p class="address "> {{company.address}}<br>
                             {{company.city}}<br>
@@ -2008,27 +2057,48 @@
                           <p class="address col-9" style="margin-left: 0px;">
                             {{po_item.vendor_mail}}</p>
                           <p class="address col-9">{{po_item.vendor_gst_traet}}</p>
+                          {% if po_item.vendor_gst_no != "" %}
                           <p class="address col-9">GST No: {{po_item.vendor_gst_no}}</p>
+                          {% endif %}
                           <p class="address col-9">Place of Supply: {{po_item.source_supply}}</p>
-
+                          {% if po_item.vendor_address != "" %}
+                          <p class="address col-9">Billing Address: {{po_item.vendor_address}}</p>
+                          {% endif %}
                         </div>
                         <div class="col-4">
                           <p>Deliver To,</p>
                           {% if po_item.customer_name == '' %}
                           <h5>{{po_item.Org_name}}</h5>
+                          {% if po_item.Org_address != "" %}
                           <p class="address col-9" style="margin-left: 0px;">
                             {{po_item.Org_address}}</p>
+                            {% endif %}
+                            {% if po_item.Org_gst != "" %}
                           <p class="address col-9">GST No: {{po_item.Org_gst}}</p>
-                          <p class="address col-9">GST No: {{po_item.Org_address}}</p>
-                          <p class="address col-9">GST No: {{po_item.Org_state}}</p>
+                          {% endif %}
+                          {% if po_item.Org_address != "" %}
+                          <p class="address col-9">Address: {{po_item.Org_address}}</p>
+                          {% endif %}
+                          {% if po_item.Org_state != "" %}
+                          <p class="address col-9">State: {{po_item.Org_state}}</p>
+                          {% endif %}
                           {% else %}
                           <h5>{{po_item.customer_name}}</h5>
+                          {% if po_item.customer_mail != "" %}
                           <p class="address col-9" style="margin-left: 0px;">
                             {{po_item.customer_mail}}</p>
+                            {% endif %}
+                            {% if po_item.customer_address != "" %}
                           <p class="address col-9">{{po_item.customer_address}}</p>
+                          {% endif %}
                           <p class="address col-9">{{po_item.custo.GSTTreatment}}</p>
+                          {% if po_item.custo.GSTIN != "" %}
                           <p class="address col-9">GST No: {{po_item.custo.GSTIN}}</p>
+                          {% endif %}
                           <p class="address col-9">Place of Supply: {{po_item.customer_source_supply}}</p>
+                          {% if po_item.customer_address != "" %}
+                          <p class="address col-9">Billing Address: {{po_item.customer_address}}</p>
+                          {% endif %}
                           {% endif %}
                         </div>
                       </div>
@@ -2050,13 +2120,14 @@
                     <table class=" table table-hover table-bordered " id="table1">
                       <thead>
                         <tr>
-                          <td style="text-align: center; font-weight:bold; color:black ">Product</td>
-                          <td style="font-weight:bold; color:black">HSN</td>
-                          <td style="font-weight:bold; color:black">Quantity</td>
-                          <td style="font-weight:bold; color:black">Price</td>
-                          <td style="font-weight:bold; color:black">Discount</td>
-                          <td style="font-weight:bold; color:black">Tax(%)</td>
-                          <td style="font-weight:bold; color:black">Total</td>
+                          <td style="text-align: center; font-weight:bold; color:black ">Sl No</td>
+                          <td style="text-align: center; font-weight:bold; color:black ">Item Name</td>
+                          <td style="text-align: center;font-weight:bold; color:black">HSN</td>
+                          <td style="text-align: center;font-weight:bold; color:black">Price</td>
+                          <td style="text-align: center;font-weight:bold; color:black">Quantity</td>
+                          <td style="text-align: center;font-weight:bold; color:black">Tax</td>
+                          <td style="text-align: center;font-weight:bold; color:black">Discount</td>
+                          <td style="text-align: center;font-weight:bold; color:black">Total</td>
 
                         </tr>
                       </thead>
@@ -2064,17 +2135,18 @@
 
                         {% for j in pot %}
                         <tr>
+                          <td style="color:black; text-align: center;">{{forloop.counter}}</td>
                           <td style="color:black; text-align: center;">{{j.item}}</td>
-                          <td style="color:black">{{j.hsn}}</td>
-                          <td style="color:black">{{j.quantity}}</td>
-                          <td style="color:black">{{j.rate}} </td>
-                          <td style="color:black">{{j.discount}} </td>
+                          <td style="text-align: center;color:black">{{j.hsn}}</td>
+                          <td style="text-align: center;color:black">{{j.rate}} </td>
+                          <td style="text-align: center;color:black">{{j.quantity}}</td>
                           {% if pcom_state == company.state %}
-                          <td style="color:black">{{j.tax}}% GST</td>
+                          <td style="text-align: center;color:black">{{j.tax}}% GST</td>
                           {% else %}
-                          <td style="color:black">{{j.tax}}% IGST</td>
+                          <td style="text-align: center;color:black">{{j.tax}}% IGST</td>
                           {% endif %}
-                          <td style="color:black">{{j.amount}}</td>
+                          <td style="text-align: center;color:black">{{j.discount}} </td>
+                          <td style="text-align: center;color:black">{{j.amount}}</td>
 
                         </tr>
                         {% endfor %}

@@ -173,7 +173,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
 
       <div class="row mt-2 d-none" id="email_row">
         <div class="col-md-3">
-          <label for="email_inp">Vendor Email</label>
+          <label for="email_inp">Email</label>
         </div>
         <div class="col-md-6">
           <input type="text" class="form-control bg-light text-dark" id="email_inp" name="email_inp" readonly>
@@ -199,7 +199,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
       </div>
       <div class="row mt-2 mb-2 d-none" id="baddress_row">
         <div class="col-md-3">
-          <label for="baddress_inp">Billing Address</label>
+          <label for="baddress_inp">Vendor Billing Address</label>
         </div>
         <div class="col-md-6">
           <input type="text" class="form-control bg-light text-dark"  id="baddress_inp" name="baddress_inp" readonly>
@@ -291,7 +291,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
 </div>     
 <div class="row mt-2">
   <div class="col-md-3">
-    <label for="orgAddress">E-Mail:</label>
+    <label for="orgAddress">Email:</label>
   
   </div>       
   <div class="col-md-6">
@@ -388,7 +388,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
         </div>
         <div class="row mt-2 d-none" id="custAddress_row">
           <div class="col-md-3">
-            <label for="custAddress">Address:</label>
+            <label for="custAddress">Billing Address:</label>
 
           </div>
           <div class="col-md-6">
@@ -398,7 +398,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
 
         </div>
         
-        <div class="row mt-2 d-none" id="custstreet_row">
+        <!-- <div class="row mt-2 d-none" id="custstreet_row">
           <div class="col-md-3">
             <label for="custAddress">Street:</label>
 
@@ -432,7 +432,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
   
           </div>
 
-        </div>
+        </div> -->
         <div class="row mt-2 d-none" id="cust_gst_trt_row">
           <div class="col-md-3">
             <label for="gst_trt_inp">GST Treatment</label>
@@ -566,9 +566,9 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
           <div class="d-flex">
             <select class="form-control bg-light text-dark my-select" id="pay_method" name="ptype" required>
               <option value="" hidden>Select Payment Method</option>
-              <option value="cash">Cash</option>
-              <option value="cheque">Cheque</option>
-              <option value="upi">UPI</option>
+              <option value="Cash">Cash</option>
+              <option value="Cheque">Cheque</option>
+              <option value="UPI">UPI</option>
               {% for item in bank %}
               <option value="{{item.name}}">{{item.name}}</option>
               {% endfor %}
@@ -1066,7 +1066,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
 
                 <div class="row mt-5">
                   <div class="col-md-1">
-                    <label for="vstreet">Street</label>
+                    <label for="vstreet">Address</label>
                   </div>
                   <div class="col-md-4">
                     <textarea class="form-control bg-light text-dark street" id="vstreet" name="vstreet"></textarea>
@@ -1074,7 +1074,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                   <div class="col-md-1"></div>
 
                   <div class="col-md-1">
-                    <label for="vsstreet">Street</label>
+                    <label for="vsstreet">Address</label>
                   </div>
                   <div class="col-md-4 ">
                     <textarea class="form-control bg-light text-dark street" id="vsstreet" name="vsstreet"></textarea>
@@ -2389,7 +2389,7 @@ $(document).ready(function() {
         var na = name.split(' ')
         $.ajax({
 
-            url: "{% url 'get_vendordet' %}", 
+            url: "{% url 'get_vendordet_purchase' %}", 
 
             data: { 
                     fname : na[0],
@@ -3096,8 +3096,8 @@ if ($('input[name="radioOption1"]:checked').val() == 'Taxable') {
   intra = $('#intra').val();
 }
 else {
-  inter = 0;
-  intra = 0;
+  inter = "IGST0[0%]";
+  intra = "GST0[0%]";
 }
 
 if ($('input[name="activation"]:checked').val() == 'active') {
@@ -3752,18 +3752,18 @@ function toggleDateInput() {
   $(document).ready(function () {
     $("#pay_method").change(function () {
       var x = $('#pay_method').val();
-      if (x === 'cash') {
+      if (x === 'Cash') {
         $('#chequediv').hide()
         $('#bnkdiv').hide()
         $('#upidiv').hide()
         document.getElementById('cheque_id').value = null
         document.getElementById('upi_id').value = null
-      } else if (x === 'cheque') {
+      } else if (x === 'Cheque') {
         $('#chequediv').show()
         $('#bnkdiv').hide()
         $('#upidiv').hide()
         document.getElementById('upi_id').value = null
-      } else if (x === 'upi') {
+      } else if (x === 'UPI') {
         $('#upidiv').show()
         $('#bnkdiv').hide()
         $('#chequediv').hide()

@@ -979,7 +979,7 @@ def sample(request):
 def downloadVendorSampleImportFile(request):
     sheet1_columns = ['Salutation', 'First Name', 'Last Name', 'Company Name', 'Email', 'Work Phone', 'Mobile Phone', 
                       'Skype Number', 'Designation', 'Department', 'Website', 'Gst Treatment', 
-                      'Gst Number', 'Pan Number', 'Place of Supply', 'Currency', 'Opening Balance', 
+                      'Gst Number', 'Pan Number', 'Place of Supply', 'Opening Balance', 
                       'Opening Balance Type (Credit/Debit)', 'Billing Attention', 'Billing Street', 'Billing Country', 
                       'Billing Address', 'Billing City', 'Billing State', 'Billing Pin', 'Billing Zip', 'Billing Phone', 'Billing Fax', 'Shipping Attention', 
                       'Shipping Street', 'Shipping Country', 'Shipping Address', 'Shipping City', 'Shipping State', 'Shipping Zip', 'Shipping Pin', 'Shipping Phone', 
@@ -3492,8 +3492,8 @@ def convert_to_recinvoice_frm_purchaseorder(request,pk):
     purchase_type = set(Purchase.objects.values_list('Account_type', flat=True))
     bank=Bankcreation.objects.filter(user=request.user)
     last_id = recurring_bills.objects.filter(user_id=request.user.id).order_by('-id').values('id').first()
-    po_id=Purchase_Order.objects.get(id=pk)
-    poitems = Purchase_Order_items.objects.filter(PO=po_id)
+    po_id=Purchase_Order.objects.get(id=pk,user=request.user)
+    poitems = Purchase_Order_items.objects.filter(PO=po_id,user=request.user)
     pattern2 = r'^\d+$'
     if po_id.payment_terms:
         match2 = re.match(pattern2, po_id.payment_terms)
@@ -3574,8 +3574,9 @@ def create_recurring_bills_purchase(request):
         payment_method =request.POST['paymentmethod']
         amt_paid =request.POST['amtPaid']
         ordno =request.POST['ord_no']
-        po_item = Purchase_Order.objects.get(Pur_no=ordno)
+        po_item = Purchase_Order.objects.get(Pur_no=ordno,user=request.user)
         po_item.complete_status = 2
+        po_item.convert_status = 1
         po_item.save()
         bill_no =  request.POST.get('bills')
         sub_total =request.POST['subtotal']
@@ -4762,7 +4763,7 @@ def add_customer_for_sorder_purchase(request):
             shipfax=request.POST.get('shipfax')
 
             sal=request.POST.get('title')
-            addres=street +','+ shipcity+',' + shipstate+',' + bzip
+            addres=street
             adress2=addres
             u = User.objects.get(id = request.user.id)
 
@@ -7074,6 +7075,23 @@ def get_vendordet(request):
     bstate=vdr.bstate
     return JsonResponse({'baddress':baddress,'bcity':bcity,'bstate':bstate,'vendor_email' :vemail, 'gst_number' : gstnum,'gst_treatment':gsttr,'source_supply':source_supply},safe=False)
 
+@login_required(login_url='login')
+def get_vendordet_purchase(request):
+
+    company= company_details.objects.get(user = request.user)
+
+    # fname = request.POST.get('fname')
+    # lname = request.POST.get('lname')
+    id = request.POST.get('id')
+    vdr = vendor_table.objects.get(user=company.user_id, id=id)
+    vemail = vdr.vendor_email
+    gstnum = vdr.gst_number
+    gsttr = vdr.gst_treatment
+    source_supply = vdr.source_supply
+    baddress=vdr.baddress
+    bcity=vdr.bcity
+    bstate=vdr.bstate
+    return JsonResponse({'baddress':baddress,'bcity':bcity,'bstate':bstate,'vendor_email' :vemail, 'gst_number' : gstnum,'gst_treatment':gsttr,'source_supply':source_supply},safe=False)
 
 @login_required(login_url='login')
 def get_customerdet(request):
@@ -8759,7 +8777,7 @@ def downloadPurchaseSampleImportFile(request):
         'Org Address', 'Org GST', 'Org Street', 'Org State', 'Org City', 'Org Mail',
         'Customer Name (With Salutation)', 'Customer Mail', 'Purchase Order No', 'Vendor Place of Supply','Customer Place of Supply', 'Order Date[yyyy-mm-dd]',
         'Expiry Date[yyyy-mm-dd]', 'Shipping Charge', 'Adjustment Charge',
-        'Advance', 'Note', 'Payment Type', 'Cheque Id', 'UPI Id', 'Term']
+        'Advance', 'Note', 'Payment Type', 'Cheque Id', 'UPI Id', 'Terms and Conditions']
     sheet2_columns = ['Item', 'Quantity', 'Tax(%)', 'Discount','Purchase Order No']
 
     # Create empty dataframes with only column titles
@@ -8777,6 +8795,8 @@ def downloadPurchaseSampleImportFile(request):
     response = HttpResponse(excel_data, content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=import_purchase_order.xlsx'
     return response
+
+#---------------------------------------------------------------------------------
 
 def import_purchase(request):
     try:
@@ -8805,6 +8825,7 @@ def import_purchase(request):
                 vendor_name = new_name+' '+str(vendor_obj.id)
                 vendor_gst_traet = vendor_obj.gst_treatment
                 vendor_gst_no = vendor_obj.gst_number
+                vendor_address = vendor_obj.baddress
                 typ = row.get('Type (Organisation/Customer)')
                 Org_name = row.get('Organisation') if row.get('Organisation') is not None else ''
                 Org_address = row.get('Org Address') if row.get('Org Address') is not None else ''
@@ -8819,12 +8840,10 @@ def import_purchase(request):
                     customer_source_supply = row.get('Customer Place of Supply') 
                     customer_obj = customer.objects.get(user=request.user,customerName=customer_name,customerEmail=customer_mail)
                     customer_address = customer_obj.Address1
-                    customer_state = customer_obj.state
-                    customer_city = customer_obj.city
                     custo = customer_obj
 
                 Pur_no = row.get('Purchase Order No')
-                if Purchase_Order.objects.filter(Pur_no=Pur_no).exists():
+                if Purchase_Order.objects.filter(user=request.user,Pur_no=Pur_no).exists():
                     messages.error(request, f'Purchase order No: {Pur_no} already exist!')
                     return redirect('purchaseView')
                 p_reference = purchaseOrderReference(reference=count+1,user=request.user)
@@ -8840,7 +8859,7 @@ def import_purchase(request):
                 payment_type = row.get('Payment Type') if row.get('Payment Type') is not None else ''
                 cheque_id = row.get('Cheque Id') if row.get('Cheque Id') is not None else ''
                 upi_id = row.get('UPI Id') if row.get('UPI Id') is not None else ''
-                term = row.get('Term') if row.get('Term') is not None else ''
+                term = row.get('Terms and Conditions') if row.get('Terms and Conditions') is not None else ''
                 status = 'Draft'
                 if typ == 'Customer':
                     purchase_obj = Purchase_Order(
@@ -8850,6 +8869,7 @@ def import_purchase(request):
                         vendor_mail=vendor_mail,
                         vendor_gst_traet=vendor_gst_traet,
                         vendor_gst_no=vendor_gst_no,
+                        vendor_address=vendor_address,
                         Ord_date=Ord_date,
                         exp_date=exp_date,
                         typ=typ,
@@ -8864,8 +8884,8 @@ def import_purchase(request):
                         customer_name=customer_name,
                         customer_mail=customer_mail,
                         customer_address=customer_address,
-                        customer_state=customer_state,
-                        customer_city=customer_city,
+                        customer_state='',
+                        customer_city='',
                         customer_source_supply = customer_source_supply,
                         Pur_no=Pur_no,
                         source_supply=source_supply,
@@ -8879,7 +8899,7 @@ def import_purchase(request):
                         upi_id=upi_id,
                         term=term,
                         status=status,
-                        convert_status='0',
+                        convert_status=0,
                         complete_status=0
                     )
                     purchase_obj.save()
@@ -8891,6 +8911,7 @@ def import_purchase(request):
                         vendor_mail=vendor_mail,
                         vendor_gst_traet=vendor_gst_traet,
                         vendor_gst_no=vendor_gst_no,
+                        vendor_address=vendor_address,
                         Ord_date=Ord_date,
                         exp_date=exp_date,
                         Org_name=Org_name,
@@ -8919,7 +8940,7 @@ def import_purchase(request):
                         upi_id=upi_id,
                         term=term,
                         status=status,
-                        convert_status='0',
+                        convert_status=0,
                         complete_status=3
                     )
                     purchase_obj.save()
@@ -8957,7 +8978,7 @@ def import_purchase(request):
                 purchase_obj.tax_amount=count_tax
                 pobjsourcesupply = purchase_obj.source_supply
                 pobjsourcesupply_name = ''
-                if pobjsourcesupply == '[DNH]-Dadra and Nagar Haveli':
+                if pobjsourcesupply == '[DNH] Dadra and Nagar Haveli':
                     pobjsourcesupply_name = 'Dadra and Nagar Haveli'
                 else:
                     pobjsourcesupply_name = purchase_obj.source_supply[5:]
@@ -9485,7 +9506,8 @@ def create_Purchase_order(request):
         vmail = request.POST.get('email_inp')
         vgst_t = request.POST.get('gst_trt_inp')
         vgst_n = request.POST.get('gstin_inp')
-            
+        vaddress = request.POST.get('baddress_inp')
+
         orgname = request.POST.get('orgName')
         org_gst = request.POST.get('gstNumber')
         org_address = request.POST.get('orgAddress')
@@ -9497,13 +9519,13 @@ def create_Purchase_order(request):
         
         cmail = request.POST.get('custMail')
         caddress = request.POST.get('custAddress')
-        cstreet = request.POST.get('custStreet')
-        ccity = request.POST.get('custcity')
-        cstate = request.POST.get('custstate')
+        cstreet = ''
+        ccity = ''
+        cstate = ''
         csrc_supply = request.POST.get('cust_srcofsupply')
         src_supply = request.POST.get('srcofsupply')
         po = request.POST['pur_ord']
-        if Purchase_Order.objects.filter(Pur_no=po).exists():
+        if Purchase_Order.objects.filter(user=request.user,Pur_no=po).exists():
             messages.error(request, 'Purchase order no already exists!')
             return redirect('purchase_order')
         ref = request.POST['ref']
@@ -9540,6 +9562,7 @@ def create_Purchase_order(request):
                                     vendor_mail=vmail,
                                     vendor_gst_traet=vgst_t,
                                     vendor_gst_no=vgst_n,
+                                    vendor_address=vaddress,
                                     Org_name=orgname,
                                     Org_address=org_address,
                                     Org_gst=org_gst,
@@ -9609,6 +9632,7 @@ def create_Purchase_order(request):
                                     vendor_mail=vmail,
                                     vendor_gst_traet=vgst_t,
                                     vendor_gst_no=vgst_n,
+                                    vendor_address=vaddress,
                                     customer_name = cname,
                                     customer_mail=cmail,
                                     customer_street=cstreet,
@@ -9690,6 +9714,7 @@ def create_Purchase_order_save(request):
         vmail = request.POST.get('email_inp')
         vgst_t = request.POST.get('gst_trt_inp')
         vgst_n = request.POST.get('gstin_inp')
+        vaddress = request.POST.get('baddress_inp')
             
         orgname = request.POST.get('orgName')
         org_gst = request.POST.get('gstNumber')
@@ -9702,13 +9727,13 @@ def create_Purchase_order_save(request):
         
         cmail = request.POST.get('custMail')
         caddress = request.POST.get('custAddress')
-        cstreet = request.POST.get('custStreet')
-        ccity = request.POST.get('custcity')
-        cstate = request.POST.get('custstate')
+        cstreet = ''
+        ccity = ''
+        cstate = ''
         csrc_supply = request.POST.get('cust_srcofsupply')
         src_supply = request.POST.get('srcofsupply')
         po = request.POST['pur_ord']
-        if Purchase_Order.objects.filter(Pur_no=po).exists():
+        if Purchase_Order.objects.filter(user=request.user,Pur_no=po).exists():
             messages.error(request, 'Purchase order no already exists!')
             return redirect('purchase_order')
         ref = request.POST['ref']
@@ -9745,6 +9770,7 @@ def create_Purchase_order_save(request):
                                     vendor_mail=vmail,
                                     vendor_gst_traet=vgst_t,
                                     vendor_gst_no=vgst_n,
+                                    vendor_address=vaddress,
                                     Org_name=orgname,
                                     Org_address=org_address,
                                     Org_gst=org_gst,
@@ -9815,6 +9841,7 @@ def create_Purchase_order_save(request):
                                     vendor_mail=vmail,
                                     vendor_gst_traet=vgst_t,
                                     vendor_gst_no=vgst_n,
+                                    vendor_address=vaddress,
                                     customer_name = cname,
                                     customer_mail=cmail,
                                     customer_street=cstreet,
@@ -9926,9 +9953,9 @@ def purchase_bill_view(request,id):
             i.vendor_name = name2[0]
     cmt_data = purchase_order_comments.objects.filter(user=request.user,PO=po_item)
     bank=''
-    if po_item.payment_type != 'cash':
-        if po_item.payment_type != 'upi':
-            if po_item.payment_type != 'cheque':
+    if po_item.payment_type != 'Cash':
+        if po_item.payment_type != 'UPI':
+            if po_item.payment_type != 'Cheque':
                 bank = Bankcreation.objects.get(user=request.user,name=po_item.payment_type)
     context={
         'po':po,
@@ -9976,9 +10003,9 @@ def purchase_bill_view_by_name(request,id):
         else:
             i.vendor_name = name2[0]
     bank=''
-    if po_item.payment_type != 'cash':
-        if po_item.payment_type != 'upi':
-            if po_item.payment_type != 'cheque':
+    if po_item.payment_type != 'Cash':
+        if po_item.payment_type != 'UPI':
+            if po_item.payment_type != 'Cheque':
                 bank = Bankcreation.objects.get(user=request.user,name=po_item.payment_type)
     context={
         'po':po,
@@ -10029,9 +10056,9 @@ def purchase_bill_view_by_ordno(request,id):
         else:
             i.vendor_name = name2[0]
     bank=''
-    if po_item.payment_type != 'cash':
-        if po_item.payment_type != 'upi':
-            if po_item.payment_type != 'cheque':
+    if po_item.payment_type != 'Cash':
+        if po_item.payment_type != 'UPI':
+            if po_item.payment_type != 'Cheque':
                 bank = Bankcreation.objects.get(user=request.user,name=po_item.payment_type)
     context={
         'po':po,
@@ -10165,16 +10192,17 @@ def edit_Purchase_order(request,id):
     po_id=Purchase_Order.objects.get(id=id)
     if request.method == 'POST':
         typ=request.POST['typ']
-        po = request.POST['pur_ord']
+        po = request.POST.get('pur_ord')
         if po_id.Pur_no != po:
-            if Purchase_Order.objects.filter(Pur_no=po).exists():
+            if Purchase_Order.objects.filter(user = request.user,Pur_no=po).exists():
                 messages.error(request, 'Purchase order no already exists!')
                 return redirect('edit',id)
-        elif typ=='Organization':
+        if typ=='Organization':
             po_id.vendor_name = request.POST.get('vendor')
             po_id.vendor_mail = request.POST.get('email_inp')
             po_id.vendor_gst_traet = request.POST.get('gst_trt_inp')
             po_id.vendor_gst_no = request.POST.get('gstin_inp')
+            po_id.vendor_address = request.POST.get('baddress_inp')
             po_id.typ=typ
             po_id.Org_name = request.POST.get('orgName')
             po_id.Org_address = request.POST.get('gstNumber')
@@ -10201,6 +10229,19 @@ def edit_Purchase_order(request,id):
             po_id.sgst=request.POST['sgst']
             po_id.cgst=request.POST['cgst']
             po_id.igst=request.POST['igst']
+            po_id.payment_type=request.POST['ptype']
+            if po_id.payment_type == 'Cheque':
+                po_id.cheque_id=request.POST['cheque_id']
+                po_id.upi_id=''
+            elif po_id.payment_type == 'UPI':
+                po_id.upi_id=request.POST['upi_id']
+                po_id.cheque_id=''
+            elif po_id.payment_type == 'Cash':
+                po_id.upi_id=''
+                po_id.cheque_id=''
+            else:
+                po_id.upi_id=''
+                po_id.cheque_id=''
             po_id.tax_amount = request.POST['total_taxamount']
             po_id.shipping_charge= request.POST['shipping_charge']
             po_id.adjustment_charge= request.POST['adjustment_charge']
@@ -10245,6 +10286,7 @@ def edit_Purchase_order(request,id):
             po_id.vendor_mail = request.POST.get('email_inp')
             po_id.vendor_gst_traet = request.POST.get('gst_trt_inp')
             po_id.vendor_gst_no = request.POST.get('gstin_inp')
+            po_id.vendor_address = request.POST.get('baddress_inp')
             po_id.typ=typ
             po_id.Org_name = ''
             po_id.Org_address = ''
@@ -10257,13 +10299,13 @@ def edit_Purchase_order(request,id):
             po_id.customer_mail = request.POST.get('custMail')
             po_id.custo = customer.objects.get(customerName=po_id.customer_name,customerEmail=po_id.customer_mail)
             po_id.customer_address = request.POST.get('custAddress')
-            po_id.customer_street = request.POST.get('custstreet')
-            po_id.customer_city = request.POST.get('custcity')
-            po_id.customer_state = request.POST.get('custstate')
+            po_id.customer_street = ''
+            po_id.customer_city = ''
+            po_id.customer_state = ''
             po_id.payed = request.POST['advance']
             po_id.customer_source_supply = request.POST.get('cust_source_supply')
             po_id.source_supply = request.POST.get('srcofsupply')
-            po_id.Pur_no = request.POST['pur_ord']
+            po_id.Pur_no = po
             po_id.ref = request.POST['ref']
             po_id.payment_terms = request.POST['terms']
             po_id.Ord_date = request.POST.get('start_date')
@@ -10272,6 +10314,19 @@ def edit_Purchase_order(request,id):
             po_id.sgst=request.POST['sgst']
             po_id.cgst=request.POST['cgst']
             po_id.igst=request.POST['igst']
+            po_id.payment_type=request.POST['ptype']
+            if po_id.payment_type == 'Cheque':
+                po_id.cheque_id=request.POST['cheque_id']
+                po_id.upi_id=''
+            elif po_id.payment_type == 'UPI':
+                po_id.upi_id=request.POST['upi_id']
+                po_id.cheque_id=''
+            elif po_id.payment_type == 'Cash':
+                po_id.upi_id=''
+                po_id.cheque_id=''
+            else:
+                po_id.upi_id=''
+                po_id.cheque_id=''
             po_id.tax_amount = request.POST['total_taxamount']
             po_id.shipping_charge= request.POST['shipping_charge']
             po_id.adjustment_charge= request.POST['adjustment_charge']
@@ -13279,7 +13334,7 @@ def new_bill(request):
 @login_required(login_url='login')
 def convert_to_invoice_purchase(request,pk):
     user = request.user
-    po_id=Purchase_Order.objects.get(id=pk)
+    po_id=Purchase_Order.objects.get(id=pk,user=user)
     pos = po_id.source_supply[5:]
     if po_id.source_supply == '[DNH] Dadra and Nagar Haveli':
         pos = 'Dadra and Nagar Haveli'
@@ -13295,7 +13350,7 @@ def convert_to_invoice_purchase(request,pk):
     customers = customer.objects.filter(user_id=user.id)
     terms = payment_terms.objects.filter(user=request.user)
     units = Unit.objects.all()
-    poitems = Purchase_Order_items.objects.filter(PO=po_id)
+    poitems = Purchase_Order_items.objects.filter(PO=po_id,user=user)
     account = Chart_of_Account.objects.all()
     account_types = Chart_of_Account.objects.values_list('account_type', flat=True).distinct()
     sales_acc = Sales.objects.all()
@@ -13346,7 +13401,7 @@ def create_purchase_bill1_purchase(request):
         vendor_gst = request.POST['gstin_inp']
         sos = ''
         cust_name = request.POST['customer_name']
-        cus=customer.objects.get(customerName=cust_name)   
+        cus=customer.objects.get(user=request.user,customerName=cust_name)   
         custo=cus.id 
         cust_email = request.POST['customer_email']
         pos = request.POST['pos']
@@ -13359,8 +13414,9 @@ def create_purchase_bill1_purchase(request):
         payment_method = request.POST['paymentmethod']
         adjustment = request.POST['add_round_off']
         amt_paid = request.POST['amtPaid']
-        po_item = Purchase_Order.objects.get(Pur_no=order_number)
+        po_item = Purchase_Order.objects.get(user=request.user,Pur_no=order_number)
         po_item.complete_status = 1
+        po_item.convert_status = 1
         po_item.save()
 
         item = request.POST.getlist('item[]')

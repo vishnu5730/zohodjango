@@ -780,6 +780,7 @@ class Purchase_Order(models.Model):
     vendor_mail = models.CharField(max_length=100,null=True,blank=True)
     vendor_gst_traet = models.CharField(max_length=100,null=True,blank=True)
     vendor_gst_no = models.CharField(max_length=100,null=True,blank=True)
+    vendor_address = models.CharField(max_length=100,null=True,blank=True)
     
     Org_name = models.CharField(max_length=100,null=True,blank=True)
     Org_address = models.CharField(max_length=100,null=True,blank=True)

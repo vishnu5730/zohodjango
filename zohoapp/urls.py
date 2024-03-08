@@ -205,6 +205,7 @@ urlpatterns = [
     path('view_profileasc/<id>',views.view_profileasc,name='view_profileasc'),
     path('view_profiledesc/<id>',views.view_profiledesc,name='view_profiledesc'),
     path('get_vendordet',views.get_vendordet,name='get_vendordet'),
+    path('get_vendordet_purchase',views.get_vendordet_purchase,name='get_vendordet_purchase'),
     path('get_customerdet',views.get_customerdet,name='get_customerdet'),
     path('recurbills_vendor',views.recurbills_vendor,name='recurbills_vendor'),
     path('vendor_dropdown',views.vendor_dropdown,name = 'vendor_dropdown'),
