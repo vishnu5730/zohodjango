@@ -752,9 +752,9 @@
                   </div>
                 </div> -->
                 <div class="row mt-3">
-                  <div class="col-5"><label class="text-dark" for="">Advance/Paid :</label></div>
+                  <div class="col-5"><label class="text-dark" for="">Balance Amount :</label></div>
                   <div class="col-7">
-                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.payed}}</p>
+                    <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">{{po_item.grand_total}}</p>
                   </div>
                 </div>
               </div>
@@ -1395,14 +1395,17 @@
                           <td class="table-cell text-black" style="border: none;">{{po_item.vendor_mail}}</td>
                         </tr>
                         {% endif %}
-                        {% if po_item.vendor_address %}
                         <tr>
-                          <td class="table-cell text-black" style="border: none;">{{po_item.vendor_address}}</td>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.vendor_gst_traet}}</td>
                         </tr>
-                        {% endif %}
                         {% if po_item.vendor_gst_no %}
                         <tr>
                           <td class="table-cell text-black" style="border: none;">GST No: {{po_item.vendor_gst_no}}</td>
+                        </tr>
+                        {% endif %}
+                        {% if po_item.vendor_address %}
+                        <tr>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.vendor_address}}</td>
                         </tr>
                         {% endif %}
                       </table>
@@ -1423,14 +1426,17 @@
                           <td class="table-cell text-black" style="border: none;">{{po_item.customer_mail}}</td>
                         </tr>
                         {% endif %}
-                        {% if po_item.customer_address != "" %}
                         <tr>
-                          <td class="table-cell text-black" style="border: none;">{{po_item.customer_address}}</td>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.custo.GSTTreatment}}</td>
                         </tr>
-                        {% endif %}
                         {% if po_item.custo.GSTIN != "" %}
                         <tr>
                           <td class="table-cell text-black" style="border: none;">GST No: {{po_item.custo.GSTIN}}</td>
+                        </tr>
+                        {% endif %}
+                        {% if po_item.customer_address != "" %}
+                        <tr>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.customer_address}}</td>
                         </tr>
                         {% endif %}
                       </table>
@@ -1445,14 +1451,9 @@
                           <td class="table-cell text-black" style="border: none;">{{po_item.Org_mail}}</td>
                         </tr>
                         {% endif %}
-                        {% if po_item.Org_address != "" %}
-                        <tr>
-                          <td class="table-cell text-black" style="border: none;">{{po_item.Org_address}}</td>
-                        </tr>
-                        {% endif %}
                         {% if po_item.Org_gst != "" %}
                         <tr>
-                          <td class="table-cell text-black" style="border: none;">GST No: {{po_item.Org_gst}}</td>
+                          <td class="table-cell text-black" style="border: none;">{{po_item.Org_gst}}</td>
                         </tr>
                         {% endif %}
                       </table>
@@ -2055,26 +2056,31 @@
                           <h5>{{po_item.vendor_name}}</h5>
                           <p class="address col-9" style="margin-left: 0px;">
                             {{po_item.vendor_mail}}</p>
-                            {% if po_item.vendor_address != "" %}
-                            <p class="address col-9">Address: {{po_item.vendor_address}}</p>
-                            {% endif %}
+                          <p class="address col-9">{{po_item.vendor_gst_traet}}</p>
                           {% if po_item.vendor_gst_no != "" %}
                           <p class="address col-9">GST No: {{po_item.vendor_gst_no}}</p>
+                          {% endif %}
+                          <p class="address col-9">Place of Supply: {{po_item.source_supply}}</p>
+                          {% if po_item.vendor_address != "" %}
+                          <p class="address col-9">Billing Address: {{po_item.vendor_address}}</p>
                           {% endif %}
                         </div>
                         <div class="col-4">
                           <p>Deliver To,</p>
                           {% if po_item.customer_name == '' %}
                           <h5>{{po_item.Org_name}}</h5>
-                          {% if po_item.Org_mail != "" %}
-                          <p class="address col-9" style="margin-left: 0px;">
-                            {{po_item.Org_mail}}</p>
-                            {% endif %}
                           {% if po_item.Org_address != "" %}
-                          <p class="address col-9" style="margin-left: 0px;">Address: {{po_item.Org_address}}</p>
+                          <p class="address col-9" style="margin-left: 0px;">
+                            {{po_item.Org_address}}</p>
                             {% endif %}
                             {% if po_item.Org_gst != "" %}
                           <p class="address col-9">GST No: {{po_item.Org_gst}}</p>
+                          {% endif %}
+                          {% if po_item.Org_address != "" %}
+                          <p class="address col-9">Address: {{po_item.Org_address}}</p>
+                          {% endif %}
+                          {% if po_item.Org_state != "" %}
+                          <p class="address col-9">State: {{po_item.Org_state}}</p>
                           {% endif %}
                           {% else %}
                           <h5>{{po_item.customer_name}}</h5>
@@ -2083,10 +2089,15 @@
                             {{po_item.customer_mail}}</p>
                             {% endif %}
                             {% if po_item.customer_address != "" %}
-                            <p class="address col-9">Address: {{po_item.customer_address}}</p>
-                            {% endif %}
+                          <p class="address col-9">{{po_item.customer_address}}</p>
+                          {% endif %}
+                          <p class="address col-9">{{po_item.custo.GSTTreatment}}</p>
                           {% if po_item.custo.GSTIN != "" %}
                           <p class="address col-9">GST No: {{po_item.custo.GSTIN}}</p>
+                          {% endif %}
+                          <p class="address col-9">Place of Supply: {{po_item.customer_source_supply}}</p>
+                          {% if po_item.customer_address != "" %}
+                          <p class="address col-9">Billing Address: {{po_item.customer_address}}</p>
                           {% endif %}
                           {% endif %}
                         </div>
@@ -2302,10 +2313,10 @@
       </div>
 
       <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document" style="max-width: 800px;">
+        <div class="modal-dialog" role="document">
           <div class="modal-content bg-dark text-white">
               <div class="modal-header">
-                  <h5 class="modal-title" id="commentModalLabel">Add a Comment</h5>
+                  <h5 class="modal-title" id="commentModalLabel">Add a comment</h5>
                 </div>
                 <form id="commentForm" method="post" action="{% url 'comment_purchase' po_item.id %}">
                   {% csrf_token %}
@@ -2317,7 +2328,7 @@
             </div>
             <div class="modal-footer">
               <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
-              <button type="button" class="btn btn-success btn-save-comment" id="submitCommentBtn" onclick="submitComment()">Save Comment</button>
+              <button type="button" class="btn btn-primary btn-save-comment" id="submitCommentBtn" onclick="submitComment()">Save Comment</button>
             </div></form>
             {% if cmt_data %}
             <div class="modal-header">
@@ -2336,8 +2347,8 @@
                   {% for com in cmt_data %}
                   <tr class="table-row">
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ com.comment|slice:":50" }}{% if com.comment|length > 50 %}...{% endif %}</td>
-                    <td><a style="color: red;" href="{% url 'delete_comment_purchase' po_item.id com.id %}">Delete</a></td>
+                    <td>{{ com.comment }}</td>  
+                    <td><a href="{% url 'delete_comment_purchase' po_item.id com.id %}">Delete</a></td>
                   </tr>
                   {% endfor %}
                 </tbody>

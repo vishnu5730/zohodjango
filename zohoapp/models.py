@@ -825,6 +825,7 @@ class Purchase_Order(models.Model):
     status=models.CharField(max_length=255,default='Draft')
     convert_status=models.IntegerField(default='0',null=True)
     complete_status = models.IntegerField(default=0)
+    balance_amount = models.FloatField(null=True,blank=True)
 
 class Purchase_Order_items (models.Model):
 

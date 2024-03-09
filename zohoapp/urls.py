@@ -37,6 +37,7 @@ urlpatterns = [
     path('delete_comment_vendor/<int:vid>/<int:pk>',views.delete_comment_vendor,name='delete_comment_vendor'),
     path('comment_purchase/<int:pk>',views.comment_purchase,name='comment_purchase'),
     path('delete_comment_purchase/<int:vid>/<int:pk>',views.delete_comment_purchase,name='delete_comment_purchase'),
+    path('edit_comment_purchase/<int:vid>/<int:pk>',views.edit_comment_purchase,name='edit_comment_purchase'),
     path('add_comment/<int:pk>',views.add_comment,name='add_comment'),
     path('sendmail/<int:pk>',views.sendmail,name='sendmail'),
     path('edit_vendor/<int:pk>',views.edit_vendor,name='edit_vendor'),

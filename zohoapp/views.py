@@ -1359,6 +1359,13 @@ def comment_purchase(request,pk):
         cmt.save()
         return redirect('purchase_bill_view',pk)
 
+def edit_comment_purchase(request,vid,pk):
+    new_comment = purchase_order_comments.objects.get(user=request.user,id=pk)
+    if request.method == 'POST':
+        new_comment.comment = request.POST['edited_comment']
+        new_comment.save()
+    return redirect('purchase_bill_view',vid)
+
 def delete_comment_purchase(request,vid,pk):
     comment = purchase_order_comments.objects.get(id=pk)
     comment.delete()
@@ -8735,22 +8742,7 @@ def purchaseView_by_ord_no(request):
         }
     return render(request,'purchase_order.html',context)
 
-def purchaseView(request):
-    purchase_table=Purchase_Order.objects.filter(user=request.user)
-    for i in purchase_table:
-        name=i.vendor_name.split(' ')
-        if len(name) == 3:
-            i.vendor_name = name[0]+' '+name[1]
-        else:
-            i.vendor_name = name[0]
-    purchase_order_table=Purchase_Order_items.objects.all()
-    company=company_details.objects.get(id=request.user.id)
-    context={
-        'pt':purchase_table,
-        'po_t':purchase_order_table,
-        'company':company,
-        }
-    return render(request,'purchase_order.html',context)
+
 #-----------------------------------------------VIEWS TO REPLACE---------------------------------------------
 
 def purchaseView(request):
@@ -8820,7 +8812,7 @@ def import_purchase(request):
                     new_name = a[1]+' '+a[2]
                 else:
                     new_name = a[1]
-                vendor_obj = vendor_table.objects.get(user=request.user,first_name=vendor_first_name,last_name=vendor_last_name,vendor_email=vendor_mail)
+                vendor_obj = vendor_table.objects.get(user=request.user,first_name=vendor_first_name,last_name=vendor_last_name,vendor_email=vendor_mail,status="Active")
                 
                 vendor_name = new_name+' '+str(vendor_obj.id)
                 vendor_gst_traet = vendor_obj.gst_treatment
@@ -8838,7 +8830,7 @@ def import_purchase(request):
                     customer_name = row.get('Customer Name (With Salutation)') 
                     customer_mail = row.get('Customer Mail') 
                     customer_source_supply = row.get('Customer Place of Supply') 
-                    customer_obj = customer.objects.get(user=request.user,customerName=customer_name,customerEmail=customer_mail)
+                    customer_obj = customer.objects.get(user=request.user,customerName=customer_name,customerEmail=customer_mail,status="Active")
                     customer_address = customer_obj.Address1
                     custo = customer_obj
 
@@ -8978,7 +8970,7 @@ def import_purchase(request):
                 purchase_obj.tax_amount=count_tax
                 pobjsourcesupply = purchase_obj.source_supply
                 pobjsourcesupply_name = ''
-                if pobjsourcesupply == '[DNH] Dadra and Nagar Haveli':
+                if pobjsourcesupply == '[DNH] Dadra and Nagar Haveli' or pobjsourcesupply == '[DNH]-Dadra and Nagar Haveli':
                     pobjsourcesupply_name = 'Dadra and Nagar Haveli'
                 else:
                     pobjsourcesupply_name = purchase_obj.source_supply[5:]
@@ -8991,7 +8983,8 @@ def import_purchase(request):
                     purchase_obj.cgst=0
                     purchase_obj.sgst=0
                 purchase_obj.sub_total=count_amt
-                purchase_obj.grand_total=count_tax+count_amt+purchase_obj.shipping_charge+purchase_obj.adjustment_charge
+                purchase_obj.grand_total=round(count_tax+count_amt+purchase_obj.shipping_charge+purchase_obj.adjustment_charge,2)
+                purchase_obj.balance_amount=round(purchase_obj.grand_total-purchase_obj.payed,2)
                 purchase_obj.save()
         return redirect('purchaseView')
     except:
@@ -9511,7 +9504,7 @@ def create_Purchase_order(request):
         orgname = request.POST.get('orgName')
         org_gst = request.POST.get('gstNumber')
         org_address = request.POST.get('orgAddress')
-        org_street = request.POST.get('orgstreet')
+        org_street = request.POST.get('orgStreat')
         org_city = request.POST.get('orgcity')
         org_state = request.POST.get('orgstate')
             
@@ -9549,6 +9542,10 @@ def create_Purchase_order(request):
         upi_id=request.POST['upi_id']
         terms_con = request.POST['tearms_conditions']
         orgMail=request.POST.get('orgMail')
+        balance_amount = float(grand_total)-float(advance)
+        if float(advance)>float(grand_total):
+            messages.error(request, 'Advance has exceeded the total amount!')
+            return redirect('purchase_order')
         u = User.objects.get(id = request.user.id)
         last_reference = purchaseOrderReference.objects.filter(user=request.user.id).last()
         if last_reference == None:
@@ -9597,6 +9594,7 @@ def create_Purchase_order(request):
                                     payment_type = payment_type,
                                     term=terms_con,
                                     company=company,
+                                    balance_amount=balance_amount,
                                     user = u,typ=typ)
             purchase.save()
 
@@ -9669,6 +9667,7 @@ def create_Purchase_order(request):
                                     custo=cus,
                                     term=terms_con,
                                     company=company,
+                                    balance_amount=balance_amount,
                                     user = u,typ=typ)
             purchase.save()
 
@@ -9719,7 +9718,7 @@ def create_Purchase_order_save(request):
         orgname = request.POST.get('orgName')
         org_gst = request.POST.get('gstNumber')
         org_address = request.POST.get('orgAddress')
-        org_street = request.POST.get('orgstreet')
+        org_street = request.POST.get('orgStreat')
         org_city = request.POST.get('orgcity')
         org_state = request.POST.get('orgstate')
             
@@ -9757,6 +9756,10 @@ def create_Purchase_order_save(request):
         upi_id=request.POST['upi_id']
         terms_con = request.POST['tearms_conditions']
         orgMail=request.POST.get('orgMail')
+        balance_amount = float(grand_total)-float(advance)
+        if float(advance)>float(grand_total):
+            messages.error(request, 'Advance has exceeded the total amount!')
+            return redirect('purchase_order')
         u = User.objects.get(id = request.user.id)
         last_reference = purchaseOrderReference.objects.filter(user=request.user.id).last()
         if last_reference == None:
@@ -9806,6 +9809,7 @@ def create_Purchase_order_save(request):
                                     term=terms_con,
                                     status="Approved",
                                     company=company,
+                                    balance_amount=balance_amount,
                                     user = u,typ=typ)
             purchase.save()
 
@@ -9879,6 +9883,7 @@ def create_Purchase_order_save(request):
                                     status="Approved",
                                     term=terms_con,
                                     company=company,
+                                    balance_amount=balance_amount,
                                     user = u,typ=typ)
             purchase.save()
 
@@ -10249,6 +10254,10 @@ def edit_Purchase_order(request,id):
             po_id.note=request.POST['customer_note']
             po_id.term = request.POST['tearms_conditions']
             po_id.payed = request.POST['advance']
+            po_id.balance_amount = float(po_id.grand_total)-float(po_id.payed)
+            if float(po_id.payed)>float(po_id.grand_total):
+                messages.error(request, 'Advance exceeded the total amount!')
+                return redirect('edit',id)
             u = User.objects.get(id = request.user.id)
             if len(request.FILES)!=0:
                 if po_id.document:
@@ -10331,8 +10340,13 @@ def edit_Purchase_order(request,id):
             po_id.shipping_charge= request.POST['shipping_charge']
             po_id.adjustment_charge= request.POST['adjustment_charge']
             po_id.grand_total=request.POST['grandtotal']
+            po_id.payed = request.POST['advance']
             po_id.note=request.POST['customer_note']
             po_id.term = request.POST['tearms_conditions']
+            po_id.balance_amount = float(po_id.grand_total)-float(po_id.payed)
+            if float(po_id.payed)>float(po_id.grand_total):
+                messages.error(request, 'Advance exceeded the total amount!')
+                return redirect('edit',id)
             if len(request.FILES)!=0:
                 if po_id.document:
                     os.remove(po_id.document.path)

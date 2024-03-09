@@ -1049,51 +1049,51 @@
     </div>
 </div>
 <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content bg-dark text-white">
-        <div class="modal-header">
-            <h5 class="modal-title" id="commentModalLabel">Add a comment</h5>
+    <div class="modal-dialog" role="document" style="max-width: 800px;">
+      <div class="modal-content bg-dark text-white">
+          <div class="modal-header">
+              <h5 class="modal-title" id="commentModalLabel">Add a Comment</h5>
+            </div>
+            <form id="commentForm" method="post" action="{% url 'comment_vendor' vdata2.id %}">
+              {% csrf_token %}
+        <div class="modal-body">
+          <!-- New comment entry field -->
+          <div class="form-group">
+            <textarea name="comment" class="form-control bg-dark" id="commentText" rows="3"></textarea>
           </div>
-          <form id="commentForm" method="post" action="{% url 'comment_vendor' vdata2.id %}">
-            {% csrf_token %}
-      <div class="modal-body">
-        <!-- New comment entry field -->
-        <div class="form-group">
-          <textarea name="comment" class="form-control bg-dark" id="commentText" rows="3"></textarea>
         </div>
+        <div class="modal-footer">
+          <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+          <button type="button" class="btn btn-success btn-save-comment" id="submitCommentBtn" onclick="submitComment()">Save Comment</button>
+        </div></form>
+        {% if cmt_data %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="commentModalLabel">Comments</h5>
+        </div>
+        <div class="container-fluid">
+          <table class="table table-responsive-md mt-4 table text-white">
+            <thead>
+              <tr>
+                <th>Sl no.</th>
+                <th>Comments</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for com in cmt_data %}
+              <tr class="table-row">
+                <td>{{ forloop.counter }}</td>
+                <td>{{ com.comment|slice:":60" }}{% if com.comment|length > 60 %}...{% endif %}</td>
+                <td><a style="color: red;" href="{% url 'delete_comment_vendor' vdata2.id com.id %}">Delete</a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
       </div>
-      <div class="modal-footer">
-        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
-        <button type="button" class="btn btn-primary btn-save-comment" id="submitCommentBtn" onclick="submitComment()">Save Comment</button>
-      </div></form>
-      {% if cmt_data %}
-      <div class="modal-header">
-        <h5 class="modal-title" id="commentModalLabel">Comments</h5>
-      </div>
-      <div class="container-fluid">
-        <table class="table table-responsive-md mt-4 table text-white">
-          <thead>
-            <tr>
-              <th>Sl no.</th>
-              <th>Comments</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for com in cmt_data %}
-            <tr class="table-row">
-              <td>{{ forloop.counter }}</td>
-              <td>{{ com.comment }}</td>  
-              <td><a href="{% url 'delete_comment_vendor' vdata2.id com.id %}">Delete</a></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% endif %}
     </div>
   </div>
-</div>
 <script>
     function submitComment() {
             document.getElementById('commentForm').submit();
