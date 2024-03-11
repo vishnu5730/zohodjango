@@ -193,6 +193,13 @@
                         href="{% url 'edit_vendor' vdata2.id %}" data-toggle="tooltip" data-placement="top" title="Edit Vendor"><i class="fas fa-edit"></i></a>
                     <button data-toggle="modal" data-target="#commentModal" class="btn btn-warning " style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                         margin-right: 4px;"><i class="fas fa-comment"></i></button>
+                    <a class="btn text-center btn-warning" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                    role="button" title="Share Transaction Details" style="margin-right: 4px;"><i class="fa fa-share"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" data-target="#shareTransationEmail" data-toggle="modal">Email</a>
+                        <a class="dropdown-item"  onclick="shareViaWhatsApp()">Whatsapp</a>
+                    </div>
                     <!-- <button onclick="fieldset3_function()" class="btn btn-warning " style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                         margin-right: 4px;"><i class="far fa-envelope"></i></button> -->
                     <button onclick="fieldset5_function()" class="btn btn-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
@@ -247,10 +254,10 @@
                                     margin-right: 4px;"><i class="fa fa-print"></i>Print</button>
                                 <button onclick="exportAsPDF()" class="btn btn-warning " style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                                     margin-right: 4px;"><i class="fa fa-file-pdf-o"></i>PDF</button>
-                                <button class="btn btn-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                                <!-- <button class="btn btn-warning" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                                     margin-right: 4px;" data-target="#shareTransationEmail" data-toggle="modal"><i class="fa fa-envelope"></i>Email</button>
                                     <button onclick="shareViaWhatsApp()" class="btn btn-warning " style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-                                    margin-right: 4px;"><i class="fa fa-whatsapp"></i>Whatsapp</button>
+                                    margin-right: 4px;"><i class="fa fa-whatsapp"></i>Whatsapp</button> -->
                             
                         </div> 
                     </div>
@@ -373,7 +380,7 @@
                                         {% endif %}
                                         {% if vdata2.source_supply %}
                                         <div class="row mt-2">
-                                            <div class="col-5"><label for="">Source Of Supply :</label></div>
+                                            <div class="col-5"><label for="">Source of Supply :</label></div>
                                             <div class="col-7">
                                                 <p class="bold">{{vdata2.source_supply}}</p>
                                             </div>

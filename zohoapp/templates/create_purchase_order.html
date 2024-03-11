@@ -207,11 +207,11 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
       </div>
       <div class="row mt-2 mb-4 d-none" id="srcofsupply_row">
         <div class="col-md-3">
-          <label >Place of Supply*</label>
+          <label >Place of Supply *</label>
         </div>
 
         <div class="col-md-6">
-            <select name="srcofsupply" id="srcofsupply" onclick="toggleDateInput()" onselect="calculateTaxAmount()" class="form-control bg-light text-dark">
+            <select name="srcofsupply" id="srcofsupply" onclick="toggleDateInput()" onselect="calculateTaxAmount()" class="form-control bg-light text-dark" required>
                 <option selected="selected"></option>
                 <option value="[AN] Andaman and Nicobar Islads">[AN] Andaman and Nicobar Islads</option>
                 <option value="[AD] Andhra Predhesh">[AD] Andhra Predhesh</option>
@@ -257,7 +257,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
       </div>
       <div class="row mt-3" id="">
         <div class="col-md-3">
-          <label for="">Deliver To</label>
+          <label for="">Deliver to *</label>
         </div>
         
         <div class="col-md-3 mt-3">
@@ -452,11 +452,11 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
         </div>
         <div class="row mt-2 mb-4 d-none" id="custsrcofsupply_row">
           <div class="col-md-3">
-            <label >Place of Supply</label>
+            <label >Place of Supply *</label>
           </div>
   
           <div class="col-md-6">
-              <select name="cust_srcofsupply" id="custsrcofsupply" class="form-control bg-light text-dark">
+              <select name="cust_srcofsupply" id="custsrcofsupply" class="form-control bg-light text-dark" required>
                   <option selected="selected"></option>
                   <option value="[AN] Andaman and Nicobar Islads">[AN] Andaman and Nicobar Islads</option>
                   <option value="[AD] Andhra Predhesh">[AD] Andhra Predhesh</option>
@@ -504,7 +504,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
 
       <div class="row mt-2">
         <div class="col-md-3">
-          <label for="prof_name" >Purchase Order</label>
+          <label for="prof_name" >Purchase Order No *</label>
         </div>
         <div class="col-md-6">
           <input type="text" class="form-control bg-light text-dark" value="{{remaining_characters}}"  id="prof_name" name="pur_ord">
@@ -541,11 +541,11 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
 
       <div class="row mt-2">
         <div class="col-md-3">
-          <label for="date2">Payment Terms</label>
+          <label for="date2">Payment Terms *</label>
         </div>
         <div class="col-md-6">
           <div class="d-flex">
-            <select class="form-control bg-light text-dark" id="terms" name="terms">
+            <select class="form-control bg-light text-dark" id="terms" name="terms" required>
               <option value=""></option>
               {% for p in payment %}
                 <option value="{{p.id}}">{{p.Terms}}</option>
@@ -559,7 +559,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
     </div>
       <div class="row mt-2">
         <div class="col-md-3">
-          <label for="date2">Payment Method</label>
+          <label for="date2">Payment Method *</label>
         </div>
 
         <div class="col-md-6">
@@ -627,7 +627,7 @@ integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="ano
                 <td class='text-center text-dark serial-number'></td>
                   <td style="width: 10%;">
                       <div><select class='form-control text-dark item_select itm'
-                              name='item[]' id='item1'>
+                              name='item[]' id='item1' required>
                               <option value=" " selected disabled>Select Item</option>
                               {% for i in item %}
                                 <option value="{{i.Name}}">{{ i.Name  }} </option>
@@ -3137,10 +3137,10 @@ $.ajax({
 
   success: function(response) {
         if (response.message === "success") {
-          document.getElementById("verror_message").innerHTML = "Item added successfully.";
+          // document.getElementById("verror_message").innerHTML = "Item added successfully.";
           document.getElementById("modalItem").reset();
           reloadItem();
-          $('#vendorExistsModal').modal('show');
+          // $('#vendorExistsModal').modal('show');
       }
     },
     error: function(xhr, status, error) {
@@ -3327,7 +3327,7 @@ function calculateGrandTotal() {
         <td class='text-center text-dark serial-number'></td>
         <td style="width: 10%;">
           <div>
-            <select class='form-control text-dark item_select itm' name='item[]' id='item${rowCount}'>
+            <select class='form-control text-dark item_select itm' name='item[]' id='item${rowCount}' required>
               <option value=" " selected disabled>Select Item</option>
               {% for i in item %}
                 <option value="{{i.Name}}">{{ i.Name }}</option>
